@@ -172,3 +172,8 @@ ENV/
 *.out
 *.app
 
+# SIP
+modules/
+src/debug/
+src/release/
+.qmake.stash
