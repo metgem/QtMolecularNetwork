@@ -1,10 +1,13 @@
-#ifndef NETWORKVIEW_H
-#define NETWORKVIEW_H
+#ifndef NETWORKSCENE_H
+#define NETWORKSCENE_H
+
+#include "graphicsitem.h"
 
 #include <QGraphicsScene>
 #include <QWidget>
 
 class Node;
+class Edge;
 
 class Q_DECL_EXPORT NetworkScene : public QGraphicsScene
 {
@@ -12,9 +15,18 @@ class Q_DECL_EXPORT NetworkScene : public QGraphicsScene
 
 public:
     NetworkScene(QWidget *parent = 0);
-    void addNodes(QList<int> indexes, QList<QString> labels, QList<QPointF> positions);
-    void addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> weights, QList<qreal> widths);
 
+    void clear();
+
+    QList<Node *> addNodes(QList<int> indexes, QList<QString> labels, QList<QPointF> positions);
+    QList<Edge *> addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> weights, QList<qreal> widths);
+
+    QList<QGraphicsItem *> nodes() const;
+    QList<QGraphicsItem *> edges() const;
+
+private:
+    GraphicsItemLayer *nodesLayer;
+    GraphicsItemLayer *edgesLayer;
 };
 
-#endif // NETWORKVIEW_H
+#endif // NETWORKSCENE_H

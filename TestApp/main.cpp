@@ -9,6 +9,7 @@
 
 #include <ctime>
 #include <iostream>
+using namespace std;
 
 int main(int argc, char **argv)
 {
@@ -36,7 +37,8 @@ int main(int argc, char **argv)
     node2->setPos(0, -50);*/
 
     // Populate scene
-    std::clock_t begin = std::clock();
+    cout << "Populate Scene" << endl;
+    clock_t begin = clock();
     int nitems = 0;
     QList<int> indexes;
     QList<QString> labels;
@@ -51,10 +53,17 @@ int main(int argc, char **argv)
         }
     }
     scene->addNodes(indexes, labels, positions);
-    std::clock_t end = std::clock();
+    clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << elapsed_secs << "s" << std::endl;
-    std::cout << nitems << "items" << std::endl;
+    cout << elapsed_secs << "s" << endl;
+    cout << nitems << "items" << endl;
+
+    cout << "Get all nodes" << endl;
+    begin = clock();
+    cout << scene->nodes().size() << endl;
+    end = clock();
+    elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    cout << elapsed_secs << "s" << endl;
 
     QMainWindow mainWindow;
     mainWindow.setCentralWidget(view);
