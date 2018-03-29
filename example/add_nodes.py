@@ -4,14 +4,14 @@ import time
 from PyQt5.QtWidgets import QApplication, QGraphicsView, QGraphicsScene
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import QPointF
-from PyNetworkView import NetworkScene, Node
+from NetworkView import NetworkScene
 
 app = QApplication(sys.argv)
 
 view = QGraphicsView()
 scene = NetworkScene()
 view.setScene(scene)
-# scene.setItemIndexMethod(QGraphicsScene.NoIndex)
+scene.setItemIndexMethod(QGraphicsScene.NoIndex)
 view.setScene(scene)
 view.setCacheMode(QGraphicsView.CacheBackground)
 view.setOptimizationFlags(QGraphicsView.DontSavePainterState)
@@ -27,7 +27,7 @@ for i in range(-11000, 11000, 110):
     for j in range(-7000, 7000, 70):
         indexes.append(nitems)
         labels.append(str(nitems))
-        positions.append(QPointF(0, 0))
+        positions.append(QPointF(i, j))
 
         nitems += 1
         

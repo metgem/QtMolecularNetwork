@@ -4,7 +4,7 @@ import time
 from PyQt5.QtWidgets import QApplication, QGraphicsView, QGraphicsScene
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import QPointF
-from PyNetworkView import NetworkScene, Node
+from NetworkView import NetworkScene, Node
 
 app = QApplication(sys.argv)
 
@@ -12,7 +12,6 @@ view = QGraphicsView()
 scene = NetworkScene()
 view.setScene(scene)
 scene.setItemIndexMethod(QGraphicsScene.NoIndex)
-view.setScene(scene)
 view.setCacheMode(QGraphicsView.CacheBackground)
 view.setOptimizationFlags(QGraphicsView.DontSavePainterState)
 view.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
