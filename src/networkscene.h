@@ -22,7 +22,14 @@ public:
     QList<Edge *> addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> weights, QList<qreal> widths);
 
     QList<Node *> nodes() const;
+    QList<Node *> selectedNodes() const;
+    void setNodesSelection(QList<int> indexes);
+    void setNodesSelection(QList<Node *> nodes);
+
     QList<Edge *> edges() const;
+    QList<Edge *> selectedEdges() const;
+    void setEdgesSelection(QList<int> indexes);
+    void setEdgesSelection(QList<Edge *> edges);
 
     void setLayout(QList<qreal> layout);
     void setLayout(QList<QPointF> layout);
