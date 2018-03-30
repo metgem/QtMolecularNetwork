@@ -8,7 +8,7 @@
 
 Edge::Edge(int index, Node *sourceNode, Node *destNode, qreal weight, qreal width)
 {
-    this->index = index;
+    this->id = index;
     this->weight = weight;
     this->source = sourceNode;
     this->dest = destNode;
@@ -23,6 +23,11 @@ Edge::Edge(int index, Node *sourceNode, Node *destNode, qreal weight, qreal widt
     adjust();
 
     setFlag(ItemIsSelectable);
+}
+
+int Edge::index()
+{
+    return this->id;
 }
 
 Node *Edge::sourceNode() const
@@ -49,22 +54,23 @@ void Edge::setDestNode(Node *node)
 
 void Edge::setColor(const QColor color)
 {
-    QPen pen;
+    QPen pen(this->pen());
     pen.setColor(color);
     setPen(pen);
 }
 
 void Edge::setWidth(qreal width)
 {
-    QPen pen;
+    QPen pen(this->pen());
     if ((source != dest) && width)
-    {;
+    {
         pen.setWidth(width);
     }
     else
     {
         pen.setWidth(1);
     }
+    setPen(pen);
 }
 
 void Edge::adjust()

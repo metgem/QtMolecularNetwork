@@ -42,21 +42,29 @@ int main(int argc, char **argv)
     int nitems = 0;
     QList<int> indexes;
     QList<QString> labels;
-    QList<QPointF> positions;
+    QList<qreal> positions;
     for (int i = -11000; i < 11000; i += 110) {
         for (int j = -7000; j < 7000; j += 70) {
             indexes.append(nitems);
             labels.append(QString::number(nitems));
-            positions.append(QPointF(i, j));
+            positions.append(i);
+            positions.append(j);
 
             ++nitems;
         }
     }
-    scene->addNodes(indexes, labels, positions);
+    scene->addNodes(indexes, labels);
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     cout << elapsed_secs << "s" << endl;
     cout << nitems << "items" << endl;
+
+    cout << "Set Layout" << endl;
+    begin = clock();
+    scene->setLayout(positions);
+    end = clock();
+    elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    cout << elapsed_secs << "s" << endl;
 
     cout << "Get all nodes" << endl;
     begin = clock();

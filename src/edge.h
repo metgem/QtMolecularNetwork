@@ -9,6 +9,8 @@ class Edge : public QGraphicsPathItem
 {
 public:
     Edge(int index, Node *sourceNode, Node *destNode, qreal weight=1, qreal width=1);
+
+    int index();
     Node *sourceNode() const;
     Node *destNode() const;
     void setColor(const QColor color);
@@ -18,7 +20,7 @@ public:
     void adjust();
 
     enum { Type = UserType + 2 };
-    int type() const override { return Type; }
+    int type() const { return Type; }
 
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
@@ -27,7 +29,7 @@ protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 private:
-    int index;
+    int id;
     QPointF sourcePoint;
     QPointF destPoint;
     qreal weight;

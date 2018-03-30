@@ -12,6 +12,7 @@ class Node : public QGraphicsEllipseItem {
 public:
     Node(int index, QString label);
 
+    int index();
     void setColor(const QColor color);
     void setLabel(QString label);
     void addEdge(Edge *edge);

@@ -10,13 +10,14 @@ class Node : public QGraphicsEllipseItem
 public:
     Node(int index, QString label);
 
+    int index();
     void setColor(const QColor color);
     void setLabel(QString label);
     void addEdge(Edge *edge);
     QList<Edge *> edges() const;
 
     enum { Type = UserType + 1 };
-    int type() const override { return Type; }
+    int type() const { return Type; }
 
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
@@ -27,7 +28,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
 private:
-    int index;
+    int id;
     QString label;
     QColor color;
     QList<Edge *> edgeList;

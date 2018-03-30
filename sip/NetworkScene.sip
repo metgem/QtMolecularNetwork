@@ -15,11 +15,14 @@ public:
     
     void clear();
     
-    void addNodes(QList<int> indexes, QList<QString> labels, QList<QPointF> positions);
-    void addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> weights, QList<qreal> widths);
+    QList<Node *>  addNodes(QList<int> indexes, QList<QString> labels, QList<QPointF> positions = QList<QPointF>());
+    QList<Edge *>  addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> weights, QList<qreal> widths);
     
-    QList<QGraphicsItem *> nodes() const;
-    QList<QGraphicsItem *> edges() const;    
+    QList<Node *> nodes() const;
+    QList<Edge *> edges() const;  
+    
+    void setLayout(QList<qreal> layout);
+    void setLayout(QList<QPointF> layout);
 };
 
 %End

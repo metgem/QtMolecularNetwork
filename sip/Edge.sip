@@ -11,6 +11,8 @@ class Edge : public QGraphicsPathItem {
 
 public:
     Edge(int index, Node *sourceNode, Node *destNode, qreal weight /TransferThis/ = 1, qreal width /TransferThis/ = 1);
+    
+    int index();
     Node *sourceNode() const;
     Node *destNode() const;
     void setColor(const QColor color);

@@ -8,7 +8,7 @@
 Node::Node(int index, QString label)
     : QGraphicsEllipseItem(-RADIUS, -RADIUS, 2*RADIUS, 2*RADIUS)
 {
-    this->index = index;
+    this->id = index;
     this->label = label;
 
     setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges);
@@ -16,6 +16,11 @@ Node::Node(int index, QString label)
     setCacheMode(DeviceCoordinateCache);
 
     setColor(Qt::lightGray);
+}
+
+int Node::index()
+{
+    return this->id;
 }
 
 void Node::setColor(const QColor color)

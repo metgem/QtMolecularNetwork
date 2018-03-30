@@ -25,8 +25,9 @@ QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, 
     QList<Node *> nodes;
 
     for (int i=0; i<indexes.size(); i++) {
-        Node *node = new Node(indexes.at(i), labels.at(i));
-        node->setPos(positions.at(i));
+        Node *node = new Node(indexes[i], labels[i]);
+        if (positions.size() == indexes.size())
+            node->setPos(positions[i]);
 
         node->setParentItem(nodesLayer);
         nodes.append(node);
@@ -40,7 +41,7 @@ QList<Edge *> NetworkScene::addEdges(QList<int> indexes, QList<Node *> sourceNod
     QList<Edge *> edges;
 
     for (int i=0; i<indexes.size(); i++) {
-        Edge *edge = new Edge(indexes.at(i), sourceNodes.at(i), destNodes.at(i), weights.at(i), widths.at(i));
+        Edge *edge = new Edge(indexes[i], sourceNodes[i], destNodes[i], weights[i], widths[i]);
 
         edge->setParentItem(edgesLayer);
         edges.append(edge);
@@ -49,12 +50,39 @@ QList<Edge *> NetworkScene::addEdges(QList<int> indexes, QList<Node *> sourceNod
     return edges;
 }
 
-QList<QGraphicsItem *> NetworkScene::nodes() const
+QList<Node *> NetworkScene::nodes() const
 {
-    return nodesLayer->childItems();
+    QList<Node *> nodes;
+    foreach(QGraphicsItem *item, nodesLayer->childItems())
+    {
+        nodes.append(qgraphicsitem_cast<Node *>(item));
+    }
+    return nodes;
 }
 
-QList<QGraphicsItem *> NetworkScene::edges() const
+QList<Edge *> NetworkScene::edges() const
 {
-    return edgesLayer->childItems();
+    QList<Edge *> edges;
+    foreach(QGraphicsItem *item, edgesLayer->childItems())
+    {
+        edges.append(qgraphicsitem_cast<Edge *>(item));
+    }
+    return edges;
+}
+
+void NetworkScene::setLayout(QList<QPointF> layout)
+{
+    QList<Node *> nodes = this->nodes();
+
+    for (int i=0; i<nodes.size(); i++) {
+        nodes[i]->setPos(layout[i]);
+    }
+}
+
+void NetworkScene::setLayout(QList<qreal> layout)
+{
+    QList<Node *> nodes(this->nodes());
+    for (int i=0; i<nodes.size(); i++) {
+        nodes[i]->setPos(layout[i*2], layout[i*2+1]);
+    }
 }
