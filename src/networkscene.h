@@ -34,6 +34,11 @@ public:
     void setLayout(QList<qreal> layout);
     void setLayout(QList<QPointF> layout);
 
+    void hideItems(QList<QGraphicsItem *> items);
+    void showItems(QList<QGraphicsItem *> items);
+    void hideSelectedItems();
+    void showAllItems();
+
 private:
     GraphicsItemLayer *nodesLayer;
     GraphicsItemLayer *edgesLayer;

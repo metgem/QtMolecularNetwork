@@ -11,7 +11,7 @@ Node::Node(int index, QString label)
     this->id = index;
     this->label = label;
 
-    setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsGeometryChanges);
+    setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsScenePositionChanges);
 
     setCacheMode(DeviceCoordinateCache);
 
@@ -49,9 +49,10 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     switch (change)
     {
-    case ItemPositionHasChanged:
-        for (int i = 0; i < edgeList.size(); ++i) {
-            edgeList.at(i)->adjust();
+    case ItemScenePositionHasChanged:
+        foreach(Edge* edge, edgeList)
+        {
+            edge->adjust();
         }
         break;
     case ItemSelectedChange:
@@ -95,11 +96,11 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     if (lod > 0.1 && pieList.size() > 0)
     {
         QRectF rect(-0.85*RADIUS, -0.85*RADIUS, 1.7*RADIUS, 1.7*RADIUS);
-        float start(0);
+        float start = 0;
 
         painter->setPen(QPen(Qt::NoPen));
-        for (int i = 0; i < pieList.size(); ++i) {
-            float v(pieList.at(i));
+        foreach(float v, pieList)
+        {
             painter->drawPie(rect, start*5760, v*5760);
             start += v;
         }

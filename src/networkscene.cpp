@@ -135,7 +135,15 @@ void NetworkScene::setLayout(QList<QPointF> layout)
     QList<Node *> nodes = this->nodes();
 
     for (int i=0; i<nodes.size(); i++) {
+        Node *node = nodes[i];
+        node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
         nodes[i]->setPos(layout[i]);
+        node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+    }
+
+    foreach(Edge* edge, edges())
+    {
+        edge->adjust();
     }
 }
 
@@ -143,6 +151,48 @@ void NetworkScene::setLayout(QList<qreal> layout)
 {
     QList<Node *> nodes(this->nodes());
     for (int i=0; i<nodes.size(); i++) {
-        nodes[i]->setPos(layout[i*2], layout[i*2+1]);
+        Node *node = nodes[i];
+        node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
+        node->setPos(layout[i*2], layout[i*2+1]);
+        node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+    }
+
+    foreach(Edge* edge, edges())
+    {
+        edge->adjust();
+    }
+}
+
+void NetworkScene::hideItems(QList<QGraphicsItem *> items)
+{
+    foreach(QGraphicsItem *item, items)
+    {
+        item->hide();
+    }
+}
+
+void NetworkScene::showItems(QList<QGraphicsItem *> items)
+{
+    foreach(QGraphicsItem *item, items)
+    {
+        item->show();
+    }
+}
+
+void NetworkScene::hideSelectedItems()
+{
+    QList<QGraphicsItem *> items = selectedItems();
+    clearSelection();
+    foreach(QGraphicsItem *item, items)
+    {
+        item->hide();
+    }
+}
+
+void NetworkScene::showAllItems()
+{
+    foreach(QGraphicsItem *item, items())
+    {
+        item->show();
     }
 }
