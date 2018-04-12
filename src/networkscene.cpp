@@ -25,7 +25,12 @@ QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, 
     QList<Node *> nodes;
 
     for (int i=0; i<indexes.size(); i++) {
-        Node *node = new Node(indexes[i], labels[i]);
+        Node *node;
+        if (labels.size() == indexes.size())
+            node = new Node(indexes[i], labels[i]);
+        else
+            node = new Node(indexes[i]);
+
         if (positions.size() == indexes.size())
             node->setPos(positions[i]);
 
@@ -195,4 +200,37 @@ void NetworkScene::showAllItems()
     {
         item->show();
     }
+}
+
+Node *NetworkScene::nodeAt(const QPointF &position, const QTransform &deviceTransform) const
+{
+    QGraphicsItem *item = itemAt(position, deviceTransform);
+    if (nodesLayer->isAncestorOf(item))
+        return qgraphicsitem_cast<Node *>(item);
+    return 0;
+
+}
+
+Node *NetworkScene::nodeAt(qreal x, qreal y, const QTransform &deviceTransform) const
+{
+    QGraphicsItem *item = itemAt(x, y, deviceTransform);
+    if (nodesLayer->isAncestorOf(item))
+        return qgraphicsitem_cast<Node *>(item);
+    return 0;
+}
+
+Edge *NetworkScene::edgeAt(const QPointF &position, const QTransform &deviceTransform) const
+{
+    QGraphicsItem *item = itemAt(position, deviceTransform);
+    if (edgesLayer->isAncestorOf(item))
+        return qgraphicsitem_cast<Edge *>(item);
+    return 0;
+}
+
+Edge *NetworkScene::edgeAt(qreal x, qreal y, const QTransform &deviceTransform) const
+{
+    QGraphicsItem *item = itemAt(x, y, deviceTransform);
+    if (edgesLayer->isAncestorOf(item))
+        return qgraphicsitem_cast<Edge *>(item);
+    return 0;
 }

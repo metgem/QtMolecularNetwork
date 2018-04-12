@@ -15,7 +15,7 @@ public:
     
     void clear();
     
-    QList<Node *>  addNodes(QList<int> indexes, QList<QString> labels, QList<QPointF> positions = QList<QPointF>());
+    QList<Node *> addNodes(QList<int> indexes, QList<QString> labels=QList<QString>(), QList<QPointF> positions = QList<QPointF>());
     QList<Edge *>  addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> weights, QList<qreal> widths);
     
     QList<Node *> nodes() const;
@@ -35,6 +35,11 @@ public:
     void showItems(QList<QGraphicsItem *> items);
     void hideSelectedItems();
     void showAllItems();
+    
+    Node *nodeAt(const QPointF &position, const QTransform &deviceTransform) const;
+    Node *nodeAt(qreal x, qreal y, const QTransform &deviceTransform) const;
+    Edge *edgeAt(const QPointF &position, const QTransform &deviceTransform) const;
+    Edge *edgeAt(qreal x, qreal y, const QTransform &deviceTransform) const;
 };
 
 %End

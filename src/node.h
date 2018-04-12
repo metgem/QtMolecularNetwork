@@ -8,10 +8,12 @@ class Edge;
 class Node : public QGraphicsEllipseItem
 {
 public:
-    Node(int index, QString label);
+    Node(int index, QString label=0);
 
     int index();
+    const QColor color();
     void setColor(const QColor color);
+    QString label();
     void setLabel(QString label);
     void addEdge(Edge *edge);
     QList<Edge *> edges() const;
@@ -29,8 +31,8 @@ protected:
 
 private:
     int id;
-    QString label;
-    QColor color;
+    QString label_;
+    QColor color_;
     QList<Edge *> edgeList;
     QList<float> pieList;
 };

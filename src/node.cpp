@@ -4,12 +4,15 @@
 
 #include <QtWidgets>
 #include <QtCore>
+#include <QString>
 
 Node::Node(int index, QString label)
     : QGraphicsEllipseItem(-RADIUS, -RADIUS, 2*RADIUS, 2*RADIUS)
 {
     this->id = index;
-    this->label = label;
+    if (label==0)
+        label = QString::number(index);
+    this->label_ = label;
 
     setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsScenePositionChanges);
 
@@ -23,14 +26,24 @@ int Node::index()
     return this->id;
 }
 
+const QColor Node::color()
+{
+    return color_;
+}
+
 void Node::setColor(const QColor color)
 {
-    this->color = color;
+    this->color_ = color;
+}
+
+QString Node::label()
+{
+    return label_;
 }
 
 void Node::setLabel(QString label)
 {
-    this->label = label;
+    this->label_ = label;
     setCacheMode(cacheMode()); // Force redraw
 }
 
@@ -82,7 +95,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     if (option->state & QStyle::State_Selected)
         painter->setBrush(Qt::yellow);
     else
-        painter->setBrush(color);
+        painter->setBrush(color_);
 
     // Draw ellipse
     if (spanAngle() != 0 && qAbs(spanAngle() % (360 * 16)) == 0)
@@ -114,6 +127,6 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         font.setPixelSize(FONT_SIZE);
         painter->setFont(font);
         painter->setPen(QPen(Qt::black, 0));
-        painter->drawText(rect(), Qt::AlignCenter, label);
+        painter->drawText(rect(), Qt::AlignCenter, label_);
     }
 }
