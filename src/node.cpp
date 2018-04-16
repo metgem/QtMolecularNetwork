@@ -11,7 +11,7 @@ Node::Node(int index, QString label)
 {
     this->id = index;
     if (label==0)
-        label = QString::number(index);
+        label = QString::number(index+1);
     this->label_ = label;
 
     setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsScenePositionChanges);
