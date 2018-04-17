@@ -5,6 +5,7 @@
 
 #include <QGraphicsScene>
 #include <QWidget>
+#include <QAbstractTableModel>
 
 class Node;
 class Edge;
@@ -33,6 +34,7 @@ public:
 
     void setLayout(QList<qreal> layout);
     void setLayout(QList<QPointF> layout);
+    void setLabelsFromModel(QAbstractTableModel* model, int column_id);
 
     void hideItems(QList<QGraphicsItem *> items);
     void showItems(QList<QGraphicsItem *> items);

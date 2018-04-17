@@ -168,6 +168,15 @@ void NetworkScene::setLayout(QList<qreal> layout)
     }
 }
 
+void NetworkScene::setLabelsFromModel(QAbstractTableModel* model, int column_id)
+{
+    foreach (Node* node, this->nodes()) {
+        QVariant label = model->index(node->index(), column_id).data();
+        node->setLabel(label.toString());
+    }
+    this->update();
+}
+
 void NetworkScene::hideItems(QList<QGraphicsItem *> items)
 {
     foreach(QGraphicsItem *item, items)
