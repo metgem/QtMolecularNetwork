@@ -14,6 +14,10 @@ class Q_DECL_EXPORT NetworkScene : public QGraphicsScene
 {
     Q_OBJECT
 
+signals:
+   void scaleChanged(qreal);
+   void layoutChanged();
+
 public:
     NetworkScene(QWidget *parent = 0);
 
@@ -32,8 +36,10 @@ public:
     void setEdgesSelection(QList<int> indexes);
     void setEdgesSelection(QList<Edge *> edges);
 
-    void setLayout(QList<qreal> layout, qreal scale=1);
-    void setLayout(QList<QPointF> layout, qreal scale=1);
+    void setLayout(QList<qreal> layout, qreal scale=0);
+    void setLayout(QList<QPointF> layout, qreal scale=0);
+    qreal scale();
+    void setScale(qreal scale=1);
     void setLabelsFromModel(QAbstractTableModel* model, int column_id, int role=Qt::DisplayRole);
 
     void hideItems(QList<QGraphicsItem *> items);
@@ -49,6 +55,7 @@ public:
 private:
     GraphicsItemLayer *nodesLayer;
     GraphicsItemLayer *edgesLayer;
+    qreal scale_;
 };
 
 #endif // NETWORKSCENE_H

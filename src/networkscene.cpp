@@ -11,6 +11,8 @@ void NetworkScene::clear()
 {
     QGraphicsScene::clear();
 
+    this->scale_ = 1;
+
     nodesLayer = new GraphicsItemLayer;
     edgesLayer = new GraphicsItemLayer;
 
@@ -137,6 +139,9 @@ void NetworkScene::setEdgesSelection(QList<Edge *> edges)
 
 void NetworkScene::setLayout(QList<QPointF> layout, qreal scale)
 {
+    if (!scale)
+        scale = this->scale_;
+
     QList<Node *> nodes = this->nodes();
 
     for (int i=0; i<nodes.size(); i++) {
@@ -150,10 +155,15 @@ void NetworkScene::setLayout(QList<QPointF> layout, qreal scale)
     {
         edge->adjust();
     }
+
+    emit this->layoutChanged();
 }
 
 void NetworkScene::setLayout(QList<qreal> layout, qreal scale)
 {
+    if (!scale)
+        scale = this->scale_;
+
     QList<Node *> nodes(this->nodes());
     for (int i=0; i<nodes.size(); i++) {
         Node *node = nodes[i];
@@ -166,6 +176,30 @@ void NetworkScene::setLayout(QList<qreal> layout, qreal scale)
     {
         edge->adjust();
     }
+
+    emit this->layoutChanged();
+}
+
+qreal NetworkScene::scale()
+{
+    return this->scale_;
+}
+
+void NetworkScene::setScale(qreal scale)
+{
+    foreach (Node* node, this->nodes()) {
+        node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
+        node->setPos(node->pos() * scale / this->scale_);
+        node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+    }
+
+    foreach(Edge* edge, edges())
+    {
+        edge->adjust();
+    }
+
+    this->scale_ = scale;
+    emit this->scaleChanged(scale);
 }
 
 void NetworkScene::setLabelsFromModel(QAbstractTableModel* model, int column_id, int role)

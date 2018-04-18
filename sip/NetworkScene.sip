@@ -28,8 +28,10 @@ public:
     void setEdgesSelection(QList<int> indexes);
     void setEdgesSelection(QList<Edge *> edges);
     
-    void setLayout(QList<qreal> layout, qreal scale=1);
-    void setLayout(QList<QPointF> layout, qreal scale=1);
+    void setLayout(QList<qreal> layout, qreal scale=0);
+    void setLayout(QList<QPointF> layout, qreal scale=0);
+    qreal scale();
+    void setScale(qreal scale=1);
     void setLabelsFromModel(QAbstractTableModel* model, int column_id, int role=Qt::DisplayRole);
     
     void hideItems(QList<QGraphicsItem *> items);
