@@ -32,9 +32,9 @@ public:
     void setEdgesSelection(QList<int> indexes);
     void setEdgesSelection(QList<Edge *> edges);
 
-    void setLayout(QList<qreal> layout);
-    void setLayout(QList<QPointF> layout);
-    void setLabelsFromModel(QAbstractTableModel* model, int column_id);
+    void setLayout(QList<qreal> layout, qreal scale=1);
+    void setLayout(QList<QPointF> layout, qreal scale=1);
+    void setLabelsFromModel(QAbstractTableModel* model, int column_id, int role=Qt::DisplayRole);
 
     void hideItems(QList<QGraphicsItem *> items);
     void showItems(QList<QGraphicsItem *> items);

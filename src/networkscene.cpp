@@ -135,14 +135,14 @@ void NetworkScene::setEdgesSelection(QList<Edge *> edges)
     }
 }
 
-void NetworkScene::setLayout(QList<QPointF> layout)
+void NetworkScene::setLayout(QList<QPointF> layout, qreal scale)
 {
     QList<Node *> nodes = this->nodes();
 
     for (int i=0; i<nodes.size(); i++) {
         Node *node = nodes[i];
         node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
-        nodes[i]->setPos(layout[i]);
+        nodes[i]->setPos(layout[i] * scale);
         node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
     }
 
@@ -152,13 +152,13 @@ void NetworkScene::setLayout(QList<QPointF> layout)
     }
 }
 
-void NetworkScene::setLayout(QList<qreal> layout)
+void NetworkScene::setLayout(QList<qreal> layout, qreal scale)
 {
     QList<Node *> nodes(this->nodes());
     for (int i=0; i<nodes.size(); i++) {
         Node *node = nodes[i];
         node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
-        node->setPos(layout[i*2], layout[i*2+1]);
+        node->setPos(layout[i*2] * scale, layout[i*2+1] * scale);
         node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
     }
 
@@ -168,10 +168,10 @@ void NetworkScene::setLayout(QList<qreal> layout)
     }
 }
 
-void NetworkScene::setLabelsFromModel(QAbstractTableModel* model, int column_id)
+void NetworkScene::setLabelsFromModel(QAbstractTableModel* model, int column_id, int role)
 {
     foreach (Node* node, this->nodes()) {
-        QVariant label = model->index(node->index(), column_id).data();
+        QVariant label = model->index(node->index(), column_id).data(role);
         node->setLabel(label.toString());
     }
     this->update();
