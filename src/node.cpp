@@ -65,7 +65,7 @@ void Node::setPie(QList<qreal> values)
         values = QList<qreal>();
     this->pieList = values;
     if (isVisible())
-        setCacheMode(cacheMode());
+        update();
 }
 
 void Node::addEdge(Edge *edge)
