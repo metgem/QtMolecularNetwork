@@ -55,9 +55,14 @@ void Node::setPie(QList<qreal> values)
     for (int i=0; i<values.size(); i++) {
         sum += values[i];
     }
-    for (int i=0; i<values.size(); i++) {
-        values[i] /= sum;
+    if (sum>0)
+    {
+        for (int i=0; i<values.size(); i++) {
+            values[i] /= sum;
+        }
     }
+    else
+        values = QList<qreal>();
     this->pieList = values;
     if (isVisible())
         setCacheMode(cacheMode());
