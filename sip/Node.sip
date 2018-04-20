@@ -17,6 +17,7 @@ public:
     void setColor(const QColor color);
     QString label();
     void setLabel(QString label);
+    void setPie(QList<qreal> values);
     void addEdge(Edge *edge);
     QList<Edge *> edges() const;
 };

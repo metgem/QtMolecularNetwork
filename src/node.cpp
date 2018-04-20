@@ -1,6 +1,7 @@
 #include "node.h"
 #include "edge.h"
 #include "config.h"
+#include "networkscene.h"
 
 #include <QtWidgets>
 #include <QtCore>
@@ -44,7 +45,22 @@ QString Node::label()
 void Node::setLabel(QString label)
 {
     this->label_ = label;
-    setCacheMode(cacheMode()); // Force redraw
+    if (isVisible())
+        update();
+}
+
+void Node::setPie(QList<qreal> values)
+{
+    qreal sum = 0;
+    for (int i=0; i<values.size(); i++) {
+        sum += values[i];
+    }
+    for (int i=0; i<values.size(); i++) {
+        values[i] /= sum;
+    }
+    this->pieList = values;
+    if (isVisible())
+        setCacheMode(cacheMode());
 }
 
 void Node::addEdge(Edge *edge)
@@ -106,16 +122,16 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     qreal lod(option->levelOfDetailFromTransform(painter->worldTransform()));
 
     // Draw pie if any
-    if (lod > 0.1 && pieList.size() > 0)
+    if (lod > 0.1 && this->pieList.size() > 0)
     {
         QRectF rect(-0.85*RADIUS, -0.85*RADIUS, 1.7*RADIUS, 1.7*RADIUS);
         float start = 0;
-
+        QList<QColor> colors = qobject_cast<NetworkScene *>(scene())->pieColors();
         painter->setPen(QPen(Qt::NoPen));
-        foreach(float v, pieList)
-        {
-            painter->drawPie(rect, start*5760, v*5760);
-            start += v;
+        for (int i=0; i<this->pieList.size(); i++) {
+            painter->setBrush(colors[i]);
+            painter->drawPie(rect, start*5760, pieList[i]*5760);
+            start += this->pieList[i];
         }
     }
 

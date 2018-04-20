@@ -73,6 +73,14 @@ int main(int argc, char **argv)
     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     cout << elapsed_secs << "s" << endl;
 
+    Node *node = scene->nodes()[0];
+    QList<QColor> colors;
+    colors << QColor(Qt::red) << QColor(Qt::green) << QColor(Qt::blue);
+    scene->setPieColors(colors);
+    QList<qreal> pies;
+    pies << 5. << 10.;
+    node->setPie(pies);
+
     QMainWindow mainWindow;
     mainWindow.setCentralWidget(view);
 

@@ -33,6 +33,10 @@ public:
     qreal scale();
     void setScale(qreal scale=1);
     void setLabelsFromModel(QAbstractTableModel* model, int column_id, int role=Qt::DisplayRole);
+    QList<QColor> pieColors();
+    void setPieColors(QList<QColor> colors);
+    void setPieChartsFromModel(QAbstractTableModel* model, QList<int> column_ids, int role=Qt::DisplayRole);
+    void resetPieCharts();
     
     void hideItems(QList<QGraphicsItem *> items);
     void showItems(QList<QGraphicsItem *> items);

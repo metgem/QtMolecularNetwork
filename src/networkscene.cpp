@@ -208,7 +208,37 @@ void NetworkScene::setLabelsFromModel(QAbstractTableModel* model, int column_id,
         QVariant label = model->index(node->index(), column_id).data(role);
         node->setLabel(label.toString());
     }
-    this->update();
+    this->invalidate();
+}
+
+QList<QColor> NetworkScene::pieColors()
+{
+    return this->colors_;
+}
+
+void NetworkScene::setPieColors(QList<QColor> colors)
+{
+    this->colors_ = colors;
+}
+
+void NetworkScene::setPieChartsFromModel(QAbstractTableModel *model, QList<int> column_ids, int role)
+{
+    foreach (Node* node, this->nodes()) {
+        QList<qreal> values;
+        for (int i=0; i<column_ids.size(); i++) {
+            values.append(model->index(node->index(), column_ids[i]).data(role).toReal());
+        }
+        node->setPie(values);
+    }
+    this->invalidate();
+}
+
+void NetworkScene::resetPieCharts()
+{
+    foreach (Node* node, this->nodes()) {
+        node->setPie(QList<qreal>());
+    }
+    this->invalidate();
 }
 
 void NetworkScene::hideItems(QList<QGraphicsItem *> items)

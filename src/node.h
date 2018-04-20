@@ -15,6 +15,8 @@ public:
     void setColor(const QColor color);
     QString label();
     void setLabel(QString label);
+    void setPie(QList<qreal> values);
+
     void addEdge(Edge *edge);
     QList<Edge *> edges() const;
 
@@ -34,7 +36,7 @@ private:
     QString label_;
     QColor color_;
     QList<Edge *> edgeList;
-    QList<float> pieList;
+    QList<qreal> pieList;
 };
 
 #endif // NODE_H
