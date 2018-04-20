@@ -5,13 +5,13 @@
 NetworkScene::NetworkScene(QWidget *)
 {
     clear();
+
+    this->scale_ = 1;
 }
 
 void NetworkScene::clear()
 {
     QGraphicsScene::clear();
-
-    this->scale_ = 1;
 
     nodesLayer = new GraphicsItemLayer;
     edgesLayer = new GraphicsItemLayer;
@@ -208,7 +208,6 @@ void NetworkScene::setLabelsFromModel(QAbstractTableModel* model, int column_id,
         QVariant label = model->index(node->index(), column_id).data(role);
         node->setLabel(label.toString());
     }
-    this->invalidate();
 }
 
 QList<QColor> NetworkScene::pieColors()
@@ -230,7 +229,6 @@ void NetworkScene::setPieChartsFromModel(QAbstractTableModel *model, QList<int> 
         }
         node->setPie(values);
     }
-    this->invalidate();
 }
 
 void NetworkScene::resetPieCharts()
@@ -238,7 +236,6 @@ void NetworkScene::resetPieCharts()
     foreach (Node* node, this->nodes()) {
         node->setPie(QList<qreal>());
     }
-    this->invalidate();
 }
 
 void NetworkScene::hideItems(QList<QGraphicsItem *> items)
