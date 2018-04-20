@@ -222,6 +222,9 @@ void NetworkScene::setPieColors(QList<QColor> colors)
 
 void NetworkScene::setPieChartsFromModel(QAbstractTableModel *model, QList<int> column_ids, int role)
 {
+    if (column_ids.size() != this->colors_.size())
+        return false;
+
     foreach (Node* node, this->nodes()) {
         QList<qreal> values;
         for (int i=0; i<column_ids.size(); i++) {
