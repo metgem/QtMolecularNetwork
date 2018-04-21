@@ -22,6 +22,7 @@ public:
     QList<Node *> selectedNodes() const;
     void setNodesSelection(QList<int> indexes);
     void setNodesSelection(QList<Node *> nodes);
+    QRectF selectedNodesBoundingRect();
     
     QList<Edge *> edges() const;
     QList<Edge *> selectedEdges() const;
@@ -33,6 +34,7 @@ public:
     qreal scale();
     void setScale(qreal scale=1);
     void setLabelsFromModel(QAbstractTableModel* model, int column_id, int role=Qt::DisplayRole);
+    void resetLabels();
     QList<QColor> pieColors();
     void setPieColors(QList<QColor> colors);
     void setPieChartsFromModel(QAbstractTableModel* model, QList<int> column_ids, int role=Qt::DisplayRole);

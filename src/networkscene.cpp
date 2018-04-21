@@ -97,6 +97,14 @@ void NetworkScene::setNodesSelection(QList<Node *> nodes)
     }
 }
 
+QRectF NetworkScene::selectedNodesBoundingRect()
+{
+    QRectF boundingRect;
+    foreach (Node* node, selectedNodes())
+        boundingRect |= node->sceneBoundingRect();
+    return boundingRect;
+}
+
 QList<Edge *> NetworkScene::edges() const
 {
     QList<Edge *> edges;
@@ -210,6 +218,14 @@ void NetworkScene::setLabelsFromModel(QAbstractTableModel* model, int column_id,
     }
 }
 
+void NetworkScene::resetLabels()
+{
+    foreach (Node* node, this->nodes()) {
+        QString label = QString::number(node->index() + 1);
+        node->setLabel(label);
+    }
+}
+
 QList<QColor> NetworkScene::pieColors()
 {
     return this->colors_;
@@ -223,7 +239,7 @@ void NetworkScene::setPieColors(QList<QColor> colors)
 void NetworkScene::setPieChartsFromModel(QAbstractTableModel *model, QList<int> column_ids, int role)
 {
     if (column_ids.size() != this->colors_.size())
-        return false;
+        return;
 
     foreach (Node* node, this->nodes()) {
         QList<qreal> values;
