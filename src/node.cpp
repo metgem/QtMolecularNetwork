@@ -29,7 +29,10 @@ int Node::index()
 
 const QColor Node::color()
 {
-    return color_;
+    if(color_ != Qt::lightGray)
+        return color_;
+    else
+        return QColor();
 }
 
 void Node::setColor(const QColor color)

@@ -1,6 +1,12 @@
+#include <algorithm>
 #include "networkscene.h"
 #include "node.h"
 #include "edge.h"
+
+bool NodeLessThan(Node *n1, Node *n2)
+{
+    return n1->index() < n2->index();
+}
 
 NetworkScene::NetworkScene(QWidget *)
 {
@@ -22,9 +28,10 @@ void NetworkScene::clear()
     edgesLayer->setZValue(0);
 }
 
-QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, QList<QPointF> positions)
+QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, QList<QPointF> positions, QList<QVariant> colors)
 {
     QList<Node *> nodes;
+    QColor color;
 
     for (int i=0; i<indexes.size(); i++) {
         Node *node;
@@ -35,6 +42,13 @@ QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, 
 
         if (positions.size() == indexes.size())
             node->setPos(positions[i]);
+
+        if (colors.size() == indexes.size())
+        {
+            color = colors[i].value<QColor>();
+            if (color.isValid())
+                node->setColor(color);
+        }
 
         node->setParentItem(nodesLayer);
         nodes.append(node);
@@ -151,11 +165,13 @@ void NetworkScene::setLayout(QList<QPointF> layout, qreal scale)
         scale = this->scale_;
 
     QList<Node *> nodes = this->nodes();
+    int j;
 
     for (int i=0; i<nodes.size(); i++) {
         Node *node = nodes[i];
+        j = node->index();
         node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
-        nodes[i]->setPos(layout[i] * scale);
+        node->setPos(layout[j] * scale);
         node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
     }
 
@@ -173,10 +189,13 @@ void NetworkScene::setLayout(QList<qreal> layout, qreal scale)
         scale = this->scale_;
 
     QList<Node *> nodes(this->nodes());
+    int j;
+
     for (int i=0; i<nodes.size(); i++) {
         Node *node = nodes[i];
+        j = node->index();
         node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
-        node->setPos(layout[i*2] * scale, layout[i*2+1] * scale);
+        node->setPos(layout[j*2] * scale, layout[j*2+1] * scale);
         node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
     }
 
@@ -288,6 +307,42 @@ void NetworkScene::showAllItems()
     foreach(QGraphicsItem *item, items())
     {
         item->show();
+    }
+}
+
+QList<QColor> NetworkScene::nodesColors()
+{
+    QList<QColor> colors;
+    QList<Node *> nodes = this->nodes();
+
+    std::sort(nodes.begin(), nodes.end(), NodeLessThan);
+
+    foreach(Node *node, nodes)
+    {
+        colors.append(node->color());
+    }
+
+    return colors;
+}
+
+void NetworkScene::setNodesColors(QList<QVariant> colors)
+{
+    QColor color;
+    QList<Node *> nodes = this->nodes();
+
+    for (int i=0; i<nodes.size(); i++) {
+        color = colors[nodes[i]->index()].value<QColor>();
+        if (color.isValid())
+            nodes[i]->setColor(color);
+    }
+}
+
+void NetworkScene::setSelectedNodesColor(QColor color)
+{
+    foreach(Node *node, selectedNodes())
+    {
+        if (color.isValid())
+            node->setColor(color);
     }
 }
 
