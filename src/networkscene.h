@@ -25,6 +25,10 @@ public:
 
     QList<Node *> addNodes(QList<int> indexes, QList<QString> labels=QList<QString>(), QList<QPointF> positions = QList<QPointF>(), QList<QVariant> colors = QList<QVariant>());
     QList<Edge *> addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> weights, QList<qreal> widths);
+    void removeAllNodes();
+    void removeNodes(QList<Node *> nodes);
+    void removeAllEdges();
+    void removeEdges(QList<Edge *> edges);
 
     QList<Node *> nodes() const;
     QList<Node *> selectedNodes() const;

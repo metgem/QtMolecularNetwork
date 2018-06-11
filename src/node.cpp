@@ -38,6 +38,11 @@ const QColor Node::color()
 void Node::setColor(const QColor color)
 {
     this->color_ = color;
+
+    // Calculate the perceptive luminance (aka luma) - human eye favors green color...
+    // See https://stackoverflow.com/questions/1855884/determine-font-color-based-on-background-color
+    double luma = 0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue() / 255;
+    this->text_color_ = (luma > 0.5) ? QColor(Qt::black) : QColor(Qt::white);
 }
 
 QString Node::label()
@@ -115,11 +120,19 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
+    QColor text_color;
+
     // If selected, change brush to yellow
     if (option->state & QStyle::State_Selected)
+    {
         painter->setBrush(Qt::yellow);
+        text_color = QColor(Qt::black);
+    }
     else
+    {
         painter->setBrush(color_);
+        text_color = this->text_color_;
+    }
 
     // Draw ellipse
     if (spanAngle() != 0 && qAbs(spanAngle() % (360 * 16)) == 0)
@@ -150,7 +163,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         font = painter->font();
         font.setPixelSize(FONT_SIZE);
         painter->setFont(font);
-        painter->setPen(QPen(Qt::black, 0));
+        painter->setPen(QPen(text_color, 0));
         painter->drawText(rect(), Qt::AlignCenter, label_);
     }
 }

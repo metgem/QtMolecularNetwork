@@ -71,6 +71,38 @@ QList<Edge *> NetworkScene::addEdges(QList<int> indexes, QList<Node *> sourceNod
     return edges;
 }
 
+void NetworkScene::removeAllNodes()
+{
+    foreach(Node* node, nodes())
+    {
+        removeItem(qgraphicsitem_cast<QGraphicsItem *>(node));
+    }
+}
+
+void NetworkScene::removeNodes(QList<Node *> nodes)
+{
+    foreach(Node* node, nodes)
+    {
+        removeItem(qgraphicsitem_cast<QGraphicsItem *>(node));
+    }
+}
+
+void NetworkScene::removeAllEdges()
+{
+    foreach(Edge* edge, edges())
+    {
+        removeItem(qgraphicsitem_cast<QGraphicsItem *>(edge));
+    }
+}
+
+void NetworkScene::removeEdges(QList<Edge *> edges)
+{
+    foreach(Edge* edge, edges)
+    {
+        removeItem(qgraphicsitem_cast<QGraphicsItem *>(edge));
+    }
+}
+
 QList<Node *> NetworkScene::nodes() const
 {
     QList<Node *> nodes;

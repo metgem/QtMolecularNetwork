@@ -35,6 +35,7 @@ private:
     int id;
     QString label_;
     QColor color_;
+    QColor text_color_;
     QList<Edge *> edgeList;
     QList<qreal> pieList;
 };
