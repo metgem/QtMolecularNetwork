@@ -1,25 +1,26 @@
 #include "node.h"
 #include "edge.h"
-#include "config.h"
 #include "networkscene.h"
+#include "style.h"
 
 #include <QtWidgets>
 #include <QtCore>
 #include <QString>
 
-Node::Node(int index, QString label)
-    : QGraphicsEllipseItem(-RADIUS, -RADIUS, 2*RADIUS, 2*RADIUS)
+Node::Node(int index, int radius, QString label)
+    : QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
 {
     this->id = index;
+    this->radius_ = radius;
     if (label==0)
         label = QString::number(index+1);
     this->label_ = label;
 
     setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsScenePositionChanges);
-
     setCacheMode(DeviceCoordinateCache);
 
-    setColor(Qt::lightGray);
+    setBrush(Qt::lightGray);
+    setPen(QPen(Qt::black, 1));
 }
 
 int Node::index()
@@ -27,22 +28,49 @@ int Node::index()
     return this->id;
 }
 
-const QColor Node::color()
+int Node::radius()
 {
-    if(color_ != Qt::lightGray)
-        return color_;
-    else
-        return QColor();
+    return this->radius_;
 }
 
-void Node::setColor(const QColor color)
+void Node::setRadius(int radius)
 {
-    this->color_ = color;
+    this->radius_ = radius;
+    this->setRect(QRectF(-radius, -radius, 2 * radius, 2 * radius));
+}
 
-    // Calculate the perceptive luminance (aka luma) - human eye favors green color...
-    // See https://stackoverflow.com/questions/1855884/determine-font-color-based-on-background-color
-    double luma = 0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue() / 255;
-    this->text_color_ = (luma > 0.5) ? QColor(Qt::black) : QColor(Qt::white);
+QFont Node::font()
+{
+    return this->font_;
+}
+
+void Node::setFont(QFont font)
+{
+    this->font_ = font;
+}
+
+const QColor Node::textColor()
+{
+    return this->text_color;
+}
+
+void Node::setTextColor(const QColor color)
+{
+    this->text_color = color;
+}
+
+void Node::setBrush(const QBrush brush, bool autoTextColor)
+{
+    QGraphicsEllipseItem::setBrush(brush);
+
+    if (autoTextColor)
+    {
+        QColor color = brush.color();
+        // Calculate the perceptive luminance (aka luma) - human eye favors green color...
+        // See https://stackoverflow.com/questions/1855884/determine-font-color-based-on-background-color
+        double luma = 0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue() / 255;
+        this->text_color = (luma > 0.5) ? QColor(Qt::black) : QColor(Qt::white);
+    }
 }
 
 QString Node::label()
@@ -79,12 +107,22 @@ void Node::setPie(QList<qreal> values)
 void Node::addEdge(Edge *edge)
 {
     edgeList << edge;
-    edge->adjust();
 }
 
 QList<Edge *> Node::edges() const
 {
     return edgeList;
+}
+
+void Node::updateStyle(NetworkStyle* old, NetworkStyle *style)
+{
+    setRadius(style->nodeRadius());
+    if (this->brush().color() == old->nodeBrush().color())
+        setBrush(style->nodeBrush(), false);
+    setTextColor(style->textColor());
+    setPen(style->nodePen());
+    setFont(style->font());
+    update();
 }
 
 QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -118,11 +156,20 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
+QRectF Node::boundingRect() const
+{
+    QRectF brect = QGraphicsEllipseItem::boundingRect();
+    int pwidth = this->pen().width();
+    int size = 2 * (this->radius_ + pwidth);
+    return QRectF(brect.x() - pwidth, brect.y() - pwidth, size, size);
+}
+
 void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
-    QColor text_color;
+    NetworkScene *scene = qobject_cast<NetworkScene *>(this->scene());
 
-    // If selected, change brush to yellow
+    // If selected, change brush to yellow and text to black
+    QColor text_color;
     if (option->state & QStyle::State_Selected)
     {
         painter->setBrush(Qt::yellow);
@@ -130,9 +177,12 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     }
     else
     {
-        painter->setBrush(color_);
-        text_color = this->text_color_;
+        painter->setBrush(this->brush());
+        text_color = this->text_color;
     }
+
+    // Set pen
+    painter->setPen(this->pen());
 
     // Draw ellipse
     if (spanAngle() != 0 && qAbs(spanAngle() % (360 * 16)) == 0)
@@ -143,11 +193,12 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     qreal lod(option->levelOfDetailFromTransform(painter->worldTransform()));
 
     // Draw pie if any
-    if (lod > 0.1 && this->pieList.size() > 0)
+    if (scene != 0 && lod > 0.1 && this->pieList.size() > 0)
     {
-        QRectF rect(-0.85*RADIUS, -0.85*RADIUS, 1.7*RADIUS, 1.7*RADIUS);
+        int radius = this->radius();
+        QRectF rect(-0.85*radius, -0.85*radius, 1.7*radius, 1.7*radius);
         float start = 0;
-        QList<QColor> colors = qobject_cast<NetworkScene *>(scene())->pieColors();
+        QList<QColor> colors = scene->pieColors();
         painter->setPen(QPen(Qt::NoPen));
         for (int i=0; i<this->pieList.size(); i++) {
             painter->setBrush(colors[i]);
@@ -159,10 +210,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     // Draw text
     if (lod > 0.4)
     {
-        QFont font;
-        font = painter->font();
-        font.setPixelSize(FONT_SIZE);
-        painter->setFont(font);
+        painter->setFont(this->font_);
         painter->setPen(QPen(text_color, 0));
         painter->drawText(rect(), Qt::AlignCenter, label_);
     }

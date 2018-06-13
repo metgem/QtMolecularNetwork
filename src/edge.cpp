@@ -1,6 +1,7 @@
 #include "edge.h"
-#include "config.h"
 #include "node.h"
+#include "networkscene.h"
+#include "style.h"
 
 #include <QtGui>
 #include <QtCore>
@@ -17,11 +18,10 @@ Edge::Edge(int index, Node *sourceNode, Node *destNode, qreal weight, qreal widt
     if (source != dest)
         dest->addEdge(this);
 
-    setAcceptedMouseButtons(Qt::LeftButton);
-    setColor(Qt::darkGray);
+    setPen(QPen(Qt::darkGray));
     setWidth(width);
-    adjust();
 
+    setAcceptedMouseButtons(Qt::LeftButton);
     setFlag(ItemIsSelectable);
 }
 
@@ -52,11 +52,15 @@ void Edge::setDestNode(Node *node)
     adjust();
 }
 
-void Edge::setColor(const QColor color)
+void Edge::setPen(QPen pen)
 {
-    QPen pen(this->pen());
-    pen.setColor(color);
-    setPen(pen);
+    pen.setWidth(this->pen().width());
+    QGraphicsPathItem::setPen(pen);
+}
+
+qreal Edge::width()
+{
+    return this->pen().width();
 }
 
 void Edge::setWidth(qreal width)
@@ -70,7 +74,7 @@ void Edge::setWidth(qreal width)
     {
         pen.setWidth(1);
     }
-    setPen(pen);
+    QGraphicsPathItem::setPen(pen);
 }
 
 void Edge::adjust()
@@ -83,9 +87,11 @@ void Edge::adjust()
 
     prepareGeometryChange();
 
-    if (length > qreal(2*RADIUS+NODE_BORDER_WIDTH)) {
-        QPointF edgeOffset((line.dx() * (RADIUS + NODE_BORDER_WIDTH + 1)) / length,
-                           (line.dy() * (RADIUS + NODE_BORDER_WIDTH + 1)) / length);
+    int min_len = source->radius() + dest->radius() + source->pen().width() + dest->pen().width();
+
+    if (length > qreal(min_len)) {
+        QPointF edgeOffset((line.dx() * (min_len/2 + 1)) / length,
+                           (line.dy() * (min_len/2 + 1)) / length);
         sourcePoint = line.p1() + edgeOffset;
         destPoint = line.p2() - edgeOffset;
     } else {
@@ -96,11 +102,12 @@ void Edge::adjust()
 
     if (source == dest)
     {
-        path.moveTo(sourcePoint.x()-RADIUS-NODE_BORDER_WIDTH*2,
+        int radius  = source->radius();
+        path.moveTo(sourcePoint.x() - radius - 2 * source->pen().width(),
                     sourcePoint.y());
-        path.cubicTo(QPointF(sourcePoint.x()-4*RADIUS, sourcePoint.y()),
-                     QPointF(sourcePoint.x(),          sourcePoint.y()-4*RADIUS),
-                     QPointF(sourcePoint.x(),          sourcePoint.y()-RADIUS-NODE_BORDER_WIDTH*2));
+        path.cubicTo(QPointF(sourcePoint.x() - 4 * radius, sourcePoint.y()),
+                     QPointF(sourcePoint.x(),              sourcePoint.y() - 4 * radius),
+                     QPointF(sourcePoint.x(),              sourcePoint.y() - radius - 2 * source->pen().width()));
     }
     else
     {
@@ -108,6 +115,12 @@ void Edge::adjust()
         path.lineTo(destPoint);
     }
     setPath(path);
+}
+
+void Edge::updateStyle(NetworkStyle *old, NetworkStyle *style)
+{
+    setPen(style->edgePen());
+    update();
 }
 
 QVariant Edge::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -126,15 +139,16 @@ QRectF Edge::boundingRect() const
     if (!source || !dest)
         return QRectF();
 
-    QRectF brect(QGraphicsPathItem::boundingRect());
+    QRectF brect = QGraphicsPathItem::boundingRect();
 
     if (source == dest)
     {
         qreal w(pen().width());
-        return QRectF(brect.x()+2*RADIUS-NODE_BORDER_WIDTH*2-w,
-                       brect.y()+2*RADIUS-NODE_BORDER_WIDTH*2-w,
-                       2*(RADIUS+NODE_BORDER_WIDTH+1+w),
-                       2*(RADIUS+NODE_BORDER_WIDTH+1+w));
+        int radius = source->radius();
+        int width = source->pen().width();
+        int delta = 2 * radius - 2 * width - w;
+        int size = 2 * (radius + width + 1 + w);
+        return QRectF(brect.x()+delta, brect.y() + delta, size, size);
     }
 
     return brect;

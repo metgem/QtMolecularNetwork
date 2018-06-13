@@ -6,12 +6,12 @@
 class GraphicsItemLayer : public QGraphicsItem
 {
 public:
-    QRectF boundingRect() const
+    QRectF boundingRect() const override
     {
         return QRectF(0,0,0,0);
     }
 
-    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *)
+    void paint(QPainter *, const QStyleOptionGraphicsItem *, QWidget *) override
     {
     }
 };

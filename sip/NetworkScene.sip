@@ -8,10 +8,14 @@ class NetworkScene : public QGraphicsScene {
 %TypeHeaderCode
 #include "networkscene.h"
 #include "graphicsitem.h"
+#include "style.h"
 %End
 
 public:
     NetworkScene(QWidget *parent /TransferThis/ = 0);
+    
+    NetworkStyle *networkStyle();
+    void setNetworkStyle(NetworkStyle * /KeepReference/);
     
     void clear();
     

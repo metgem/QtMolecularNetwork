@@ -2,6 +2,9 @@
 #define EDGE_H
 
 #include <QGraphicsPathItem>
+#include <QPen>
+
+#include "style.h"
 
 class Node;
 
@@ -13,18 +16,20 @@ public:
     int index();
     Node *sourceNode() const;
     Node *destNode() const;
-    void setColor(const QColor color);
+    void setPen(QPen pen);
+    qreal width();
     void setWidth(qreal width);
     void setSourceNode(Node *node);
     void setDestNode(Node *node);
     void adjust();
+
+    void updateStyle(NetworkStyle *old, NetworkStyle *style);
 
     enum { Type = UserType + 2 };
     int type() const { return Type; }
 
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
-protected:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 

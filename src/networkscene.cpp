@@ -1,7 +1,9 @@
 #include <algorithm>
+
 #include "networkscene.h"
 #include "node.h"
 #include "edge.h"
+#include "style.h"
 
 bool NodeLessThan(Node *n1, Node *n2)
 {
@@ -12,7 +14,32 @@ NetworkScene::NetworkScene(QWidget *)
 {
     clear();
 
+    this->style_ = new DefaultStyle();
     this->scale_ = 1;
+}
+
+NetworkStyle *NetworkScene::networkStyle()
+{
+    return this->style_;
+}
+
+void NetworkScene::setNetworkStyle(NetworkStyle *style)
+{
+    NetworkStyle *new_style;
+    if (style != 0)
+        new_style = style;
+    else
+        new_style = new DefaultStyle();
+
+    foreach(Node* node, nodes())
+        node->updateStyle(this->style_, new_style);
+
+    foreach(Edge* edge, edges())
+        edge->updateStyle(this->style_, new_style);
+
+    setBackgroundBrush(new_style->backgroundBrush());
+
+    this->style_ = new_style;
 }
 
 void NetworkScene::clear()
@@ -36,9 +63,9 @@ QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, 
     for (int i=0; i<indexes.size(); i++) {
         Node *node;
         if (labels.size() == indexes.size())
-            node = new Node(indexes[i], labels[i]);
+            node = new Node(indexes[i], this->style_->nodeRadius(), labels[i]);
         else
-            node = new Node(indexes[i]);
+            node = new Node(indexes[i], this->style_->nodeRadius());
 
         if (positions.size() == indexes.size())
             node->setPos(positions[i]);
@@ -47,8 +74,10 @@ QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, 
         {
             color = colors[i].value<QColor>();
             if (color.isValid())
-                node->setColor(color);
+                node->setBrush(color);
         }
+        else if (style_ != 0)
+            node->setBrush(style_->nodeBrush());
 
         node->setParentItem(nodesLayer);
         nodes.append(node);
@@ -63,8 +92,8 @@ QList<Edge *> NetworkScene::addEdges(QList<int> indexes, QList<Node *> sourceNod
 
     for (int i=0; i<indexes.size(); i++) {
         Edge *edge = new Edge(indexes[i], sourceNodes[i], destNodes[i], weights[i], widths[i]);
-
         edge->setParentItem(edgesLayer);
+        edge->adjust();
         edges.append(edge);
     }
 
@@ -345,13 +374,18 @@ void NetworkScene::showAllItems()
 QList<QColor> NetworkScene::nodesColors()
 {
     QList<QColor> colors;
+    QColor color;
     QList<Node *> nodes = this->nodes();
 
     std::sort(nodes.begin(), nodes.end(), NodeLessThan);
 
     foreach(Node *node, nodes)
     {
-        colors.append(node->color());
+        color = node->brush().color();
+        if (color != style_->nodeBrush().color())
+            colors.append(color);
+        else
+            colors.append(QColor());
     }
 
     return colors;
@@ -365,7 +399,7 @@ void NetworkScene::setNodesColors(QList<QVariant> colors)
     for (int i=0; i<nodes.size(); i++) {
         color = colors[nodes[i]->index()].value<QColor>();
         if (color.isValid())
-            nodes[i]->setColor(color);
+            nodes[i]->setBrush(color);
     }
 }
 
@@ -374,7 +408,7 @@ void NetworkScene::setSelectedNodesColor(QColor color)
     foreach(Node *node, selectedNodes())
     {
         if (color.isValid())
-            node->setColor(color);
+            node->setBrush(color);
     }
 }
 

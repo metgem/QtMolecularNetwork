@@ -15,11 +15,13 @@ public:
     int index();
     Node *sourceNode() const;
     Node *destNode() const;
-    void setColor(const QColor color);
+    void setPen(const QPen pen);
+    qreal width();
     void setWidth(qreal width);
     void setSourceNode(Node *node);
     void setDestNode(Node *node);
     void adjust();
+    void updateStyle(NetworkStyle *old, NetworkStyle *style);
 };
 
 %End

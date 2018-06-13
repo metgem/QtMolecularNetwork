@@ -10,16 +10,22 @@ class Node : public QGraphicsEllipseItem {
 %End
 
 public:
-    Node(int index, QString label=0);
+    Node(int index, int radius, QString label=0);
 
     int index();
-    const QColor color();
-    void setColor(const QColor color);
+    int radius();
+    void setRadius(int radius);
+    QFont font();
+    void setFont(QFont font);
+    const QColor textColor();
+    void setTextColor(const QColor color);
+    void setBrush(const QBrush brush);
     QString label();
     void setLabel(QString label);
     void setPie(QList<qreal> values);
     void addEdge(Edge *edge);
     QList<Edge *> edges() const;
+    void updateStyle(NetworkStyle* old, NetworkStyle *style);
 };
 
 %End

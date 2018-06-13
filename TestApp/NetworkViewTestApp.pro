@@ -1,8 +1,8 @@
 HEADERS += \
     ../src/node.h \
     ../src/edge.h \
-    ../src/config.h \
     ../src/networkscene.h \
+    ../src/style.h \
     ../src/graphicsitem.h
 SOURCES += \
     main.cpp \

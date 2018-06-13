@@ -1,6 +1,7 @@
 #include "../src/node.h"
 #include "../src/edge.h"
 #include "../src/networkscene.h"
+#include "../src/style.h"
 
 #include <QApplication>
 #include <QMainWindow>
@@ -18,6 +19,7 @@ int main(int argc, char **argv)
     QGraphicsView *view = new QGraphicsView;
 
     NetworkScene *scene = new NetworkScene(view);
+    //scene->setNetworkStyle(new DarkStyle());
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
     view->setScene(scene);
     view->setCacheMode(QGraphicsView::CacheBackground);

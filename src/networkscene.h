@@ -2,6 +2,7 @@
 #define NETWORKSCENE_H
 
 #include "graphicsitem.h"
+#include "style.h"
 
 #include <QGraphicsScene>
 #include <QWidget>
@@ -20,6 +21,9 @@ signals:
 
 public:
     NetworkScene(QWidget *parent = 0);
+
+    NetworkStyle *networkStyle();
+    void setNetworkStyle(NetworkStyle *style=0);
 
     void clear();
 
@@ -67,6 +71,7 @@ public:
     Edge *edgeAt(qreal x, qreal y, const QTransform &deviceTransform) const;
 
 private:
+    NetworkStyle *style_;
     GraphicsItemLayer *nodesLayer;
     GraphicsItemLayer *edgesLayer;
     qreal scale_;

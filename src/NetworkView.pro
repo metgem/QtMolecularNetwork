@@ -16,8 +16,9 @@ SOURCES += \
 HEADERS += \
     node.h \
     edge.h \
-    config.h \
-    networkscene.h
+    networkscene.h \
+    style.h \
+    graphicsitem.h
     
 unix {
     networkview.files=$PWD/src/libPyNetworkView.so*
