@@ -119,9 +119,9 @@ void Node::updateStyle(NetworkStyle* old, NetworkStyle *style)
     setRadius(style->nodeRadius());
     if (this->brush().color() == old->nodeBrush().color())
         setBrush(style->nodeBrush(), false);
-    setTextColor(style->textColor());
+    setTextColor(style->nodeTextColor());
     setPen(style->nodePen());
-    setFont(style->font());
+    setFont(style->nodeFont());
     update();
 }
 

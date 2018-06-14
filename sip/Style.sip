@@ -10,14 +10,16 @@ class NetworkStyle {
 %End
 
 public:
-    QString name();
+    NetworkStyle(QString name, QBrush node_brush, QColor node_text_color, int node_radius, QPen node_pen, QPen edge_pen, QBrush background_brush);
+    NetworkStyle();
+    QString styleName();
     QBrush nodeBrush() const;
-    QColor textColor() const;
+    QColor nodeTextColor() const;
     int nodeRadius();
     QPen nodePen() const;
-    QFont font();
+    QFont nodeFont();
     QPen edgePen() const;
-    QBrush backgroundBrush();
+    QBrush backgroundBrush() const;
 };
 
 class DefaultStyle : public NetworkStyle {
@@ -27,14 +29,14 @@ class DefaultStyle : public NetworkStyle {
 %End
 
 public:
-    QString name();
+    QString styleName();
     QBrush nodeBrush() const;
-    QColor textColor() const;
+    QColor nodeTextColor() const;
     int nodeRadius();
     QPen nodePen() const;
-    QFont font();
+    QFont nodeFont();
     QPen edgePen() const;
-    QBrush backgroundBrush();
+    QBrush backgroundBrush() const;
 };
 
 class DarkStyle : public NetworkStyle {
@@ -44,14 +46,14 @@ class DarkStyle : public NetworkStyle {
 %End
 
 public:
-    QString name();
+    QString styleName();
     QBrush nodeBrush() const;
-    QColor textColor() const;
+    QColor nodeTextColor() const;
     int nodeRadius();
     QPen nodePen() const;
-    QFont font();
+    QFont nodeFont();
     QPen edgePen() const;
-    QBrush backgroundBrush();
+    QBrush backgroundBrush() const;
 };
 
 %End
