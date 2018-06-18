@@ -20,10 +20,10 @@ signals:
    void layoutChanged();
 
 public:
-    NetworkScene(QWidget *parent = 0);
+    NetworkScene(QWidget *parent=NULL);
 
     NetworkStyle *networkStyle();
-    void setNetworkStyle(NetworkStyle *style=0);
+    void setNetworkStyle(NetworkStyle *style=NULL);
 
     void clear();
 

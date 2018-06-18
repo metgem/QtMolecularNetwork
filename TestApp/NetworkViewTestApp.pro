@@ -8,7 +8,8 @@ SOURCES += \
     main.cpp \
     ../src/node.cpp \
     ../src/edge.cpp \
-    ../src/networkscene.cpp
+    ../src/networkscene.cpp \
+    ../src/style.cpp
 
 
 QT += core gui widgets

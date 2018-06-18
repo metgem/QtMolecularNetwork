@@ -114,10 +114,10 @@ QList<Edge *> Node::edges() const
     return edgeList;
 }
 
-void Node::updateStyle(NetworkStyle* old, NetworkStyle *style)
+void Node::updateStyle(NetworkStyle *style, NetworkStyle* old)
 {
     setRadius(style->nodeRadius());
-    if (this->brush().color() == old->nodeBrush().color())
+    if (old == NULL || this->brush().color() == old->nodeBrush().color())
         setBrush(style->nodeBrush(), false);
     setTextColor(style->nodeTextColor());
     setPen(style->nodePen());
@@ -167,22 +167,29 @@ QRectF Node::boundingRect() const
 void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     NetworkScene *scene = qobject_cast<NetworkScene *>(this->scene());
+    if (scene == 0)
+        return;
 
     // If selected, change brush to yellow and text to black
     QColor text_color;
     if (option->state & QStyle::State_Selected)
     {
-        painter->setBrush(Qt::yellow);
-        text_color = QColor(Qt::black);
+        QBrush brush = scene->networkStyle()->nodeBrush("selected");
+        if (brush.color().isValid())
+            painter->setBrush(brush);
+        else
+            painter->setBrush(this->brush());
+        text_color = scene->networkStyle()->nodeTextColor("selected");
+        if (!text_color.isValid())
+            text_color = this->text_color;
+        painter->setPen(scene->networkStyle()->nodePen("selected"));
     }
     else
     {
         painter->setBrush(this->brush());
+        painter->setPen(this->pen());
         text_color = this->text_color;
     }
-
-    // Set pen
-    painter->setPen(this->pen());
 
     // Draw ellipse
     if (spanAngle() != 0 && qAbs(spanAngle() % (360 * 16)) == 0)
@@ -193,7 +200,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     qreal lod(option->levelOfDetailFromTransform(painter->worldTransform()));
 
     // Draw pie if any
-    if (scene != 0 && lod > 0.1 && this->pieList.size() > 0)
+    if (lod > 0.1 && this->pieList.size() > 0)
     {
         int radius = this->radius();
         QRectF rect(-0.85*radius, -0.85*radius, 1.7*radius, 1.7*radius);

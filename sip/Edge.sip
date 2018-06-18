@@ -21,7 +21,7 @@ public:
     void setSourceNode(Node *node);
     void setDestNode(Node *node);
     void adjust();
-    void updateStyle(NetworkStyle *old, NetworkStyle *style);
+    void updateStyle(NetworkStyle *style, NetworkStyle *old=NULL);
 };
 
 %End

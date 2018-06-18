@@ -117,7 +117,7 @@ void Edge::adjust()
     setPath(path);
 }
 
-void Edge::updateStyle(NetworkStyle *old, NetworkStyle *style)
+void Edge::updateStyle(NetworkStyle *style, NetworkStyle *old)
 {
     setPen(style->edgePen());
     update();
@@ -159,17 +159,22 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     if (!source || !dest)
         return;
 
+    NetworkScene *scene = qobject_cast<NetworkScene *>(this->scene());
+    if (scene == 0)
+        return;
+
     QLineF line(sourcePoint, destPoint);
     if ((source != dest) && qFuzzyCompare(line.length(), qreal(0.)))
         return;
 
-    QPen pen(this->pen());
-
     if (option->state & QStyle::State_Selected)
     {
-        pen.setColor(Qt::red);
+        QPen pen = scene->networkStyle()->edgePen("selected");
+        pen.setWidth(this->pen().width());
+        painter->setPen(pen);
     }
+    else
+        painter->setPen(this->pen());
 
-    painter->setPen(pen);
     painter->drawPath(path());
 }

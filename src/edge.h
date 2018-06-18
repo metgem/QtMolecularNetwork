@@ -23,7 +23,7 @@ public:
     void setDestNode(Node *node);
     void adjust();
 
-    void updateStyle(NetworkStyle *old, NetworkStyle *style);
+    void updateStyle(NetworkStyle *style, NetworkStyle *old=NULL);
 
     enum { Type = UserType + 2 };
     int type() const { return Type; }

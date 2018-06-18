@@ -10,7 +10,7 @@ class Node : public QGraphicsEllipseItem {
 %End
 
 public:
-    Node(int index, int radius, QString label=0);
+    Node(int index, int radius, QString label=NULL);
 
     int index();
     int radius();
@@ -25,7 +25,7 @@ public:
     void setPie(QList<qreal> values);
     void addEdge(Edge *edge);
     QList<Edge *> edges() const;
-    void updateStyle(NetworkStyle* old, NetworkStyle *style);
+    void updateStyle(NetworkStyle *style, NetworkStyle* old=NULL);
 };
 
 %End

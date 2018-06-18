@@ -1,5 +1,5 @@
 QT += core gui widgets
-config += c++11
+CONFIG += c++11
 
 TARGET = NetworkView
 TEMPLATE = lib
@@ -12,7 +12,8 @@ DEFINES += NETWORKVIEW_LIBRARY
 SOURCES += \
     node.cpp \
     edge.cpp \
-    networkscene.cpp
+    networkscene.cpp \
+    style.cpp
 HEADERS += \
     node.h \
     edge.h \

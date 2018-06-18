@@ -10,15 +10,16 @@ class NetworkStyle {
 %End
 
 public:
-    NetworkStyle(QString name, QBrush node_brush, QColor node_text_color, int node_radius, QPen node_pen, QPen edge_pen, QBrush background_brush);
+    NetworkStyle(QString name, QMap<QString, QVariant> node,
+                 QMap<QString, QVariant> edge, QMap<QString, QBrush> scene);
     NetworkStyle();
     QString styleName();
-    QBrush nodeBrush() const;
-    QColor nodeTextColor() const;
+    QBrush nodeBrush(QString state = "normal") const;
+    QColor nodeTextColor(QString state = "normal") const;
     int nodeRadius();
-    QPen nodePen() const;
-    QFont nodeFont();
-    QPen edgePen() const;
+    QPen nodePen(QString state = "normal") const;
+    QFont nodeFont(QString state = "normal");
+    QPen edgePen(QString state = "normal") const;
     QBrush backgroundBrush() const;
 };
 
@@ -30,29 +31,12 @@ class DefaultStyle : public NetworkStyle {
 
 public:
     QString styleName();
-    QBrush nodeBrush() const;
-    QColor nodeTextColor() const;
+    QBrush nodeBrush(QString state = "normal") const;
+    QColor nodeTextColor(QString state = "normal") const;
     int nodeRadius();
-    QPen nodePen() const;
-    QFont nodeFont();
-    QPen edgePen() const;
-    QBrush backgroundBrush() const;
-};
-
-class DarkStyle : public NetworkStyle {
-
-%TypeHeaderCode
-#include "style.h"
-%End
-
-public:
-    QString styleName();
-    QBrush nodeBrush() const;
-    QColor nodeTextColor() const;
-    int nodeRadius();
-    QPen nodePen() const;
-    QFont nodeFont();
-    QPen edgePen() const;
+    QPen nodePen(QString state = "normal") const;
+    QFont nodeFont(QString state = "normal");
+    QPen edgePen(QString state = "normal") const;
     QBrush backgroundBrush() const;
 };
 
