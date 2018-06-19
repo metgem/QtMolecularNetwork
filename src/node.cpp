@@ -81,8 +81,7 @@ QString Node::label()
 void Node::setLabel(QString label)
 {
     this->label_ = label;
-    if (isVisible())
-        update();
+    this->update();
 }
 
 void Node::setPie(QList<qreal> values)
@@ -100,8 +99,7 @@ void Node::setPie(QList<qreal> values)
     else
         values = QList<qreal>();
     this->pieList = values;
-    if (isVisible())
-        update();
+    this->update();
 }
 
 void Node::addEdge(Edge *edge)
