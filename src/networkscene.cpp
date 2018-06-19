@@ -10,6 +10,11 @@ bool NodeLessThan(Node *n1, Node *n2)
     return n1->index() < n2->index();
 }
 
+bool EdgeLessThan(Edge *e1, Edge *e2)
+{
+    return e1->index() < e2->index();
+}
+
 NetworkScene::NetworkScene(QWidget *)
 {
     clear();
@@ -138,10 +143,14 @@ void NetworkScene::removeEdges(QList<Edge *> edges)
 QList<Node *> NetworkScene::nodes() const
 {
     QList<Node *> nodes;
+
     foreach(QGraphicsItem *item, nodesLayer->childItems())
     {
         nodes.append(qgraphicsitem_cast<Node *>(item));
     }
+
+    std::sort(nodes.begin(), nodes.end(), NodeLessThan);
+
     return nodes;
 }
 
@@ -190,6 +199,9 @@ QList<Edge *> NetworkScene::edges() const
     {
         edges.append(qgraphicsitem_cast<Edge *>(item));
     }
+
+    std::sort(edges.begin(), edges.end(), EdgeLessThan);
+
     return edges;
 }
 
@@ -378,11 +390,8 @@ QList<QColor> NetworkScene::nodesColors()
 {
     QList<QColor> colors;
     QColor color;
-    QList<Node *> nodes = this->nodes();
 
-    std::sort(nodes.begin(), nodes.end(), NodeLessThan);
-
-    foreach(Node *node, nodes)
+    foreach(Node *node, this->nodes())
     {
         color = node->brush().color();
         if (color != style_->nodeBrush().color())
