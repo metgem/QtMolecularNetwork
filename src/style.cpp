@@ -45,17 +45,6 @@ QColor NetworkStyle::nodeTextColor(QString state) const
         return QColor(Qt::black);
 }
 
-int NetworkStyle::nodeRadius()
-{
-    if (this->node.contains("radius"))
-    {
-        QVariant var = this->node.value("radius");
-        return var.toInt();
-    }
-
-    return 30;
-}
-
 QPen NetworkStyle::nodePen(QString state) const
 {
     if (this->node.contains("border"))

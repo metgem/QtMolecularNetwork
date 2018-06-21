@@ -3,7 +3,8 @@ HEADERS += \
     ../src/edge.h \
     ../src/networkscene.h \
     ../src/style.h \
-    ../src/graphicsitem.h
+    ../src/graphicsitem.h \
+    ../src/config.h
 SOURCES += \
     main.cpp \
     ../src/node.cpp \

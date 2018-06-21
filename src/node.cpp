@@ -2,16 +2,17 @@
 #include "edge.h"
 #include "networkscene.h"
 #include "style.h"
+#include "config.h"
 
 #include <QtWidgets>
 #include <QtCore>
 #include <QString>
 
-Node::Node(int index, int radius, QString label)
-    : QGraphicsEllipseItem(-radius, -radius, 2*radius, 2*radius)
+Node::Node(int index, QString label)
+    : QGraphicsEllipseItem(-RADIUS, -RADIUS, 2*RADIUS, 2*RADIUS)
 {
     this->id = index;
-    this->radius_ = radius;
+    this->radius_ = RADIUS;
     if (label==0)
         label = QString::number(index+1);
     this->label_ = label;
@@ -114,7 +115,6 @@ QList<Edge *> Node::edges() const
 
 void Node::updateStyle(NetworkStyle *style, NetworkStyle* old)
 {
-    setRadius(style->nodeRadius());
     if (old == NULL || this->brush().color() == old->nodeBrush().color())
         setBrush(style->nodeBrush(), false);
     setTextColor(style->nodeTextColor());
@@ -200,7 +200,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     // Draw pie if any
     if (lod > 0.1 && this->pieList.size() > 0)
     {
-        int radius = this->radius();
+        int radius = this->radius_;
         QRectF rect(-0.85*radius, -0.85*radius, 1.7*radius, 1.7*radius);
         float start = 0;
         QList<QColor> colors = scene->pieColors();

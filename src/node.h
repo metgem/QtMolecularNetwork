@@ -13,7 +13,7 @@ class Edge;
 class Node : public QGraphicsEllipseItem
 {
 public:
-    Node(int index, int radius, QString label=NULL);
+    Node(int index, QString label=NULL);
 
     int index();
     int radius();

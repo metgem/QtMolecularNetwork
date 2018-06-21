@@ -19,7 +19,8 @@ HEADERS += \
     edge.h \
     networkscene.h \
     style.h \
-    graphicsitem.h
+    graphicsitem.h \
+    config.h
     
 unix {
     networkview.files=$PWD/src/libPyNetworkView.so*

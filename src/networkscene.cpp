@@ -4,6 +4,7 @@
 #include "node.h"
 #include "edge.h"
 #include "style.h"
+#include "config.h"
 
 bool NodeLessThan(Node *n1, Node *n2)
 {
@@ -69,9 +70,9 @@ QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, 
     for (int i=0; i<indexes.size(); i++) {
         Node *node;
         if (labels.size() == indexes.size())
-            node = new Node(indexes[i], this->style_->nodeRadius(), labels[i]);
+            node = new Node(indexes[i], labels[i]);
         else
-            node = new Node(indexes[i], this->style_->nodeRadius());
+            node = new Node(indexes[i]);
 
         if (positions.size() == indexes.size())
             node->setPos(positions[i]);
@@ -442,7 +443,7 @@ QList<int> NetworkScene::nodesRadii()
     foreach(Node *node, this->nodes())
     {
         radius = node->radius();
-        if (radius != this->style_->nodeRadius())
+        if (radius != RADIUS)
             radii.append(radius);
         else
             radii.append(0);
