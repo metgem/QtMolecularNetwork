@@ -60,10 +60,11 @@ void NetworkScene::clear()
     edgesLayer->setZValue(0);
 }
 
-QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, QList<QPointF> positions, QList<QVariant> colors)
+QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, QList<QPointF> positions, QList<QVariant> colors, QList<QVariant> radii)
 {
     QList<Node *> nodes;
     QColor color;
+    int radius;
 
     for (int i=0; i<indexes.size(); i++) {
         Node *node;
@@ -83,6 +84,13 @@ QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, 
             color = colors[i].value<QColor>();
             if (color.isValid())
                 node->setBrush(color);
+        }
+
+        if (radii.size() == indexes.size())
+        {
+            radius = radii[i].value<int>();
+            if (radius > 0)
+                node->setRadius(radius);
         }
 
         node->setParentItem(nodesLayer);
@@ -394,7 +402,7 @@ QList<QColor> NetworkScene::nodesColors()
     foreach(Node *node, this->nodes())
     {
         color = node->brush().color();
-        if (color != style_->nodeBrush().color())
+        if (color != this->style_->nodeBrush().color())
             colors.append(color);
         else
             colors.append(QColor());
@@ -417,12 +425,55 @@ void NetworkScene::setNodesColors(QList<QVariant> colors)
 
 void NetworkScene::setSelectedNodesColor(QColor color)
 {
-    foreach(Node *node, selectedNodes())
+    if (color.isValid())
     {
-        if (color.isValid())
+        foreach(Node *node, selectedNodes())
+        {
             node->setBrush(color);
+        }
     }
 }
+
+QList<int> NetworkScene::nodesRadii()
+{
+    QList<int> radii;
+    int radius;
+
+    foreach(Node *node, this->nodes())
+    {
+        radius = node->radius();
+        if (radius != this->style_->nodeRadius())
+            radii.append(radius);
+        else
+            radii.append(0);
+    }
+
+    return radii;
+}
+
+void NetworkScene::setNodesRadii(QList<int> radii)
+{
+    int radius;
+    QList<Node *> nodes = this->nodes();
+
+    for (int i=0; i<nodes.size(); i++) {
+        radius = radii[nodes[i]->index()];
+        nodes[i]->setRadius(radius);
+        foreach(Edge* edge, nodes[i]->edges())
+            edge->adjust();
+    }
+}
+
+void NetworkScene::setSelectedNodesRadius(int radius)
+{
+    foreach(Node *node, selectedNodes())
+    {
+        node->setRadius(radius);
+        foreach(Edge* edge, node->edges())
+            edge->adjust();
+    }
+}
+
 
 Node *NetworkScene::nodeAt(const QPointF &position, const QTransform &deviceTransform) const
 {
