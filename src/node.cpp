@@ -157,9 +157,10 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 QRectF Node::boundingRect() const
 {
     QRectF brect = QGraphicsEllipseItem::boundingRect();
-    int pwidth = this->pen().width();
-    int size = 2 * (this->radius_ + pwidth);
-    return QRectF(brect.x() - pwidth, brect.y() - pwidth, size, size);
+    int height = brect.height();
+    QFontMetrics fm = QFontMetrics(this->font_);
+    int width = std::max(height, fm.width(this->label_));
+    return QRectF(brect.x() - (width-height)/2, brect.y(), width, height);
 }
 
 void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
@@ -217,6 +218,6 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     {
         painter->setFont(this->font_);
         painter->setPen(QPen(text_color, 0));
-        painter->drawText(rect(), Qt::AlignCenter, label_);
+        painter->drawText(boundingRect(), Qt::AlignCenter, label_);
     }
 }
