@@ -85,12 +85,18 @@ void Node::setLabel(QString label)
     this->update();
 }
 
+QList<qreal> Node::pie()
+{
+    return this->pieList;
+}
+
 void Node::setPie(QList<qreal> values)
 {
     qreal sum = 0;
     for (int i=0; i<values.size(); i++) {
         sum += values[i];
     }
+
     if (sum>0)
     {
         for (int i=0; i<values.size(); i++) {
@@ -98,7 +104,9 @@ void Node::setPie(QList<qreal> values)
         }
     }
     else
+    {
         values = QList<qreal>();
+     }
     this->pieList = values;
     this->update();
 }

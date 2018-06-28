@@ -25,6 +25,7 @@ public:
     void setBrush(const QBrush brush, bool autoTextColor=true);
     QString label();
     void setLabel(QString label);
+    QList<qreal> pie();
     void setPie(QList<qreal> values);
 
     void addEdge(Edge *edge);

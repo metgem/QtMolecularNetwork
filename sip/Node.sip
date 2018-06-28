@@ -22,6 +22,7 @@ public:
     void setBrush(const QBrush brush);
     QString label();
     void setLabel(QString label);
+    QList<qreal> pie();
     void setPie(QList<qreal> values);
     void addEdge(Edge *edge);
     QList<Edge *> edges() const;
