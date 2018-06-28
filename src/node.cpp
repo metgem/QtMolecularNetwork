@@ -104,9 +104,7 @@ void Node::setPie(QList<qreal> values)
         }
     }
     else
-    {
         values = QList<qreal>();
-     }
     this->pieList = values;
     this->update();
 }
