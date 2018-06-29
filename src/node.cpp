@@ -122,8 +122,10 @@ QList<Edge *> Node::edges() const
 void Node::updateStyle(NetworkStyle *style, NetworkStyle* old)
 {
     if (old == NULL || this->brush().color() == old->nodeBrush().color())
+    {
         setBrush(style->nodeBrush(), false);
-    setTextColor(style->nodeTextColor());
+        setTextColor(style->nodeTextColor());
+    }
     setPen(style->nodePen());
     setFont(style->nodeFont());
     update();
@@ -180,13 +182,13 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     if (option->state & QStyle::State_Selected)
     {
         QBrush brush = scene->networkStyle()->nodeBrush("selected");
-        if (brush.color().isValid())
-            painter->setBrush(brush);
-        else
-            painter->setBrush(this->brush());
         text_color = scene->networkStyle()->nodeTextColor("selected");
-        if (!text_color.isValid())
-            text_color = this->text_color;
+        if (!brush.color().isValid())
+        {
+            brush = this->brush();
+            text_color = this->textColor();
+        }
+        painter->setBrush(brush);
         painter->setPen(scene->networkStyle()->nodePen("selected"));
     }
     else
