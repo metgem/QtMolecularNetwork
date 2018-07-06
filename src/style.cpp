@@ -1,6 +1,6 @@
 #include "style.h"
 
-NetworkStyle::NetworkStyle(QString name, QMap<QString, QVariant> node, QMap<QString, QVariant> edge, QMap<QString, QBrush> scene)
+NetworkStyle::NetworkStyle(QString name, QVariantMap node, QVariantMap edge, QMap<QString, QBrush> scene)
 {
     this->name = name;
     this->node = node;
@@ -18,7 +18,7 @@ QBrush NetworkStyle::nodeBrush(QString state) const
     if (this->node.contains("bgcolor"))
     {
         QVariant var = this->node.value("bgcolor");
-        QMap<QString, QVariant> map = var.toMap();
+        QVariantMap map = var.toMap();
         if (map.contains(state))
             return map.value(state).value<QBrush>();
     }
@@ -34,7 +34,7 @@ QColor NetworkStyle::nodeTextColor(QString state) const
     if (this->node.contains("txtcolor"))
     {
         QVariant var = this->node.value("txtcolor");
-        QMap<QString, QVariant> map = var.toMap();
+        QVariantMap map = var.toMap();
         if (map.contains(state))
             return map.value(state).value<QColor>();
     }
@@ -50,7 +50,7 @@ QPen NetworkStyle::nodePen(QString state) const
     if (this->node.contains("border"))
     {
         QVariant var = this->node.value("border");
-        QMap<QString, QVariant> map = var.toMap();
+        QVariantMap map = var.toMap();
         if (map.contains(state))
             return map.value(state).value<QPen>();
     }
@@ -63,7 +63,7 @@ QFont NetworkStyle::nodeFont(QString state)
     if (this->node.contains("font"))
     {
         QVariant var = this->node.value("font");
-        QMap<QString, QVariant> map = var.toMap();
+        QVariantMap map = var.toMap();
         if (map.contains(state))
             return map.value(state).value<QFont>();
     }
@@ -76,7 +76,7 @@ QPen NetworkStyle::edgePen(QString state) const
     if (this->edge.contains("color"))
     {
         QVariant var = this->edge.value("color");
-        QMap<QString, QVariant> map = var.toMap();
+        QVariantMap map = var.toMap();
         if (map.contains(state))
             return map.value(state).value<QPen>();
     }

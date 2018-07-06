@@ -10,8 +10,8 @@ class NetworkStyle {
 %End
 
 public:
-    NetworkStyle(QString name, QMap<QString, QVariant> node,
-                 QMap<QString, QVariant> edge, QMap<QString, QBrush> scene);
+    NetworkStyle(QString name, QVariantMap node,
+                 QVariantMap edge, QMap<QString, QBrush> scene);
     NetworkStyle();
     QString styleName();
     QBrush nodeBrush(QString state = "normal") const;

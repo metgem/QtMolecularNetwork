@@ -15,7 +15,7 @@
 class NetworkStyle
 {
 public:
-    NetworkStyle(QString name, QMap<QString, QVariant> node, QMap<QString, QVariant> edge, QMap<QString, QBrush> scene);
+    NetworkStyle(QString name, QVariantMap node, QVariantMap edge, QMap<QString, QBrush> scene);
     NetworkStyle() {}
     QString styleName();
     QBrush nodeBrush(QString state = "normal") const;
@@ -27,8 +27,8 @@ public:
 
 protected:
     QString name = "";
-    QMap<QString, QVariant> node;
-    QMap<QString, QVariant> edge;
+    QVariantMap node;
+    QVariantMap edge;
     QMap<QString, QBrush> scene;
 };
 
@@ -38,27 +38,27 @@ public:
     DefaultStyle() {
         name = "default";
 
-        QMap<QString, QVariant> bgcolor;
+        QVariantMap bgcolor;
         bgcolor["normal"]= QBrush(Qt::lightGray);
         bgcolor["selected"]= QBrush(Qt::yellow);
         node["bgcolor"] = bgcolor;
 
-        QMap<QString, QVariant> txtcolor;
+        QVariantMap txtcolor;
         txtcolor["normal"]= QColor(Qt::black);
         txtcolor["selected"]= QColor(Qt::black);
         node["txtcolor"] = txtcolor;
 
-        QMap<QString, QVariant> border;
+        QVariantMap border;
         border["normal"]= QPen(Qt::black, 1, Qt::SolidLine);
         border["selected"]= QPen(Qt::black, 1, Qt::SolidLine);
         node["border"] = border;
 
-        QMap<QString, QVariant> font;
+        QVariantMap font;
         font["normal"]= QPen(Qt::black, 1, Qt::SolidLine);
         font["selected"]= QPen(Qt::black, 1, Qt::SolidLine);
         node["font"] = font;
 
-        QMap<QString, QVariant> epen;
+        QVariantMap epen;
         epen["normal"] = QPen(QColor(Qt::darkGray));
         epen["selected"] = QPen(QColor(Qt::red));
         edge["color"] = epen;
