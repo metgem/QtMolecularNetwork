@@ -121,6 +121,7 @@ void Edge::adjust()
 
 void Edge::updateStyle(NetworkStyle *style, NetworkStyle *old)
 {
+    Q_UNUSED(old);
     setPen(style->edgePen());
     update();
 }

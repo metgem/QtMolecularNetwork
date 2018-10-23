@@ -12,16 +12,24 @@ Node::Node(int index, QString label)
     : QGraphicsEllipseItem(-RADIUS, -RADIUS, 2*RADIUS, 2*RADIUS)
 {
     this->id = index;
-    this->radius_ = RADIUS;
     if (label==0)
         label = QString::number(index+1);
-    this->label_ = label;
+    setLabel(label);
 
     setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsScenePositionChanges);
     setCacheMode(DeviceCoordinateCache);
 
     setBrush(Qt::lightGray);
     setPen(QPen(Qt::black, 1));
+}
+
+void Node::invalidateShape()
+{
+    //TODO: Can't find a good way to update shape
+    prepareGeometryChange();
+    QRectF rect = this->rect();
+    setRect(QRectF());
+    setRect(rect);
 }
 
 int Node::index()
@@ -31,12 +39,12 @@ int Node::index()
 
 int Node::radius()
 {
-    return this->radius_;
+    return this->rect().width() / 2;
 }
 
 void Node::setRadius(int radius)
 {
-    this->radius_ = radius;
+    prepareGeometryChange();
     this->setRect(QRectF(-radius, -radius, 2 * radius, 2 * radius));
 }
 
@@ -82,7 +90,12 @@ QString Node::label()
 void Node::setLabel(QString label)
 {
     this->label_ = label;
-    this->update();
+
+    QFontMetrics fm = QFontMetrics(this->font());
+    int width = fm.width(label);
+    int height = fm.height();
+    this->label_rect_ = QRectF(-width/2, -height/2, width, height);
+    this->invalidateShape();
 }
 
 QList<qreal> Node::pie()
@@ -128,7 +141,7 @@ void Node::updateStyle(NetworkStyle *style, NetworkStyle* old)
     }
     setPen(style->nodePen());
     setFont(style->nodeFont());
-    update();
+    invalidateShape();
 }
 
 QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -162,13 +175,11 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsItem::mouseReleaseEvent(event);
 }
 
-QRectF Node::boundingRect() const
+QPainterPath Node::shape() const
 {
-    QRectF brect = QGraphicsEllipseItem::boundingRect();
-    int height = brect.height();
-    QFontMetrics fm = QFontMetrics(this->font_);
-    int width = std::max(height, fm.width(this->label_));
-    return QRectF(brect.x() - (width-height)/2, brect.y(), width, height);
+    QPainterPath path = QGraphicsEllipseItem::shape();
+    path.addRect(this->label_rect_);
+    return path;
 }
 
 void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
@@ -209,7 +220,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     // Draw pie if any
     if (lod > 0.1 && this->pieList.size() > 0)
     {
-        int radius = this->radius_;
+        int radius = this->radius();
         QRectF rect(-0.85*radius, -0.85*radius, 1.7*radius, 1.7*radius);
         float start = 0;
         QList<QColor> colors = scene->pieColors();

@@ -15,6 +15,7 @@ class Node : public QGraphicsEllipseItem
 public:
     Node(int index, QString label=NULL);
 
+    void invalidateShape();
     int index();
     int radius();
     void setRadius(int radius);
@@ -37,7 +38,7 @@ public:
     int type() const { return Type; }
 
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
-    QRectF boundingRect() const override;
+    QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
 protected:
@@ -47,7 +48,7 @@ protected:
 private:
     int id;
     QString label_;
-    int radius_;
+    QRectF label_rect_;
     QFont font_ = QApplication::font();
     QColor text_color;
     QList<Edge *> edgeList;
