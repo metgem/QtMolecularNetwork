@@ -10,7 +10,7 @@
 
 class Edge;
 
-class Node : public QGraphicsEllipseItem
+class Q_DECL_EXPORT Node : public QGraphicsEllipseItem
 {
 public:
     Node(int index, QString label=NULL);

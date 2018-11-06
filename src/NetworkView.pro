@@ -15,9 +15,9 @@ SOURCES += \
     networkscene.cpp \
     style.cpp
 HEADERS += \
+    networkscene.h \
     node.h \
     edge.h \
-    networkscene.h \
     style.h \
     graphicsitem.h \
     config.h

@@ -1,7 +1,7 @@
 HEADERS += \
+    ../src/networkscene.h \
     ../src/node.h \
     ../src/edge.h \
-    ../src/networkscene.h \
     ../src/style.h \
     ../src/graphicsitem.h \
     ../src/config.h

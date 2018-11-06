@@ -1,12 +1,12 @@
 #ifndef NETWORKSCENE_H
 #define NETWORKSCENE_H
 
-#include "graphicsitem.h"
-#include "style.h"
-
 #include <QGraphicsScene>
 #include <QWidget>
 #include <QAbstractTableModel>
+
+#include "graphicsitem.h"
+#include "style.h"
 
 class Node;
 class Edge;

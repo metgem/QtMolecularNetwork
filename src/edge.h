@@ -6,9 +6,10 @@
 
 #include "style.h"
 
+
 class Node;
 
-class Edge : public QGraphicsPathItem
+class Q_DECL_EXPORT Edge : public QGraphicsPathItem
 {
 public:
     Edge(int index, Node *sourceNode, Node *destNode, qreal weight=1, qreal width=1);

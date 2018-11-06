@@ -12,7 +12,8 @@
 #include <QMap>
 #include <QVariant>
 
-class NetworkStyle
+
+class Q_DECL_EXPORT NetworkStyle
 {
 public:
     NetworkStyle(QString name, QVariantMap node, QVariantMap edge, QMap<QString, QBrush> scene);

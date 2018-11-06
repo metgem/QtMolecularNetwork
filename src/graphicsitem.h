@@ -3,7 +3,7 @@
 
 #include <QGraphicsItem>
 
-class GraphicsItemLayer : public QGraphicsItem
+class Q_DECL_EXPORT GraphicsItemLayer : public QGraphicsItem
 {
 public:
     QRectF boundingRect() const override
