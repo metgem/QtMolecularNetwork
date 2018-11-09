@@ -33,7 +33,7 @@ protected:
     QMap<QString, QBrush> scene;
 };
 
-class DefaultStyle: public NetworkStyle
+class Q_DECL_EXPORT DefaultStyle: public NetworkStyle
 {
 public:
     DefaultStyle() {

@@ -4,7 +4,7 @@ import time
 from PyQt5.QtWidgets import QApplication, QGraphicsView, QGraphicsScene
 from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import QPointF
-from NetworkView import NetworkScene, Node
+from PyQtNetworkView import NetworkScene, Node
 
 app = QApplication(sys.argv)
 

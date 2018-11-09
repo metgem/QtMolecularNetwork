@@ -25,7 +25,7 @@ HEADERS += \
 unix {
     networkview.files=$PWD/src/libPyNetworkView.so*
     networkview.path = /usr/lib
-    INSTALLS += networkview
+    INSTALLS += qnetworkview
 
     target.path = /usr/lib
     INSTALLS += target

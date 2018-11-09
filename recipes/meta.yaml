@@ -1,0 +1,40 @@
+{% set data = load_setup_py_data() %}
+
+package:
+    name: pyqtnetworkview
+    version: {{ data.get('version') }}
+
+source:
+    path: ../
+
+build:
+    number: 0
+    script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+    build:
+        - python
+        - setuptools
+        - pyqt
+        - sip
+    run:
+        - python
+        - pyqt
+        - sip
+
+test:
+    imports:
+        - PyQtNetworkView
+
+about:
+    home: http://github.com/metgem/PyQtNetworkView
+    license: GPLv3
+    license_family: GPL
+    license_file: 'LICENSE'
+    summary: 'Widgets used for visualisation of graph in MetGem'
+    description: 'Widgets used for visualisation of graph in `MetGem`_'
+    doc_url: ''
+    dev_url: 'http://github.com/metgem/PyQtNetworkView'
+
+extra:
+    recipe-maintainers: 'nicolas.elie@cnrs.fr'
