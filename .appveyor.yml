@@ -1,0 +1,39 @@
+image: Visual Studio 2017
+
+environment:
+  matrix:
+    - TARGET_ARCH: "x64"
+      MINICONDA: "C:\\Miniconda35-x64"
+      MYCONDAPY: 3.5
+    - TARGET_ARCH: "x64"
+      MINICONDA: "C:\\Miniconda36-x64"
+      MYCONDAPY: 3.6
+    - TARGET_ARCH: "x64"
+      MINICONDA: "C:\\Miniconda37-x64"
+      MYCONDAPY: 3.7
+      
+build: off
+
+platform:
+    - x64
+    
+init:
+    - set QTDIR="C:\Qt\5.11.1\msvc2017_64"
+    - "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%MINICONDA%\\Library\\bin;%QTDIR%\bin;%PATH%"
+    
+install:
+    - conda config --set always_yes true --set changeps1 no   
+    - conda install -q conda conda-build conda-verify anaconda-client
+    - conda create -q -n test-env python=%MYCONDAPY%   
+    - activate test-env
+    - conda install pyqt sip
+    - pip install pytest pylint pytest-pylint pytest-cov codecov
+    - python setup.py develop
+
+# test_script:
+    # - pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
+    # - pytest tests --cov=PyQtNetworkView
+    
+# after_test:
+    # Upload the coverage analysis
+    # - codecov -e PYTHON=%MYCONDAPY%
