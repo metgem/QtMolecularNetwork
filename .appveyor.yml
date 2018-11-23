@@ -19,7 +19,7 @@ platform:
     
 init:
     - set QTDIR="C:\Qt\5.11.1\msvc2017_64"
-    - "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%MINICONDA%\\Library\\bin;%QTDIR%\bin;%PATH%"
+    - "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%MINICONDA%\\Library\\bin;%QTDIR%\\bin;%PATH%"
     
 install:
     - conda config --set always_yes true --set changeps1 no   
