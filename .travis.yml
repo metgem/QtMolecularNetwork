@@ -15,8 +15,6 @@ language: generic
 os:
   - linux
   - osx
-osx_image:
-  - xcode8
 compiler: gcc
 
 cache:
