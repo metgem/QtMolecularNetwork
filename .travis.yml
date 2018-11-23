@@ -64,14 +64,14 @@ install:
     
 script:
     - python setup.py develop
-    # - pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
-    # - pytest tests --cov=PyQtNetworkView
+    - pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
+    - pytest tests --cov=PyQtNetworkView
     
     # Make CPP and PY source package for github deployment
     - if [[ $TRAVIS_TAG ]]; then
         python setup.py sdist;
       fi
         
-# after_success:
-    # # Upload the coverage analysis
-    # - codecov -e PYTHON=$MYCONDAPY
+after_success:
+    # Upload the coverage analysis
+    - codecov -e PYTHON=$MYCONDAPY

@@ -30,10 +30,10 @@ install:
     - conda install pyqt sip tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov
     - python setup.py develop
 
-# test_script:
-    # - pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
-    # - pytest tests --cov=PyQtNetworkView
+test_script:
+    - pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
+    - pytest tests --cov=PyQtNetworkView
     
-# after_test:
+after_test:
     # Upload the coverage analysis
-    # - codecov -e PYTHON=%MYCONDAPY%
+    - codecov -e PYTHON=%MYCONDAPY%
