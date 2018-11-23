@@ -46,9 +46,10 @@ before_install:
         export CXX=g++-4.9;
       fi;
     - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-        sudo apt-get update;
-        sudo apt-get install qtdeclarative5-dev;
+        sudo apt-get -qy update;
+        sudo apt-get -qy install qtdeclarative5-dev;
       else
+        brew update;
         brew install qt;
         brew link --force qt;
       fi;
@@ -65,7 +66,7 @@ install:
     - conda create -q -n test-env python=${MYCONDAPY}
     - source activate test-env
     
-    - conda install -q conda conda-build conda-verify anaconda-client numpy setuptools pyqt sip tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
+    - conda install -q conda conda-build conda-verify anaconda-client numpy setuptools pyqt>=5.9 sip tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
     
 script:
     - python setup.py develop
