@@ -275,6 +275,11 @@ else:
     setup_requires = []
     ext_modules = []
 
+install_requires = ["PyQt5"]
+if sys.platform.startswith('win'):
+    install_requires.append("pywin32")
+    
+
 write_version_py(os.path.join(SRC_PATH, '_version.py'))
 with open('README.rst', 'r') as f:
     LONG_DESCRIPTION = f.read()
@@ -311,6 +316,6 @@ setup(
     },
     packages = find_packages(),
     setup_requires = setup_requires,
-    install_requires = ["PyQt5"],
+    install_requires = install_requires,
     zip_safe=False
 )

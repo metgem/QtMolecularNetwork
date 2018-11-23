@@ -9,81 +9,77 @@ from PyQt5.QtCore import Qt, QCoreApplication
 from PyQt5.QtGui import QColor, QFont, QPen, QBrush
 
 from .config import RADIUS
+    
+class NetworkStyle:
+    name = ""
+    node = {}
+    edge = {}
+    scene = {}
 
-try:
-    from .NetworkView import NetworkStyle, DefaultStyle
+    def __init__(self, name=None, node=None, edge=None, scene=None):
+        if name is not None:
+            self.name = name
+        if node is not None:
+            self.node = node
+        if edge is not None:
+            self.edge = edge
+        if scene is not None:
+            self.scene = scene
 
-except ImportError:
-    class NetworkStyle:
-        name = ""
-        node = {}
-        edge = {}
-        scene = {}
+    def styleName(self):
+        return self.name
 
-        def __init__(self, name=None, node=None, edge=None, scene=None):
-            if name is not None:
-                self.name = name
-            if node is not None:
-                self.node = node
-            if edge is not None:
-                self.edge = edge
-            if scene is not None:
-                self.scene = scene
+    def nodeBrush(self, state='normal') -> QBrush:
+        try:
+            return self.node['bgcolor'][state]
+        except KeyError:
+            return None if state == 'selected' else QBrush(QColor(Qt.lightGray))
 
-        def styleName(self):
-            return self.name
+    def nodeTextColor(self, state='normal') -> QColor:
+        try:
+            return self.node['txtcolor'][state]
+        except KeyError:
+            return None if state == 'selected' else QColor(Qt.black)
 
-        def nodeBrush(self, state='normal') -> QBrush:
-            try:
-                return self.node['bgcolor'][state]
-            except KeyError:
-                return None if state == 'selected' else QBrush(QColor(Qt.lightGray))
+    def nodePen(self, state='normal') -> QPen:
+        try:
+            return self.node['border'][state]
+        except KeyError:
+            return QPen(Qt.black, 1)
 
-        def nodeTextColor(self, state='normal') -> QColor:
-            try:
-                return self.node['txtcolor'][state]
-            except KeyError:
-                return None if state == 'selected' else QColor(Qt.black)
+    def nodeFont(self, state='normal') -> QFont:
+        try:
+            return self.node['font'][state]
+        except KeyError:
+            return QFont()
 
-        def nodePen(self, state='normal') -> QPen:
-            try:
-                return self.node['border'][state]
-            except KeyError:
-                return QPen(Qt.black, 1)
+    def edgePen(self, state='normal') -> QPen:
+        try:
+            return self.edge['color'][state]
+        except KeyError:
+            return QPen(Qt.red) if state == 'selected' else QPen(Qt.darkGray)
 
-        def nodeFont(self, state='normal') -> QFont:
-            try:
-                return self.node['font'][state]
-            except KeyError:
-                return QFont()
-
-        def edgePen(self, state='normal') -> QPen:
-            try:
-                return self.edge['color'][state]
-            except KeyError:
-                return QPen(Qt.red) if state == 'selected' else QPen(Qt.darkGray)
-
-        def backgroundBrush(self) -> QBrush:
-            try:
-                return self.scene['color']
-            except KeyError:
-                return QBrush(QColor(Qt.white))
+    def backgroundBrush(self) -> QBrush:
+        try:
+            return self.scene['color']
+        except KeyError:
+            return QBrush(QColor(Qt.white))
 
 
-    class DefaultStyle(NetworkStyle):
-        name = "default"
-        node = {'bgcolor': {'normal': QBrush(Qt.lightGray),
-                            'selected': QBrush(Qt.yellow)},
-                'txtcolor': {'normal': QColor(Qt.black),
-                             'selected': QColor(Qt.black)},
-                'border': {'normal': QPen(Qt.black, 1, Qt.SolidLine),
-                           'selected': QPen(Qt.black, 1, Qt.SolidLine)},
-                'font': {'normal': QFont('Arial', 10),
-                         'selected': QFont('Arial', 10)},
-                }
-        edge = {'color': {'normal': QPen(QColor(Qt.darkGray)),
-                          'selected': QPen(QColor(Qt.red))}}
-        scene = {'color': QBrush(Qt.white)}
+class DefaultStyle(NetworkStyle):
+    name = "default"
+    node = {'bgcolor': {'normal': QBrush(Qt.lightGray),
+                        'selected': QBrush(Qt.yellow)},
+            'txtcolor': {'normal': QColor(Qt.black),
+                         'selected': QColor(Qt.black)},
+            'border': {'normal': QPen(Qt.black, 1, Qt.SolidLine),
+                       'selected': QPen(Qt.black, 1, Qt.SolidLine)},
+            'font': {'normal': QFont('Arial', 10),
+                     'selected': QFont('Arial', 10)},
+            }
+    edge = {'color': {'normal': QPen(QColor(Qt.darkGray)),
+                      'selected': QPen(QColor(Qt.red))}}
+    scene = {'color': QBrush(Qt.white)}
 
 # Code to load theme from css
 CSS_FONT_WEIGHTS_TO_QT = {100: 0, 200: 12, 300: 25, 400: 50, 500: 57, 600: 63, 700: 75, 800: 81, 900: 87, 1000: 99,
@@ -93,6 +89,9 @@ CSS_FONT_VARIANTS_TO_QT = {'normal': QFont.MixedCase, 'small-caps': QFont.SmallC
                            'capitalize': QFont.Capitalize, 'upper': QFont.AllUppercase,
                            'lower': QFont.AllLowercase}
 CSS_BORDER_STYLES_TO_QT = {'solid': Qt.SolidLine, 'dashed': Qt.DashLine, 'dotted': Qt.DotLine, 'none': Qt.NoPen}
+
+QT_FONT_WEIGHTS_TO_JSON = {QFont.Bold: 'bold', QFont.ExtraBold: 'bolder', QFont.Light: 'lighter'}
+QT_BORDER_STYLES_TO_JSON = {v: k for k, v in CSS_BORDER_STYLES_TO_QT.items()}
 
 
 def parse_rule(rule):
@@ -127,36 +126,15 @@ def css_font_weight_to_qt(weight):
         return
 
 
-def css_font_style_to_qt(style):
-    try:
-        return CSS_FONT_STYLES_TO_QT[style]
-    except KeyError:
-        return
-
-
-def css_font_variant_to_qt(style):
-    try:
-        return CSS_FONT_VARIANTS_TO_QT[style]
-    except KeyError:
-        return
-
-
-def css_border_style_to_qt(style):
-    try:
-        return CSS_BORDER_STYLES_TO_QT[style]
-    except KeyError:
-        return
-
-
-def style_from_css(css):
+def read_css(css):
     if not HAS_TINYCSS2 or css is None:
-        return DefaultStyle()
+        return
 
     try:
         with open(css, 'r') as f:
             sheet = tinycss2.parse_stylesheet(''.join(f.readlines()))
     except FileNotFoundError:
-        return DefaultStyle()
+        return
 
     stylename = None
     node = {'bgcolor': {'normal': Qt.lightGray,
@@ -194,18 +172,18 @@ def style_from_css(css):
                             if weight is not None:
                                 node['font'][state]['weight'] = weight
                         elif prop == 'font-style':
-                            style = css_font_style_to_qt(token.value)
+                            style = CSS_FONT_STYLES_TO_QT.get(token.value)
                             if style is not None:
                                 node['font'][state]['style'] = style
                         elif prop == 'font-variant':
-                            variant = css_font_variant_to_qt(token.value)
+                            variant = CSS_FONT_VARIANTS_TO_QT.get(token.value)
                             node['font'][state]['variant'] = variant
                         elif prop == 'font':
-                            style = css_font_style_to_qt(token.value)
+                            style = CSS_FONT_STYLES_TO_QT.get(token.value)
                             if style is not None:
                                 node['font'][state]['style'] = style
                             else:
-                                variant = css_font_variant_to_qt(token.value)
+                                variant = CSS_FONT_VARIANTS_TO_QT.get(token.value)
                                 if variant is not None:
                                     node['font'][state]['variant'] = variant
                                 else:
@@ -215,12 +193,12 @@ def style_from_css(css):
                                     else:
                                         node['font'][state]['family'] = token.value
                         elif prop == 'border-style':
-                            style = css_border_style_to_qt(token.value)
+                            style = CSS_BORDER_STYLES_TO_QT.get(token.value)
                             node['border'][state]['style'] = style
                         elif prop == 'border-color':
                             node['border'][state]['color'] = token.value
                         elif prop == 'border':
-                            style = css_border_style_to_qt(token.value)
+                            style = CSS_BORDER_STYLES_TO_QT.get(token.value)
                             if style is not None:
                                 node['border'][state]['style'] = style
                             else:
@@ -236,8 +214,8 @@ def style_from_css(css):
                             node['bgcolor'][state] = token.serialize()
                         elif prop == 'color':
                             node['txtcolor'][state] = token.serialize()
-                        elif prop == 'border-color':
-                            node['border'][state] = token.serialize()
+                        elif prop in ('border', 'border-color'):
+                            node['border'][state]['color'] = token.serialize()
                 elif name == 'edge':
                     if token.type == 'ident':
                         if prop == 'background-color':
@@ -271,12 +249,21 @@ def style_from_css(css):
         edge['color'][state] = QPen(QColor(edge['color'][state]))
     scene['color'] = QColor(scene['color'])
 
-    return NetworkStyle(stylename, node, edge, scene)
+    return stylename, node, edge, scene
 
+    
+def style_from_css(css):
+    result = read_css(css)
+    
+    if result is None:
+        return DefaultStyle()
+    
+    return NetworkStyle(*result)
+    
 
 def style_to_json(style: NetworkStyle):
     style_dict = {"format_version": 1.0,
-                  "generated_by": f"{QCoreApplication.applicationName()}-{QCoreApplication.applicationVersion()}",
+                  "generated_by": f"{QCoreApplication.applicationName()} {QCoreApplication.applicationVersion()}",
                   "target_cytoscapejs_version": "~2.1",
                   "title": style.styleName(),
                   "style": [{
@@ -290,13 +277,13 @@ def style_to_json(style: NetworkStyle):
                           "font-size": style.nodeFont().pointSize(),
                           "width": RADIUS * 2,
                           "shape": "ellipse",
-                          "color": style.nodeTextColor(),
+                          "color": style.nodeTextColor().name(),
                           "border-opacity": 1.0,
                           "height": RADIUS * 2,
                           "background-opacity": 1.0,
                           "border-color": style.nodePen().color().name(),
                           "font-family": style.nodeFont().family(),
-                          "font-weight": style.nodeFont().weight(),
+                          "font-weight": QT_FONT_WEIGHTS_TO_JSON.get(style.nodeFont().weight(), 'normal'),
                           "content": "data(name)"
                       }
                   }, {
@@ -306,18 +293,18 @@ def style_to_json(style: NetworkStyle):
                           "border-width": style.nodePen('selected').width(),
                           "font-size": style.nodeFont('selected').pointSize(),
                           "width": RADIUS * 2,
-                          "color": style.nodeTextColor('selected'),
+                          "color": style.nodeTextColor('selected').name(),
                           "height": RADIUS * 2,
                           "border-color": style.nodePen('selected').color().name(),
                           "font-family": style.nodeFont('selected').family(),
-                          "font-weight": style.nodeFont('selected').weight()
+                          "font-weight": QT_FONT_WEIGHTS_TO_JSON.get(style.nodeFont('selected').weight(), 'normal')
                       }
                   }, {
                       "selector": "edge",
                       "css": {
                           "line-color": style.edgePen().color().name(),
                           "opacity": 1.0,
-                          "line-style": style.edgePen().style(),
+                          "line-style": QT_BORDER_STYLES_TO_JSON.get(style.edgePen().style(), 'solid'),
                           "text-opacity": 1.0,
                           "content": "data(interaction)"
                       }
@@ -325,7 +312,7 @@ def style_to_json(style: NetworkStyle):
                       "selector": "edge:selected",
                       "css": {
                           "line-color": style.edgePen('selected').color().name(),
-                          "line-style": style.edgePen().style()
+                          "line-style": QT_BORDER_STYLES_TO_JSON.get(style.edgePen('selected').style(), 'solid'),
                       }
                   }]
                   }
@@ -333,7 +320,7 @@ def style_to_json(style: NetworkStyle):
 
 
 def style_to_cytoscape(style: NetworkStyle):
-    style_dict = {'title': QCoreApplication.applicationName() + "-" + style.styleName(),
+    return  {'title': QCoreApplication.applicationName() + "-" + style.styleName(),
                   'defaults':
                       [{'visualProperty': 'COMPOUND_NODE_SHAPE', 'value': 'ROUND_RECTANGLE'},
                        {'visualProperty': 'EDGE_LABEL', 'value': ''},
@@ -346,9 +333,9 @@ def style_to_cytoscape(style: NetworkStyle):
                        {'visualProperty': 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
                        {'visualProperty': 'EDGE_TARGET_ARROW_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
                        {'visualProperty': 'EDGE_STROKE_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
-                       {'visualProperty': 'EDGE_SOURCE_ARROW_SELECTED_PAINT', 'value': style.edgePen().color().name()},
-                       {'visualProperty': 'EDGE_TARGET_ARROW_SELECTED_PAINT', 'value': style.edgePen().color().name()},
-                       {'visualProperty': 'EDGE_STROKE_SELECTED_PAINT', 'value': style.edgePen().color().name()},
+                       {'visualProperty': 'EDGE_SOURCE_ARROW_SELECTED_PAINT', 'value': style.edgePen('selected').color().name()},
+                       {'visualProperty': 'EDGE_TARGET_ARROW_SELECTED_PAINT', 'value': style.edgePen('selected').color().name()},
+                       {'visualProperty': 'EDGE_STROKE_SELECTED_PAINT', 'value': style.edgePen('selected').color().name()},
                        {'visualProperty': 'NETWORK_BACKGROUND_PAINT', 'value': style.backgroundBrush().color().name()},
                        {'visualProperty': 'NETWORK_CENTER_X_LOCATION', 'value': 0.0},
                        {'visualProperty': 'NETWORK_CENTER_Y_LOCATION', 'value': 0.0},
@@ -395,4 +382,3 @@ def style_to_cytoscape(style: NetworkStyle):
                                 'mappingColumnType': 'String',
                                 'visualProperty': 'NODE_LABEL'}]}
 
-    return style_dict

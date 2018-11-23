@@ -13,7 +13,7 @@ QString NetworkStyle::styleName()
     return this->name;
 }
 
-QBrush NetworkStyle::nodeBrush(QString state) const
+QBrush NetworkStyle::nodeBrush(const QString &state) const
 {
     if (this->node.contains("bgcolor"))
     {
@@ -29,7 +29,7 @@ QBrush NetworkStyle::nodeBrush(QString state) const
         return QBrush(QColor(Qt::lightGray));
 }
 
-QColor NetworkStyle::nodeTextColor(QString state) const
+QColor NetworkStyle::nodeTextColor(const QString &state) const
 {
     if (this->node.contains("txtcolor"))
     {
@@ -45,7 +45,7 @@ QColor NetworkStyle::nodeTextColor(QString state) const
         return QColor(Qt::black);
 }
 
-QPen NetworkStyle::nodePen(QString state) const
+QPen NetworkStyle::nodePen(const QString &state) const
 {
     if (this->node.contains("border"))
     {
@@ -58,7 +58,7 @@ QPen NetworkStyle::nodePen(QString state) const
     return QPen(Qt::black, 1);
 }
 
-QFont NetworkStyle::nodeFont(QString state)
+QFont NetworkStyle::nodeFont(const QString &state)
 {
     if (this->node.contains("font"))
     {
@@ -71,7 +71,7 @@ QFont NetworkStyle::nodeFont(QString state)
     return QFont();
 }
 
-QPen NetworkStyle::edgePen(QString state) const
+QPen NetworkStyle::edgePen(const QString &state) const
 {
     if (this->edge.contains("color"))
     {

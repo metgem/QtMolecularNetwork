@@ -54,13 +54,13 @@ install:
     
     # Configure conda and get a few essentials
     - conda config --set always_yes yes
+    - conda config --add channels conda-forge
         
     - conda remove --name test-env --all
     - conda create -q -n test-env python=${MYCONDAPY}
     - source activate test-env
     
-    - conda install -q conda conda-build conda-verify anaconda-client numpy setuptools pyqt sip
-    - pip install pytest pylint pytest-pylint pytest-cov codecov
+    - conda install -q conda conda-build conda-verify anaconda-client numpy setuptools pyqt sip tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov
     
 script:
     - python setup.py develop

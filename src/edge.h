@@ -12,22 +12,22 @@ class Node;
 class Q_DECL_EXPORT Edge : public QGraphicsPathItem
 {
 public:
-    Edge(int index, Node *sourceNode, Node *destNode, qreal weight=1, qreal width=1);
+    Edge(int index, Node *sourceNode, Node *destNode, qreal width=1);
 
     int index();
     Node *sourceNode() const;
     Node *destNode() const;
-    void setPen(QPen pen);
+    void setPen(const QPen &pen);
     qreal width();
     void setWidth(qreal width);
     void setSourceNode(Node *node);
     void setDestNode(Node *node);
     void adjust();
 
-    void updateStyle(NetworkStyle *style, NetworkStyle *old=NULL);
+    void updateStyle(NetworkStyle *style, NetworkStyle *old=nullptr);
 
     enum { Type = UserType + 2 };
-    int type() const { return Type; }
+    int type() const override { return Type; }
 
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
@@ -38,8 +38,9 @@ private:
     int id;
     QPointF sourcePoint;
     QPointF destPoint;
-    qreal weight;
     Node *source, *dest;
 };
+
+Q_DECLARE_METATYPE(Edge *);
 
 #endif // EDGE_H

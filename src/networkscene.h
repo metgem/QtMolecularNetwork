@@ -20,19 +20,21 @@ signals:
    void layoutChanged();
 
 public:
-    NetworkScene(QWidget *parent=NULL);
+    NetworkScene(QWidget *parent=nullptr);
 
     NetworkStyle *networkStyle();
-    void setNetworkStyle(NetworkStyle *style=NULL);
+    void setNetworkStyle(NetworkStyle *style=nullptr);
 
     void clear();
 
+    void addNode(Node *node);
+    void addEdge(Edge *edge);
     QList<Node *> addNodes(QList<int> indexes,
-                           QList<QString> labels=QList<QString>(),
+                           QList<QString> labels = QList<QString>(),
                            QList<QPointF> positions = QList<QPointF>(),
                            QList<QVariant> colors = QList<QVariant>(),
                            QList<QVariant> radii = QList<QVariant>());
-    QList<Edge *> addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> weights, QList<qreal> widths);
+    QList<Edge *> addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> widths);
     void removeAllNodes();
     void removeNodes(QList<Node *> nodes);
     void removeAllEdges();
@@ -49,21 +51,23 @@ public:
     void setEdgesSelection(QList<int> indexes);
     void setEdgesSelection(QList<Edge *> edges);
 
+    QList<QPointF> layout();
     void setLayout(QList<qreal> layout, qreal scale=0);
     void setLayout(QList<QPointF> layout, qreal scale=0);
     qreal scale();
     void setScale(qreal scale=1);
-    void setLabelsFromModel(QAbstractTableModel* model, int column_id, int role=Qt::DisplayRole);
+    void setLabelsFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole);
     void resetLabels();
     QList<QColor> pieColors();
     void setPieColors(QList<QColor> colors);
-    void setPieChartsFromModel(QAbstractTableModel* model, QList<int> column_ids, int role=Qt::DisplayRole);
+    void setPieChartsFromModel(QAbstractItemModel *model, QList<int> column_ids, int role=Qt::DisplayRole);
     void resetPieCharts();
 
     void hideItems(QList<QGraphicsItem *> items);
     void showItems(QList<QGraphicsItem *> items);
     void hideSelectedItems();
     void showAllItems();
+    void hideAllItems();
 
     QList<QColor> nodesColors();
     void setNodesColors(QList<QVariant> colors);

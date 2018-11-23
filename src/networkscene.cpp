@@ -32,7 +32,7 @@ NetworkStyle *NetworkScene::networkStyle()
 void NetworkScene::setNetworkStyle(NetworkStyle *style)
 {
     NetworkStyle *new_style;
-    if (style != NULL)
+    if (style != nullptr)
         new_style = style;
     else
         new_style = new DefaultStyle();
@@ -61,6 +61,16 @@ void NetworkScene::clear()
     edgesLayer->setZValue(0);
 }
 
+void NetworkScene::addNode(Node *node)
+{
+    node->setParentItem(nodesLayer);
+}
+
+void NetworkScene::addEdge(Edge *edge)
+{
+    edge->setParentItem(edgesLayer);
+}
+
 QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, QList<QPointF> positions, QList<QVariant> colors, QList<QVariant> radii)
 {
     QList<Node *> nodes;
@@ -77,7 +87,7 @@ QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, 
         if (positions.size() == indexes.size())
             node->setPos(positions[i]);
 
-        if (this->style_ != NULL)
+        if (this->style_ != nullptr)
             node->updateStyle(this->style_);
 
         if (colors.size() == indexes.size())
@@ -101,13 +111,13 @@ QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, 
     return nodes;
 }
 
-QList<Edge *> NetworkScene::addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> weights, QList<qreal> widths)
+QList<Edge *> NetworkScene::addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> widths)
 {
     QList<Edge *> edges;
 
     for (int i=0; i<indexes.size(); i++) {
-        Edge *edge = new Edge(indexes[i], sourceNodes[i], destNodes[i], weights[i], widths[i]);
-        if (this->style_ != NULL)
+        Edge *edge = new Edge(indexes[i], sourceNodes[i], destNodes[i], widths[i]);
+        if (this->style_ != nullptr)
             edge->updateStyle(this->style_);
         edge->setParentItem(edgesLayer);
         edge->adjust();
@@ -180,7 +190,8 @@ void NetworkScene::setNodesSelection(QList<int> indexes)
     QList<Node *> nodes = this->nodes();
     foreach (int index, indexes)
     {
-        nodes[index]->setSelected(true);
+        if (0 <= index < nodes.size())
+            nodes[index]->setSelected(true);
     }
 }
 
@@ -231,7 +242,8 @@ void NetworkScene::setEdgesSelection(QList<int> indexes)
     QList<Edge *> edges = this->edges();
     foreach (int index, indexes)
     {
-        edges[index]->setSelected(true);
+        if (0 <= index < edges.size())
+            edges[index]->setSelected(true);
     }
 }
 
@@ -246,7 +258,7 @@ void NetworkScene::setEdgesSelection(QList<Edge *> edges)
 
 void NetworkScene::setLayout(QList<QPointF> layout, qreal scale)
 {
-    if (!scale)
+    if (scale <= 0)
         scale = this->scale_;
 
     QList<Node *> nodes = this->nodes();
@@ -270,7 +282,7 @@ void NetworkScene::setLayout(QList<QPointF> layout, qreal scale)
 
 void NetworkScene::setLayout(QList<qreal> layout, qreal scale)
 {
-    if (!scale)
+    if (scale <= 0)
         scale = this->scale_;
 
     QList<Node *> nodes(this->nodes());
@@ -299,6 +311,9 @@ qreal NetworkScene::scale()
 
 void NetworkScene::setScale(qreal scale)
 {
+    if (scale <= 0)
+        scale = 1;
+
     foreach (Node* node, this->nodes()) {
         node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
         node->setPos(node->pos() * scale / this->scale_);
@@ -314,7 +329,7 @@ void NetworkScene::setScale(qreal scale)
     emit this->scaleChanged(scale);
 }
 
-void NetworkScene::setLabelsFromModel(QAbstractTableModel* model, int column_id, int role)
+void NetworkScene::setLabelsFromModel(QAbstractItemModel *model, int column_id, int role)
 {
     foreach (Node* node, this->nodes()) {
         QVariant label = model->index(node->index(), column_id).data(role);
@@ -340,9 +355,9 @@ void NetworkScene::setPieColors(QList<QColor> colors)
     this->colors_ = colors;
 }
 
-void NetworkScene::setPieChartsFromModel(QAbstractTableModel *model, QList<int> column_ids, int role)
+void NetworkScene::setPieChartsFromModel(QAbstractItemModel *model, QList<int> column_ids, int role)
 {
-    if (column_ids.size() != this->colors_.size())
+    if (column_ids.size() > this->colors_.size())
         return;
 
     foreach (Node* node, this->nodes()) {
@@ -395,6 +410,14 @@ void NetworkScene::showAllItems()
     }
 }
 
+void NetworkScene::hideAllItems()
+{
+    foreach(QGraphicsItem *item, items())
+    {
+        item->hide();
+    }
+}
+
 QList<QColor> NetworkScene::nodesColors()
 {
     QList<QColor> colors;
@@ -416,6 +439,9 @@ void NetworkScene::setNodesColors(QList<QVariant> colors)
 {
     QColor color;
     QList<Node *> nodes = this->nodes();
+
+    if (colors.size() < nodes.size())
+        return;
 
     for (int i=0; i<nodes.size(); i++) {
         color = colors[nodes[i]->index()].value<QColor>();
@@ -481,7 +507,7 @@ Node *NetworkScene::nodeAt(const QPointF &position, const QTransform &deviceTran
     QGraphicsItem *item = itemAt(position, deviceTransform);
     if (nodesLayer->isAncestorOf(item))
         return qgraphicsitem_cast<Node *>(item);
-    return NULL;
+    return nullptr;
 
 }
 
@@ -490,7 +516,7 @@ Node *NetworkScene::nodeAt(qreal x, qreal y, const QTransform &deviceTransform) 
     QGraphicsItem *item = itemAt(x, y, deviceTransform);
     if (nodesLayer->isAncestorOf(item))
         return qgraphicsitem_cast<Node *>(item);
-    return NULL;
+    return nullptr;
 }
 
 Edge *NetworkScene::edgeAt(const QPointF &position, const QTransform &deviceTransform) const
@@ -498,7 +524,7 @@ Edge *NetworkScene::edgeAt(const QPointF &position, const QTransform &deviceTran
     QGraphicsItem *item = itemAt(position, deviceTransform);
     if (edgesLayer->isAncestorOf(item))
         return qgraphicsitem_cast<Edge *>(item);
-    return NULL;
+    return nullptr;
 }
 
 Edge *NetworkScene::edgeAt(qreal x, qreal y, const QTransform &deviceTransform) const
@@ -506,5 +532,5 @@ Edge *NetworkScene::edgeAt(qreal x, qreal y, const QTransform &deviceTransform) 
     QGraphicsItem *item = itemAt(x, y, deviceTransform);
     if (edgesLayer->isAncestorOf(item))
         return qgraphicsitem_cast<Edge *>(item);
-    return NULL;
+    return nullptr;
 }

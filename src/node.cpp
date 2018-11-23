@@ -8,13 +8,14 @@
 #include <QtCore>
 #include <QString>
 
-Node::Node(int index, QString label)
+Node::Node(int index, const QString &label)
     : QGraphicsEllipseItem(-RADIUS, -RADIUS, 2*RADIUS, 2*RADIUS)
 {
     this->id = index;
-    if (label==0)
-        label = QString::number(index+1);
-    setLabel(label);
+    if (label.isNull())
+        setLabel(QString::number(index+1));
+    else
+        setLabel(label);
 
     setFlags(ItemIsSelectable | ItemIsMovable | ItemSendsScenePositionChanges);
     setCacheMode(DeviceCoordinateCache);
@@ -32,6 +33,16 @@ void Node::invalidateShape()
     setRect(rect);
 }
 
+void Node::updateLabelRect()
+{
+    QFontMetrics fm = QFontMetrics(this->font());
+    int width = fm.width(this->label());
+    int height = fm.height();
+    this->label_rect_ = QRectF(-width/2, -height/2, width, height);
+
+    this->invalidateShape();
+}
+
 int Node::index()
 {
     return this->id;
@@ -39,7 +50,7 @@ int Node::index()
 
 int Node::radius()
 {
-    return this->rect().width() / 2;
+    return int(this->rect().width() / 2);
 }
 
 void Node::setRadius(int radius)
@@ -53,9 +64,10 @@ QFont Node::font()
     return this->font_;
 }
 
-void Node::setFont(QFont font)
+void Node::setFont(const QFont &font)
 {
     this->font_ = font;
+    updateLabelRect();
 }
 
 const QColor Node::textColor()
@@ -63,12 +75,12 @@ const QColor Node::textColor()
     return this->text_color;
 }
 
-void Node::setTextColor(const QColor color)
+void Node::setTextColor(const QColor &color)
 {
     this->text_color = color;
 }
 
-void Node::setBrush(const QBrush brush, bool autoTextColor)
+void Node::setBrush(const QBrush &brush, bool autoTextColor)
 {
     QGraphicsEllipseItem::setBrush(brush);
 
@@ -77,8 +89,15 @@ void Node::setBrush(const QBrush brush, bool autoTextColor)
         QColor color = brush.color();
         // Calculate the perceptive luminance (aka luma) - human eye favors green color...
         // See https://stackoverflow.com/questions/1855884/determine-font-color-based-on-background-color
-        double luma = 0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue() / 255;
-        this->text_color = (luma > 0.5) ? QColor(Qt::black) : QColor(Qt::white);
+        if (color.alpha() < 128)
+        {
+            this->text_color = QColor(Qt::black);
+        }
+        else
+        {
+            double luma = (0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue()) / 255;
+            this->text_color = (luma > 0.5) ? QColor(Qt::black) : QColor(Qt::white);
+        }
     }
 }
 
@@ -87,15 +106,10 @@ QString Node::label()
     return label_;
 }
 
-void Node::setLabel(QString label)
+void Node::setLabel(const QString &label)
 {
     this->label_ = label;
-
-    QFontMetrics fm = QFontMetrics(this->font());
-    int width = fm.width(label);
-    int height = fm.height();
-    this->label_rect_ = QRectF(-width/2, -height/2, width, height);
-    this->invalidateShape();
+    updateLabelRect();
 }
 
 QList<qreal> Node::pie()
@@ -124,17 +138,22 @@ void Node::setPie(QList<qreal> values)
 
 void Node::addEdge(Edge *edge)
 {
-    edgeList << edge;
+    this->edges_.insert(edge);
 }
 
-QList<Edge *> Node::edges() const
+void Node::removeEdge(Edge *edge)
 {
-    return edgeList;
+    this->edges_.remove(edge);
+}
+
+QSet<Edge *> Node::edges() const
+{
+    return this->edges_;
 }
 
 void Node::updateStyle(NetworkStyle *style, NetworkStyle* old)
 {
-    if (old == NULL || this->brush().color() == old->nodeBrush().color())
+    if (old == nullptr || this->brush().color() == old->nodeBrush().color())
     {
         setBrush(style->nodeBrush(), false);
         setTextColor(style->nodeTextColor());
@@ -149,7 +168,7 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
     switch (change)
     {
     case ItemScenePositionHasChanged:
-        foreach(Edge* edge, edgeList)
+        foreach(Edge* edge, this->edges_)
         {
             edge->adjust();
         }
@@ -157,6 +176,8 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
     case ItemSelectedChange:
         setZValue(!isSelected());  // Bring item to front
         setCacheMode(cacheMode()); // Force Redraw
+        break;
+    default:
         break;
     }
 
@@ -185,7 +206,7 @@ QPainterPath Node::shape() const
 void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
 {
     NetworkScene *scene = qobject_cast<NetworkScene *>(this->scene());
-    if (scene == 0)
+    if (scene == nullptr)
         return;
 
     // If selected, change brush to yellow and text to black
@@ -227,7 +248,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         painter->setPen(QPen(Qt::NoPen));
         for (int i=0; i<this->pieList.size(); i++) {
             painter->setBrush(colors[i]);
-            painter->drawPie(rect, start*5760, pieList[i]*5760);
+            painter->drawPie(rect, int(start*5760), int(pieList[i]*5760));
             start += this->pieList[i];
         }
     }

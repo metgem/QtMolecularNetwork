@@ -7,10 +7,9 @@
 #include <QtCore>
 #include <QStyleOption>
 
-Edge::Edge(int index, Node *sourceNode, Node *destNode, qreal weight, qreal width)
+Edge::Edge(int index, Node *sourceNode, Node *destNode, qreal width)
 {
     this->id = index;
-    this->weight = weight;
     this->source = sourceNode;
     this->dest = destNode;
 
@@ -37,7 +36,9 @@ Node *Edge::sourceNode() const
 
 void Edge::setSourceNode(Node *node)
 {
+    this->source->removeEdge(this);
     this->source = node;
+    this->source->addEdge(this);
     adjust();
 }
 
@@ -48,27 +49,30 @@ Node *Edge::destNode() const
 
 void Edge::setDestNode(Node *node)
 {
+    this->dest->removeEdge(this);
     this->dest = node;
+    this->dest->addEdge(this);
     adjust();
 }
 
-void Edge::setPen(QPen pen)
+void Edge::setPen(const QPen &pen)
 {
-    pen.setWidth(this->pen().width());
-    QGraphicsPathItem::setPen(pen);
+    QPen new_pen = QPen(pen);
+    new_pen.setWidthF(this->pen().widthF());
+    QGraphicsPathItem::setPen(new_pen);
 }
 
 qreal Edge::width()
 {
-    return this->pen().width();
+    return this->pen().widthF();
 }
 
 void Edge::setWidth(qreal width)
 {
     QPen pen(this->pen());
-    if ((source != dest) && width)
+    if ((source != dest) && width >= 0)
     {
-        pen.setWidth(width);
+        pen.setWidthF(width);
     }
     else
     {
@@ -87,14 +91,14 @@ void Edge::adjust()
 
     prepareGeometryChange();
 
-    int min_len = source->radius() + dest->radius() + source->pen().width() + dest->pen().width();
+    qreal min_len = source->radius() + dest->radius() + source->pen().widthF() + dest->pen().widthF();
 
-    if (length > qreal(min_len)) {
-        QPointF offset((line.dx() * (source->radius() + source->pen().width() + 1)) / length,
+    if (length > min_len) {
+        QPointF offset((line.dx() * (source->radius() + source->pen().widthF() + 1)) / length,
                            (line.dy() * (source->radius() + source->pen().width() + 1)) / length);
         sourcePoint = line.p1() + offset;
-        offset = QPointF((line.dx() * (dest->radius() + dest->pen().width())) / length,
-                         (line.dy() * (dest->radius() + dest->pen().width())) / length);
+        offset = QPointF((line.dx() * (dest->radius() + dest->pen().widthF())) / length,
+                         (line.dy() * (dest->radius() + dest->pen().widthF())) / length);
         destPoint = line.p2() - offset;
     } else {
         sourcePoint = destPoint = line.p1();
@@ -105,11 +109,11 @@ void Edge::adjust()
     if (source == dest)
     {
         int radius  = source->radius();
-        path.moveTo(sourcePoint.x() - radius - 2 * source->pen().width(),
+        path.moveTo(sourcePoint.x() - radius - 2 * source->pen().widthF(),
                     sourcePoint.y());
         path.cubicTo(QPointF(sourcePoint.x() - 4 * radius, sourcePoint.y()),
                      QPointF(sourcePoint.x(),              sourcePoint.y() - 4 * radius),
-                     QPointF(sourcePoint.x(),              sourcePoint.y() - radius - 2 * source->pen().width()));
+                     QPointF(sourcePoint.x(),              sourcePoint.y() - radius - 2 * source->pen().widthF()));
     }
     else
     {
@@ -146,11 +150,11 @@ QRectF Edge::boundingRect() const
 
     if (source == dest)
     {
-        qreal w(pen().width());
+        qreal w(pen().widthF());
         int radius = source->radius();
-        int width = source->pen().width();
-        int delta = 2 * radius - 2 * width - w;
-        int size = 2 * (radius + width + 1 + w);
+        qreal width = source->pen().widthF();
+        qreal delta = int(2 * radius - 2 * width - w);
+        qreal size = int(2 * (radius + width + 1 + w));
         return QRectF(brect.x()+delta, brect.y() + delta, size, size);
     }
 
@@ -163,7 +167,7 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         return;
 
     NetworkScene *scene = qobject_cast<NetworkScene *>(this->scene());
-    if (scene == 0)
+    if (scene == nullptr)
         return;
 
     QLineF line(sourcePoint, destPoint);
@@ -173,7 +177,7 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     if (option->state & QStyle::State_Selected)
     {
         QPen pen = scene->networkStyle()->edgePen("selected");
-        pen.setWidth(this->pen().width());
+        pen.setWidthF(this->pen().widthF());
         painter->setPen(pen);
     }
     else

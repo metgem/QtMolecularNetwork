@@ -1,9 +1,13 @@
-from PyQt5.QtGui import QPen, QColor, QFont, QBrush, QFontMetrics
-from PyQt5.QtWidgets import (QGraphicsItem, QGraphicsEllipseItem, QStyle, QApplication)
-from PyQt5.QtCore import (Qt, QRectF)
-
+from .edge import Edge
 from .style import NetworkStyle
 from .config import RADIUS
+
+from typing import Set
+
+from PyQt5.QtGui import QPen, QColor, QFont, QBrush, QFontMetrics
+from PyQt5.QtWidgets import (QGraphicsItem, QGraphicsEllipseItem, QStyle,
+                             QApplication)
+from PyQt5.QtCore import Qt, QRectF
 
 
 class Node(QGraphicsEllipseItem):
@@ -12,7 +16,7 @@ class Node(QGraphicsEllipseItem):
     def __init__(self, index, label=None):
         super().__init__(-RADIUS, -RADIUS, 2 * RADIUS, 2 * RADIUS)
 
-        self._edge_list = []
+        self._edges = set()
         self._pie = []
 
         self._font = QApplication.font()
@@ -20,8 +24,9 @@ class Node(QGraphicsEllipseItem):
 
         self.id = index
         if label is None:
-            label = str(index+1)
-        self.setLabel(label)
+            self.setLabel(str(index+1))
+        else:
+            self.setLabel(label)
 
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
@@ -37,12 +42,20 @@ class Node(QGraphicsEllipseItem):
         rect = self.rect()
         self.setRect(QRectF())
         self.setRect(rect)
+        
+    def updateLabelRect(self):
+        fm = QFontMetrics(self.font())
+        width = fm.width(self.label())
+        height = fm.height()
+        self._label_rect = QRectF(-width/2, -height/2, width, height)
+
+        self.invalidateShape()
 
     def index(self) -> int:
         return self.id
 
     def radius(self) -> int:
-        return self.rect().width() / 2
+        return self.rect().width() // 2
 
     def setRadius(self, radius: int):
         self.prepareGeometryChange()
@@ -53,6 +66,7 @@ class Node(QGraphicsEllipseItem):
 
     def setFont(self, font: QFont):
         self._font = font
+        self.updateLabelRect()
 
     def textColor(self) -> QColor:
         return self._text_color
@@ -68,20 +82,18 @@ class Node(QGraphicsEllipseItem):
             # Calculate the perceptive luminance (aka luma) - human eye favors green color...
             # See https://stackoverflow.com/questions/1855884/determine-font-color-based-on-background-color
             color = QBrush(brush).color()
-            luma = 0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue() / 255
-            self._text_color = QColor(Qt.black) if luma > 0.5 else QColor(Qt.white)
+            if color.alpha() < 128:
+                self._text_color = QColor(Qt.black)
+            else:
+                luma = (0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue()) / 255
+                self._text_color = QColor(Qt.black) if luma > 0.5 else QColor(Qt.white)
 
     def label(self) -> str:
         return self._label
 
     def setLabel(self, label: str):
         self._label = label
-        fm = QFontMetrics(self.font())
-        width = fm.width(label)
-        height = fm.height()
-        self._label_rect = QRectF(-width/2, -height/2, width, height)
-
-        self.invalidateShape()
+        self.updateLabelRect()
 
     def pie(self) -> list:
         return self._pie
@@ -95,11 +107,14 @@ class Node(QGraphicsEllipseItem):
             self._pie = []
         self.update()
 
-    def addEdge(self, edge):
-        self._edge_list.append(edge)
+    def addEdge(self, edge: Edge):
+        self._edges.add(edge)
+        
+    def removeEdge(self, edge: Edge):
+        self._edges.remove(edge)
 
-    def edges(self):
-        return self._edge_list
+    def edges(self) -> Set[Edge]:
+        return self._edges
 
     def updateStyle(self, style: NetworkStyle, old: NetworkStyle = None):
         if old is None or self.brush().color() == old.nodeBrush().color():
@@ -111,7 +126,7 @@ class Node(QGraphicsEllipseItem):
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemScenePositionHasChanged:
-            for edge in self._edge_list:
+            for edge in self._edges:
                 edge.adjust()
         elif change == QGraphicsItem.ItemSelectedChange:
             self.setZValue(not self.isSelected())  # Bring item to front

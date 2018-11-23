@@ -4,9 +4,6 @@ from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QPainter, QSurfaceFormat, QFocusEvent
 from PyQt5.QtWidgets import QGraphicsView, QRubberBand, QOpenGLWidget, QFormLayout, QSizePolicy
 
-from .scene import NetworkScene
-
-
 def isRemoteSession():
     """Detect Remote session in windows"""
 
@@ -79,8 +76,6 @@ class NetworkView(QGraphicsView):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        
-        self._minimum_zoom = 0
 
         if not isRemoteSession():
             fmt = QSurfaceFormat()
@@ -97,9 +92,6 @@ class NetworkView(QGraphicsView):
         self.minimap = MiniMapGraphicsView(self)
         layout.addWidget(self.minimap)
         self.setLayout(layout)
-        
-        scene = NetworkScene(self)
-        self.setScene(scene)
 
         self.setCacheMode(QGraphicsView.CacheBackground)
         self.setRenderHint(QPainter.Antialiasing)
@@ -114,20 +106,14 @@ class NetworkView(QGraphicsView):
             """NetworkView:focus {
                 border: 3px solid palette(highlight);
             }""")
-
-        # Connect events
-        self.scene().scaleChanged.connect(self.on_scale_changed)
-        self.scene().layoutChanged.connect(self.on_layout_changed)
         
     def setScene(self, scene):
         super().setScene(scene)
         self.minimap.setScene(scene)
-
-    # def mouseDoubleClickEvent(self, event):
-    #     pos = self.mapToScene(event.pos()).toPoint()
-    #     node = self.scene().nodeAt(pos, self.transform())
-    #     if node is not None:
-    #         self.showSpectrumTriggered.emit(node)
+        
+        # Connect events
+        scene.scaleChanged.connect(self.on_scale_changed)
+        scene.layoutChanged.connect(self.on_layout_changed)
             
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton and not self.itemAt(event.pos()):
@@ -146,7 +132,6 @@ class NetworkView(QGraphicsView):
         elif event.button() == Qt.RightButton:
             self.setDragMode(QGraphicsView.NoDrag)
 
-    # @profile
     def mouseMoveEvent(self, event):
         if self.dragMode() == QGraphicsView.ScrollHandDrag:
             self.minimap.adjustRubberband()
@@ -180,16 +165,10 @@ class NetworkView(QGraphicsView):
                 
     def zoomToFit(self):
         self.fitInView(self.scene().sceneRect(), Qt.KeepAspectRatio)
-        # self._minimum_zoom = self.transform().m11()  # Set zoom out limit to horizontal scaling factor
         self.minimap.adjustRubberband()
         
     def wheelEvent(self, event):
         self.scaleView(2**(event.angleDelta().y() / 240.0))
 
     def scaleView(self, scaleFactor):
-    #     factor = self.transform().scale(scaleFactor, scaleFactor).mapRect(QRectF(0, 0, 1, 1)).width()
-    #
-    #     if factor < self._minimum_zoom or factor > 2:
-    #         return
-    #
         self.scale(scaleFactor, scaleFactor)

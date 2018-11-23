@@ -13,14 +13,16 @@ build:
 
 requirements:
     build:
-        - python
+        - python=3.7
         - setuptools
-        - pyqt
-        - sip
+        - pyqt>=5.9
+        - sip>=4.19
     run:
         - python
-        - pyqt
-        - sip
+        - pyqt>=5.9
+        - sip>=4.19
+        - pywin32  [win]
+        - tinycss2
 
 test:
     imports:
