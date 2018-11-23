@@ -9,7 +9,7 @@ def isRemoteSession():
 
     if sys.platform.startswith('win'):
         # See https://msdn.microsoft.com/en-us/library/aa380798%28v=vs.85%29.aspx
-        from win32api import GetSystemMetrics
+        from win32api import GetSystemMetrics # pylint: disable=import-error
         if GetSystemMetrics(0x1000) != 0:  # 0x1000 is SM_REMOTESESSION
             return True
     return False
