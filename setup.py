@@ -174,12 +174,12 @@ class build_ext(sipdistutils.build_ext):
                 extension.library_dirs += [self._sip_output_dir()]
             elif sys.platform == 'darwin':
                 extension.include_dirs += [self.qt_include_dir,
-                              os.path.join(self.qt_include_dir, 'QtCore.framework','Headers'),
-                              os.path.join(self.qt_include_dir, 'QtGui.framework','Headers'),
-                              os.path.join(self.qt_include_dir, 'QtWidgets.framework','Headers'),
+                              os.path.join(self.qtconfig.QT_INSTALL_LIBS, 'QtCore.framework','Headers'),
+                              os.path.join(self.qtconfig.QT_INSTALL_LIBS, 'QtGui.framework','Headers'),
+                              os.path.join(self.qtconfig.QT_INSTALL_LIBS, 'QtWidgets.framework','Headers'),
                               self.inc_dir]
-                extension.extra_compile_args += ['-F' + self.qt_include_dir, '-std=c++11']
-                extension.extra_link_args += ['-F'+qtconfig.QT_INSTALL_LIBS,
+                extension.extra_compile_args += ['-F' + self.qtconfig.QT_INSTALL_LIBS, '-std=c++11']
+                extension.extra_link_args += ['-F' + self.qtconfig.QT_INSTALL_LIBS,
                                               "-framework QtWidgets",
                                               "-framework QtGui",
                                               "-framework QtCore"]
