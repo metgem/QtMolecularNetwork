@@ -100,7 +100,10 @@ class build_ext(sipdistutils.build_ext):
         super().finalize_options()
 
         if not self.qt_include_dir:
-            self.qt_include_dir = self.qtconfig.QT_INSTALL_HEADERS
+            if sys.platform == 'darwin':
+                self.qt_include_dir = qtconfig.QT_INSTALL_LIBS
+            else:
+                self.qt_include_dir = self.qtconfig.QT_INSTALL_HEADERS
 
         if not self.pyqt_sip_dir:
             self.pyqt_sip_dir = os.path.join(self.pyconfig.data_dir, 'sip', 'PyQt5')
@@ -159,16 +162,34 @@ class build_ext(sipdistutils.build_ext):
 
         # Add the local include directory to the include path
         if extension is not None:
-            extension.include_dirs += [self.qt_include_dir,
+            if sys.platform == 'win32':
+                extension.include_dirs += [self.qt_include_dir,
                               os.path.join(self.qt_include_dir, 'QtCore'),
                               os.path.join(self.qt_include_dir, 'QtGui'),
                               os.path.join(self.qt_include_dir, 'QtWidgets'),
                               self.inc_dir]
-            extension.library_dirs += [self.qtconfig.QT_INSTALL_LIBS,
+                extension.library_dirs += [self.qtconfig.QT_INSTALL_LIBS,
                                        self.inc_dir]
-            if sys.platform == 'win32':
                 extension.libraries += ['Qt5Core','Qt5Gui','Qt5Widgets']
                 extension.library_dirs += [self._sip_output_dir()]
+            elif sys.platform == 'darwin':
+                extension.include_dirs += [self.qt_include_dir,
+                              os.path.join(self.qt_include_dir, 'QtCore.framework','Headers'),
+                              os.path.join(self.qt_include_dir, 'QtGui.framework','Headers'),
+                              os.path.join(self.qt_include_dir, 'QtWidgets.framework','Headers'),
+                              self.inc_dir]
+                extension.extra_compile_args += ['-F' + self.qt_include_dir, '-std=c++11']
+                extension.extra_link_args += ['-F'+qtconfig.QT_INSTALL_LIBS,
+                                              "-framework QtWidgets",
+                                              "-framework QtGui",
+                                              "-framework QtCore"]
+            elif sys.platform == 'linux':
+                extension.extra_compile_args += ['-std=c++11']
+                extension.include_dirs += [self.qt_include_dir,
+                              os.path.join(self.qt_include_dir, 'QtCore'),
+                              os.path.join(self.qt_include_dir, 'QtGui'),
+                              os.path.join(self.qt_include_dir, 'QtWidgets'),
+                              self.inc_dir]
 
         return super().swig_sources(sources, extension)
         
