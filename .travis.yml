@@ -47,6 +47,12 @@ before_install:
         export CC=gcc-4.9;
         export CXX=g++-4.9;
       fi;
+    - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+        sudo apt-get update
+        sudo apt-get install qtdeclarative5-dev
+      else
+        brew install qt
+      fi;
     
 install:
     - export PATH="$HOME/miniconda/bin:$PATH"
@@ -60,7 +66,7 @@ install:
     - conda create -q -n test-env python=${MYCONDAPY}
     - source activate test-env
     
-    - conda install -q conda conda-build conda-verify anaconda-client numpy setuptools pyqt sip tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov
+    - conda install -q conda conda-build conda-verify anaconda-client numpy setuptools pyqt sip tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
     
 script:
     - python setup.py develop
