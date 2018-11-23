@@ -101,7 +101,7 @@ class build_ext(sipdistutils.build_ext):
 
         if not self.qt_include_dir:
             if sys.platform == 'darwin':
-                self.qt_include_dir = qtconfig.QT_INSTALL_LIBS
+                self.qt_include_dir = self.qtconfig.QT_INSTALL_LIBS
             else:
                 self.qt_include_dir = self.qtconfig.QT_INSTALL_HEADERS
 
