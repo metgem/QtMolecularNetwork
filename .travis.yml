@@ -61,15 +61,12 @@ install:
     
     - conda install conda conda-build conda-verify anaconda-client numpy setuptools pyqt>=5.9 sip
     - conda config --add channels conda-forge
-    - conda install tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock pytest-xvfb
+    - conda install tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
     
 script:
-    - ls /Users/travis/.conda/envs/test-env/include/qt/
     - python setup.py develop
-    - pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
-    - python -c "import PyQtNetworkView; print(PyQtNetworkView.NetworkView)"
-    - pytest --version
-    - pytest tests --cov=PyQtNetworkView
+    - xvfb-run pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
+    - xvfb-run pytest tests --cov=PyQtNetworkView
     
     # Make CPP and PY source package for github deployment
     - if [[ $TRAVIS_TAG ]]; then
