@@ -62,11 +62,14 @@ install:
     - conda install conda conda-build conda-verify anaconda-client numpy setuptools pyqt>=5.9 sip
     - conda config --add channels conda-forge
     - conda install tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
+    - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+          conda install pytest-xvfb;
+      fi;
     
 script:
     - python setup.py develop
-    - xvfb-run pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
-    - xvfb-run pytest tests --cov=PyQtNetworkView
+    - pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
+    - pytest tests --cov=PyQtNetworkView
     
     # Make CPP and PY source package for github deployment
     - if [[ $TRAVIS_TAG ]]; then
