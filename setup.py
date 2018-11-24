@@ -180,7 +180,7 @@ class build_ext(sipdistutils.build_ext):
                               os.path.join(self.qtconfig.QT_INSTALL_LIBS, 'QtWidgets.framework', 'Headers'),
                               os.path.join(self.qt_include_dir, 'QtCore'),
                               os.path.join(self.qt_include_dir, 'QtGui'),
-                              os.path.join(self.qt_include_dir, 'QtWidgets')]]
+                              os.path.join(self.qt_include_dir, 'QtWidgets')]
             elif sys.platform == 'linux':
                 extension.extra_compile_args += ['-std=c++11']
                 extension.include_dirs += [
