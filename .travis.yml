@@ -64,8 +64,7 @@ install:
     - conda install tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock pytest-xvfb
     
 script:
-    - ls /Users/travis/.conda/envs/test-env/lib/
-    - ls /Users/travis/.conda/envs/test-env/lib/include/qt/QtCore/
+    - ls /Users/travis/.conda/envs/test-env/include/qt/
     - python setup.py develop
     - pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
     - python -c "import PyQtNetworkView; print(PyQtNetworkView.NetworkView)"
