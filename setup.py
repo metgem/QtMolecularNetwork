@@ -160,7 +160,7 @@ class build_ext(sipdistutils.build_ext):
         # Add the local include directory to the include path
         if extension is not None:            
             extension.extra_compile_args += ['-D', 'QT_CORE_LIB', '-D', 'QT_GUI_LIB', '-D', 'QT_WIDGETS_LIB']
-            extension.include_dirs += [self.qt_include_dir, self.inc_dir
+            extension.include_dirs += [self.qt_include_dir, self.inc_dir,
                             os.path.join(self.qt_include_dir, 'QtCore'),
                             os.path.join(self.qt_include_dir, 'QtGui'),
                             os.path.join(self.qt_include_dir, 'QtWidgets')]
