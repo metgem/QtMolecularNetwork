@@ -61,20 +61,13 @@ install:
     
     - conda install conda conda-build conda-verify anaconda-client numpy setuptools pyqt>=5.9 sip
     - conda config --add channels conda-forge
-    - conda install tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
+    - conda install tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock pytest-xvfb
     
     # Xvfb / window manager
     # courtesy of https://github.com/astropy/ci-helpers/blob/master/travis/setup_conda_linux.sh
     - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
         sudo apt-get update;
-        sudo apt-get install -y xvfb herbstluftwm;
-        /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1920x1200x24 -ac +extension GLX +render -noreset;
-      fi;
-
-before_script:
-    - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-        "herbstluftwm &";
-        sleep 1;
+        sudo apt-get install -y xvfb;
       fi;
     
 script:
