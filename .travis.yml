@@ -59,7 +59,7 @@ install:
     - conda create -q -n test-env python=${MYCONDAPY}
     - source activate test-env
     
-    - conda install conda conda-build conda-verify anaconda-client numpy setuptools pyqt>=5.9 sip
+    - conda install conda conda-build conda-verify anaconda-client numpy setuptools pyqt sip
     - conda config --add channels conda-forge
     - conda install tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
     - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then

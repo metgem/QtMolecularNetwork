@@ -23,11 +23,12 @@ init:
     
 install:
     - conda config --set always_yes true --set changeps1 no   
-    - conda config --add channels conda-forge
     - conda install -q conda conda-build conda-verify anaconda-client
     - conda create -q -n test-env python=%MYCONDAPY%   
     - activate test-env
-    - conda install pyqt>=5.9 sip tinycss2 pywin32 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
+    - conda install pyqt sip pywin32 pytest pylint pytest-cov pytest-mock
+    - conda config --add channels conda-forge
+    - conda install tinycss2  pytest-pylint pytest-qt codecov
     - python setup.py develop
 
 test_script:
