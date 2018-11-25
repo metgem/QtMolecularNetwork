@@ -22,13 +22,13 @@ init:
     - "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%MINICONDA%\\Library\\bin;%QTDIR%\\bin;%PATH%"
     
 install:
-    - conda config --set always_yes true --set changeps1 no   
-    - conda install -q conda conda-build conda-verify anaconda-client
-    - conda create -q -n test-env python=%MYCONDAPY%   
-    - activate test-env
-    - conda install pyqt sip pywin32 pytest pylint pytest-cov pytest-mock
+    - conda config --set always_yes true --set changeps1 no
     - conda config --add channels conda-forge
-    - conda install tinycss2  pytest-pylint pytest-qt codecov
+    - conda install -q conda conda-build conda-verify anaconda-client
+    - conda create -q -n test-env python=%MYCONDAPY%
+    - activate test-env
+    - conda install -c anaconda pyqt sip
+    - conda install tinycss2 pywin32 pytest pylint pytest-pylint pytest-qt pytest-mock pytest-cov codecov
     - python setup.py develop
 
 test_script:
