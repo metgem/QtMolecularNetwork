@@ -179,4 +179,4 @@ src/release/
 .qmake.stash
 
 # Version
-PyQtNetworkView/_version.py
+_version.py

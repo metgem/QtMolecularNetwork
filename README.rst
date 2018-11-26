@@ -1,3 +1,5 @@
+|travis| |appveyor| |codecov|
+
 ===============
 PyQtNetworkView
 ===============
@@ -5,39 +7,31 @@ PyQtNetworkView
 C++ version (and Python wrapper) of widgets used for visualisation of graph in `MetGem`_
 
 
-Build for Windows
------------------
+Build for Windows (Anaconda)
+----------------------------
 
+-  Download and install `Anaconda`_
 -  Download and install `Visual Studio Community 2017`_
 -  Download and install `Qt Open Source`_
--  Download `SIP`
--  Launch a Qt terminal: `Qt 5.xx.x 64-bit for Desktop (MSVC 2017)`
--  Activate MSVC environment :
+-  Build PyQtNetworkView:
 
 ::
 
-   > "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
-
-
-- Build and install SIP:
-
-::
-
-   > cd SIP_folder
-   > python configure.py
-   > nmake
-   > nmake install
-
--  Build NetworkView:
-
-::
-
-   > cd NetworkView_folder
-   > python configure.py
-   > nmake
-
+   > python setup.py build
 
 .. _MetGem: https://github.com/metgem
+.. _Anaconda: https://www.anaconda.com/download/
 .. _Visual Studio Community 2017: https://www.visualstudio.com/fr/
 .. _Qt Open Source: https://www.qt.io/
-.. _SIP: https://riverbankcomputing.com/software/sip/intro/
+ 
+.. |travis| image:: https://travis-ci.org/metgem/PyQtNetworkView.svg?branch=master
+   :target: https://travis-ci.org/metgem/PyQtNetworkView
+   :alt: Linux and MacOS Build Status
+   
+.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/nn9eyup44mdif3w6?svg=true
+  :target: https://ci.appveyor.com/project/n-elie/pyqtnetworkview
+  :alt: Windows Build Status
+    
+.. |codecov| image:: https://codecov.io/gh/metgem/PyQtNetworkView/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/metgem/PyQtNetworkView
+  :alt: Code Coverage Status
