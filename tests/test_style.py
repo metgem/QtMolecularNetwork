@@ -22,10 +22,8 @@ def style(mod):
     
     
 @pytest.fixture
-def css(tmp_path):
-    d = tmp_path / "css"
-    d.mkdir()
-    p = d / "style.css"
+def css(tmpdir):
+    p = tmpdir.mkdir("css").join("style.css")
     content = \
 """/* name: test */
 
@@ -60,7 +58,7 @@ scene
     background-color: #008080;
 }
 """
-    p.write_text(content)
+    p.write(content)
     
     return p
     

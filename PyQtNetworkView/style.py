@@ -263,7 +263,7 @@ def style_from_css(css):
 
 def style_to_json(style: NetworkStyle):
     style_dict = {"format_version": 1.0,
-                  "generated_by": f"{QCoreApplication.applicationName()} {QCoreApplication.applicationVersion()}",
+                  "generated_by": "{} {}".format(QCoreApplication.applicationName(), QCoreApplication.applicationVersion()),
                   "target_cytoscapejs_version": "~2.1",
                   "title": style.styleName(),
                   "style": [{

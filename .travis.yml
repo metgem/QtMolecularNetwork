@@ -60,7 +60,12 @@ install:
     - conda create -q -n test-env python=${MYCONDAPY}
     - source activate test-env
     
-    - conda install -q conda conda-build conda-verify anaconda-client numpy setuptools pyqt sip tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov
+    - conda install conda conda-build conda-verify anaconda-client setuptools
+    - conda install -c anaconda pyqt sip
+    - conda install tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
+    - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+          conda install pytest-xvfb;
+      fi;
     
 script:
     - python setup.py develop

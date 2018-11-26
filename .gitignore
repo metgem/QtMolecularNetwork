@@ -177,3 +177,6 @@ modules/
 src/debug/
 src/release/
 .qmake.stash
+
+# Version
+PyQtNetworkView/_version.py
