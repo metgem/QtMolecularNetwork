@@ -18,7 +18,6 @@ platform:
     - x64
     
 init:
-    - set QTDIR="C:\Qt\5.11.1\msvc2017_64"
     - "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%MINICONDA%\\Library\\bin;%QTDIR%\\bin;%PATH%"
     
 install:
@@ -27,8 +26,8 @@ install:
     - conda install -q conda conda-build conda-verify anaconda-client
     - conda create -q -n test-env python=%MYCONDAPY%
     - activate test-env
-    - conda install -c anaconda pyqt sip
-    - conda install tinycss2 pywin32 pytest pylint pytest-pylint pytest-qt pytest-mock pytest-cov codecov
+    - conda install -q -c anaconda pyqt sip
+    - conda install -q tinycss2 pywin32 pytest pylint pytest-pylint pytest-qt pytest-mock pytest-cov codecov
     - python setup.py develop
 
 test_script:
