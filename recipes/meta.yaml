@@ -13,7 +13,7 @@ build:
 
 requirements:
     build:
-        - python=3.7
+        - python
         - setuptools
         - pyqt>=5.9
         - sip>=4.19
