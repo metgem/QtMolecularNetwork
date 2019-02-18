@@ -172,3 +172,7 @@ class NetworkView(QGraphicsView):
 
     def scaleView(self, scaleFactor):
         self.scale(scaleFactor, scaleFactor)
+        
+    def updateVisibleItems(self):
+        for item in self.items(self.viewport().rect()):
+            item.update()

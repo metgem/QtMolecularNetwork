@@ -22,6 +22,7 @@ class NetworkScene(QGraphicsScene):
         self._style = DefaultStyle()
         self._colors = []
         self._scale = 1
+        self._pie_charts_visibility = True
 
         self.clear()
 
@@ -227,6 +228,12 @@ class NetworkScene(QGraphicsScene):
     def resetPieCharts(self):
         for node in self.nodes():
             node.setPie(None)
+            
+    def pieChartsVisibility(self):
+        return self._pie_charts_visibility
+        
+    def setPieChartsVisibility(self, visibility: bool=True):
+        sekf._pie_charts_visibility = bool(visibility)
 
     def hideItems(self, items):
         for item in items:

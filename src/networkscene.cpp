@@ -22,6 +22,7 @@ NetworkScene::NetworkScene(QWidget *)
 
     this->style_ = new DefaultStyle();
     this->scale_ = 1;
+    this->pie_charts_visibility = true;
 }
 
 NetworkStyle *NetworkScene::networkStyle()
@@ -190,7 +191,7 @@ void NetworkScene::setNodesSelection(QList<int> indexes)
     QList<Node *> nodes = this->nodes();
     foreach (int index, indexes)
     {
-        if (0 <= index < nodes.size())
+        if (0 <= index && index < nodes.size())
             nodes[index]->setSelected(true);
     }
 }
@@ -242,7 +243,7 @@ void NetworkScene::setEdgesSelection(QList<int> indexes)
     QList<Edge *> edges = this->edges();
     foreach (int index, indexes)
     {
-        if (0 <= index < edges.size())
+        if (0 <= index && index < edges.size())
             edges[index]->setSelected(true);
     }
 }
@@ -374,6 +375,16 @@ void NetworkScene::resetPieCharts()
     foreach (Node* node, this->nodes()) {
         node->setPie(QList<qreal>());
     }
+}
+
+bool NetworkScene::pieChartsVisibility()
+{
+    return this->pie_charts_visibility;
+}
+
+void NetworkScene::setPieChartsVisibility(bool visibility)
+{
+    this->pie_charts_visibility = visibility;
 }
 
 void NetworkScene::hideItems(QList<QGraphicsItem *> items)

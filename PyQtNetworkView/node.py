@@ -176,7 +176,7 @@ class Node(QGraphicsEllipseItem):
         lod = option.levelOfDetailFromTransform(painter.worldTransform())
 
         # Draw pies if any
-        if lod > 0.1 and len(self._pie) > 0:
+        if scene.pieChartVisibility() and lod > 0.1 and len(self._pie) > 0:
             radius = self.radius()
             rect = QRectF(-.85 * radius, -0.85 * radius, 1.7 * radius, 1.7 * radius)
             start = 0.

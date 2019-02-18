@@ -62,6 +62,8 @@ public:
     void setPieColors(QList<QColor> colors);
     void setPieChartsFromModel(QAbstractItemModel *model, QList<int> column_ids, int role=Qt::DisplayRole);
     void resetPieCharts();
+    bool pieChartsVisibility();
+    void setPieChartsVisibility(bool visibility=true);
 
     void hideItems(QList<QGraphicsItem *> items);
     void showItems(QList<QGraphicsItem *> items);
@@ -88,6 +90,7 @@ private:
     GraphicsItemLayer *edgesLayer;
     qreal scale_;
     QList <QColor> colors_;
+    bool pie_charts_visibility;
 };
 
 #endif // NETWORKSCENE_H

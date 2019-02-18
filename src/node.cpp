@@ -239,7 +239,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     qreal lod(option->levelOfDetailFromTransform(painter->worldTransform()));
 
     // Draw pie if any
-    if (lod > 0.1 && this->pieList.size() > 0)
+    if (scene->pieChartsVisibility() && lod > 0.1 && this->pieList.size() > 0)
     {
         int radius = this->radius();
         QRectF rect(-0.85*radius, -0.85*radius, 1.7*radius, 1.7*radius);

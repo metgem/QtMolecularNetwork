@@ -159,6 +159,8 @@ setEdgesSelection(self, Iterable[Edge])
     void setPieColors(QList<QColor> colors);
     void setPieChartsFromModel(QAbstractItemModel *model, QList<int> column_ids, int role=Qt::DisplayRole);
     void resetPieCharts();
+    bool pieChartsVisibility();
+    void setPieChartsVisibility(bool visibility=true);
     
     void hideItems(QList<QGraphicsItem *> items);
     void showItems(QList<QGraphicsItem *> items);
