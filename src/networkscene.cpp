@@ -384,7 +384,11 @@ bool NetworkScene::pieChartsVisibility()
 
 void NetworkScene::setPieChartsVisibility(bool visibility)
 {
-    this->pie_charts_visibility = visibility;
+    if (visibility != this->pie_charts_visibility)
+    {
+        this->pie_charts_visibility = visibility;
+        emit this->pieChartsVisibilityChanged(visibility);
+    }
 }
 
 void NetworkScene::hideItems(QList<QGraphicsItem *> items)

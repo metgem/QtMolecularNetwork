@@ -18,6 +18,7 @@ class Q_DECL_EXPORT NetworkScene : public QGraphicsScene
 signals:
    void scaleChanged(qreal);
    void layoutChanged();
+   void pieChartsVisibilityChanged(bool);
 
 public:
     NetworkScene(QWidget *parent=nullptr);

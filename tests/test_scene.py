@@ -256,6 +256,23 @@ def test_scene_set_pie_charts_from_model(scene, colors, role):
         
         for node in scene.nodes():
             assert len(node.pie()) == 0
+            
+
+def test_scene_set_pie_charts_visibility(qtbot, scene):
+    """Check that setPieChartsVisibility effectively changed pie charts visibility."""
+    
+    assert scene.pieChartsVisibility() == True
+    with qtbot.waitSignal(scene.pieChartsVisibilityChanged):
+        scene.setPieChartsVisibility(False)
+        assert scene.pieChartsVisibility() == False
+        
+    with qtbot.assertNotEmitted(scene.pieChartsVisibilityChanged):
+        scene.setPieChartsVisibility(False)
+        assert scene.pieChartsVisibility() == False
+        
+    with qtbot.waitSignal(scene.pieChartsVisibilityChanged):
+        scene.setPieChartsVisibility(True)
+        assert scene.pieChartsVisibility() == True
 
             
 def test_scene_show_hide_items(scene):
@@ -407,5 +424,3 @@ def test_scene_selected_edges(scene):
     
     r = scene.selectedEdges()
     assert set(r) == selected_edges
-    
-

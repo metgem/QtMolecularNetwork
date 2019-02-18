@@ -15,6 +15,7 @@ from .style import NetworkStyle, DefaultStyle
 class NetworkScene(QGraphicsScene):
     scaleChanged = pyqtSignal(float)
     layoutChanged = pyqtSignal()
+    pieChartsVisibilityChanged = pyqtSignal(bool)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -233,7 +234,9 @@ class NetworkScene(QGraphicsScene):
         return self._pie_charts_visibility
         
     def setPieChartsVisibility(self, visibility: bool=True):
-        sekf._pie_charts_visibility = bool(visibility)
+        if (visibility != self._pie_charts_visibility):
+            self._pie_charts_visibility = bool(visibility)
+            self.pieChartsVisibilityChanged.emit(visibility)
 
     def hideItems(self, items):
         for item in items:
