@@ -155,6 +155,51 @@ setEdgesSelection(self, Iterable[Edge])
     void setScale(qreal scale=1);
     void setLabelsFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole);
     void resetLabels();
+    void setNodesRadiiFromModel(QAbstractItemModel *model, int column_id, int role, SIP_PYCALLABLE func /AllowNone,KeepReference,TypeHint="Callable[[qreal], int]"/ = nullptr);
+%MethodCode
+    if (a3)
+    {
+        // Make sure the callable doesn't get garbage collected.
+        Py_INCREF(a3);
+        
+        Py_BEGIN_ALLOW_THREADS
+     
+        sipCpp->setNodesRadiiFromModel(a0, a1, a2, [a3](qreal value)
+        {
+            int res = 0;
+            if (a3)
+            {
+                SIP_BLOCK_THREADS
+                
+                PyObject *res_obj;
+            
+                res_obj = sipCallMethod( NULL, a3, "d", value, NULL, NULL );
+                if (res_obj)
+                {
+                    PyErr_Clear();
+
+                    res = PyFloat_AsDouble(res_obj);
+                    Py_DECREF(res_obj);
+
+                    if (PyErr_Occurred())
+                        res_obj = 0;
+                }
+                    
+                SIP_UNBLOCK_THREADS
+            }
+            return res;
+        } );
+     
+        Py_END_ALLOW_THREADS
+    }
+    else
+    {
+        Py_BEGIN_ALLOW_THREADS
+        sipCpp->setNodesRadiiFromModel(a0, a1, a2);
+        Py_END_ALLOW_THREADS
+    }
+%End
+    void resetNodesRadii();
     QList<QColor> pieColors();
     void setPieColors(QList<QColor> colors);
     void setPieChartsFromModel(QAbstractItemModel *model, QList<int> column_ids, int role=Qt::DisplayRole);

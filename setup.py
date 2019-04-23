@@ -13,7 +13,7 @@ import sipconfig
 from PyQt5.QtCore import PYQT_CONFIGURATION
 
 MAJOR = 0
-MINOR = 2
+MINOR = 3
 MICRO = 0
 ISRELEASED = True
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)

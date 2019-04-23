@@ -60,6 +60,8 @@ public:
     void setLabelsFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole);
     void resetLabels();
     QList<QColor> pieColors();
+    void setNodesRadiiFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole, const std::function<int (qreal)> &func=nullptr);
+    void resetNodesRadii();
     void setPieColors(QList<QColor> colors);
     void setPieChartsFromModel(QAbstractItemModel *model, QList<int> column_ids, int role=Qt::DisplayRole);
     void resetPieCharts();

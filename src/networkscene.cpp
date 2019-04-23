@@ -346,6 +346,40 @@ void NetworkScene::resetLabels()
     }
 }
 
+void NetworkScene::setNodesRadiiFromModel(QAbstractItemModel *model, int column_id, int role, const std::function<int (qreal)> &func)
+{
+    QList<Node *> nodes = this->nodes();
+    QList<qreal> values;
+
+    if (func)
+    {
+        foreach (Node* node, this->nodes()) {
+            node->setRadius(func(model->index(node->index(), column_id).data(role).toReal()));
+        }
+    }
+    else
+    {
+        foreach (Node* node, this->nodes()) {
+            node->setRadius(model->index(node->index(), column_id).data(role).toInt());
+        }
+    }
+
+    foreach (Edge* edge, this->edges()) {
+        edge->adjust();
+    }
+}
+
+void NetworkScene::resetNodesRadii()
+{
+    foreach (Node* node, this->nodes()) {
+        node->setRadius(RADIUS);
+    }
+
+    foreach (Edge* edge, this->edges()) {
+        edge->adjust();
+    }
+}
+
 QList<QColor> NetworkScene::pieColors()
 {
     return this->colors_;
