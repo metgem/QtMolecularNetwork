@@ -4,6 +4,8 @@ from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QPainter, QSurfaceFormat, QFocusEvent
 from PyQt5.QtWidgets import QGraphicsView, QRubberBand, QOpenGLWidget, QFormLayout, QSizePolicy
 
+USE_OPENGL = True
+
 def isRemoteSession():
     """Detect Remote session in windows"""
 
@@ -13,6 +15,10 @@ def isRemoteSession():
         if GetSystemMetrics(0x1000) != 0:  # 0x1000 is SM_REMOTESESSION
             return True
     return False
+    
+def disable_opengl(val: bool=True):
+    global USE_OPENGL
+    USE_OPENGL = not val
 
 
 class MiniMapGraphicsView(QGraphicsView):
@@ -77,7 +83,7 @@ class NetworkView(QGraphicsView):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        if not isRemoteSession():
+        if USE_OPENGL and not isRemoteSession():
             fmt = QSurfaceFormat()
             fmt.setSamples(4)
             self.setViewport(QOpenGLWidget())
