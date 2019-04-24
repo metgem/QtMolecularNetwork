@@ -11,8 +11,9 @@ if IS_COMPILED:
     from .style import read_css, style_to_json, style_to_cytoscape
                               
     class NetworkScene(BaseNetworkScene):
-        def setLayout(self, layout, scale=0):
-            super().setLayout(layout.ravel(), scale)
+        def setLayout(self, layout, scale=0, isolated_nodes=[]):
+            super().setLayout(layout.ravel(), scale,
+                              isolated_nodes if isolated_nodes is not None else [])
             
     def style_from_css(css):
         result = read_css(css)

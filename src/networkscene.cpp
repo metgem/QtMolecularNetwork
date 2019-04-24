@@ -72,7 +72,8 @@ void NetworkScene::addEdge(Edge *edge)
     edge->setParentItem(edgesLayer);
 }
 
-QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels, QList<QPointF> positions, QList<QVariant> colors, QList<QVariant> radii)
+QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels,
+                                     QList<QPointF> positions, QList<QVariant> colors, QList<QVariant> radii)
 {
     QList<Node *> nodes;
     QColor color;
@@ -257,7 +258,7 @@ void NetworkScene::setEdgesSelection(QList<Edge *> edges)
     }
 }
 
-void NetworkScene::setLayout(QList<QPointF> layout, qreal scale)
+void NetworkScene::setLayout(QList<QPointF> layout, qreal scale, QList<int> isolated_nodes)
 {
     if (scale <= 0)
         scale = this->scale_;
@@ -268,9 +269,23 @@ void NetworkScene::setLayout(QList<QPointF> layout, qreal scale)
     for (int i=0; i<nodes.size(); i++) {
         Node *node = nodes[i];
         j = node->index();
-        node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
-        node->setPos(layout[j] * scale);
-        node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+        if (isolated_nodes.contains(j))
+        {
+            node->setFlag(QGraphicsItem::ItemHasNoContents, true);
+            node->setFlag(QGraphicsItem::ItemIsSelectable, false);
+            node->setFlag(QGraphicsItem::ItemIsMovable, false);
+            node->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+        }
+        else
+        {
+            node->setFlag(QGraphicsItem::ItemHasNoContents, false);
+            node->setFlag(QGraphicsItem::ItemIsSelectable, true);
+            node->setFlag(QGraphicsItem::ItemIsMovable, true);
+            node->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
+            node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
+            node->setPos(layout[j] * scale);
+            node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
+        }
     }
 
     foreach(Edge* edge, edges())
@@ -281,7 +296,7 @@ void NetworkScene::setLayout(QList<QPointF> layout, qreal scale)
     emit this->layoutChanged();
 }
 
-void NetworkScene::setLayout(QList<qreal> layout, qreal scale)
+void NetworkScene::setLayout(QList<qreal> layout, qreal scale, QList<int> isolated_nodes)
 {
     if (scale <= 0)
         scale = this->scale_;
@@ -292,9 +307,23 @@ void NetworkScene::setLayout(QList<qreal> layout, qreal scale)
     for (int i=0; i<nodes.size(); i++) {
         Node *node = nodes[i];
         j = node->index();
-        node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
-        node->setPos(layout[j*2] * scale, layout[j*2+1] * scale);
-        node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+        if (isolated_nodes.contains(j))
+        {
+            node->setFlag(QGraphicsItem::ItemHasNoContents, true);
+            node->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
+            node->setFlag(QGraphicsItem::ItemIsSelectable, false);
+            node->setFlag(QGraphicsItem::ItemIsMovable, false);
+        }
+        else
+        {
+            node->setFlag(QGraphicsItem::ItemHasNoContents, false);
+            node->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
+            node->setFlag(QGraphicsItem::ItemIsSelectable, true);
+            node->setFlag(QGraphicsItem::ItemIsMovable, true);
+            node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
+            node->setPos(layout[j*2] * scale, layout[j*2+1] * scale);
+            node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
+        }
     }
 
     foreach(Edge* edge, edges())
@@ -582,4 +611,15 @@ Edge *NetworkScene::edgeAt(qreal x, qreal y, const QTransform &deviceTransform) 
     if (edgesLayer->isAncestorOf(item))
         return qgraphicsitem_cast<Edge *>(item);
     return nullptr;
+}
+
+QRectF NetworkScene::itemsBoundingRect() const
+{
+    QRectF boundingRect;
+    foreach (QGraphicsItem *item, items())
+    {
+        if (!(item->flags() & QGraphicsItem::ItemHasNoContents))
+            boundingRect |= item->sceneBoundingRect();
+    }
+    return boundingRect;
 }

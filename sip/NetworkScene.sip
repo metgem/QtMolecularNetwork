@@ -149,8 +149,8 @@ setEdgesSelection(self, Iterable[Edge])
     return NULL;
 %End    
     
-    void setLayout(QList<qreal> layout, qreal scale=0);
-    void setLayout(QList<QPointF> layout, qreal scale=0);
+    void setLayout(QList<qreal> layout, qreal scale=0, QList<int> isolated_nodes=QList<int>());
+    void setLayout(QList<QPointF> layout, qreal scale=0, QList<int> isolated_nodes=QList<int>());
     qreal scale();
     void setScale(qreal scale=1);
     void setLabelsFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole);
@@ -225,6 +225,8 @@ setEdgesSelection(self, Iterable[Edge])
     Node *nodeAt(qreal x, qreal y, const QTransform &deviceTransform) const;
     Edge *edgeAt(const QPointF &position, const QTransform &deviceTransform) const;
     Edge *edgeAt(qreal x, qreal y, const QTransform &deviceTransform) const;
+    
+    QRectF itemsBoundingRect() const;
 };
 
 %End

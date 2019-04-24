@@ -172,13 +172,27 @@ class NetworkScene(QGraphicsScene):
                     if 0 <= index < edges_len:
                         edges[index].setSelected(True)
 
-    def setLayout(self, positions, scale=None):
+    def setLayout(self, positions, scale=None, isolated_nodes=[]):
         scale = scale if scale is not None else self._scale
+        isolated_nodes = set(isolated_nodes)
+        
         for node in self.nodes():
-            pos = positions[node.index()]
-            node.setFlag(QGraphicsItem.ItemSendsScenePositionChanges, False)
-            node.setPos(*pos * scale)
-            node.setFlag(QGraphicsItem.ItemSendsScenePositionChanges)
+            i = node.index()
+            if i in isolated_nodes:
+                node.setFlag(QGraphicsItem.ItemHasNoContents, True)
+                node.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                node.setFlag(QGraphicsItem.ItemIsMovable, False)
+                node.setFlag(QGraphicsItem.ItemIgnoresTransformations, True)
+            else:
+                node.setFlag(QGraphicsItem.ItemHasNoContents, False)
+                node.setFlag(QGraphicsItem.ItemIsSelectable, True)
+                node.setFlag(QGraphicsItem.ItemIsMovable, True)
+                node.setFlag(QGraphicsItem.ItemIgnoresTransformations, False)
+                
+                node.setFlag(QGraphicsItem.ItemSendsScenePositionChanges, False)
+                pos = positions[i]
+                node.setPos(*pos * scale)
+                node.setFlag(QGraphicsItem.ItemSendsScenePositionChanges)
 
         for edge in self.edges():
             edge.adjust()
@@ -304,3 +318,11 @@ class NetworkScene(QGraphicsScene):
         item = self.itemAt(*args, **kwargs)
         if isinstance(item, Edge):
             return item
+            
+    def itemsBoundingRect():
+        rect = QRectF()
+        for item in self.items():
+            if not (item.flags & QGraphicsItem.ItemHasNoContents):
+                rect |= item.sceneBoundingRect()
+        
+        return rect
