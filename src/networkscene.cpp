@@ -377,9 +377,6 @@ void NetworkScene::resetLabels()
 
 void NetworkScene::setNodesRadiiFromModel(QAbstractItemModel *model, int column_id, int role, const std::function<int (qreal)> &func)
 {
-    QList<Node *> nodes = this->nodes();
-    QList<qreal> values;
-
     if (func)
     {
         foreach (Node* node, this->nodes()) {

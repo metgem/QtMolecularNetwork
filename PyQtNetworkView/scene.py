@@ -225,6 +225,24 @@ class NetworkScene(QGraphicsScene):
         for node in self.nodes():
             label = str(node.index() + 1)
             node.setLabel(label)
+            
+    def setNodesRadiiFromModel(self, model, column_id, role=Qt.DisplayRole, func=None):       
+        if func is not None:
+            for node in self.nodes():
+                node.setRadius(func(model.index(node.index(), column_id).data(role)))
+        else:
+            for node in self.nodes():
+                node.setRadius(model.index(node.index(), column_id).data(role))
+                
+        for edge in self.edges():
+            edge.adjust()
+            
+    def resetNodesRadii(self):
+        for node in self.nodes():
+            node.setRadius(RADIUS)
+            
+        for edge in self.edges():
+            edge.adjust()
 
     def pieColors(self):
         return self._colors
