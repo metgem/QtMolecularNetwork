@@ -616,6 +616,7 @@ void NetworkScene::lock(bool lock)
     {
         node->setFlag(QGraphicsItem::ItemIsMovable, !lock);
     }
+    emit this->locked(lock);
 }
 void NetworkScene::unlock(){
     this->lock(false);

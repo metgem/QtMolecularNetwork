@@ -16,6 +16,7 @@ class NetworkScene(QGraphicsScene):
     scaleChanged = pyqtSignal(float)
     layoutChanged = pyqtSignal()
     pieChartsVisibilityChanged = pyqtSignal(bool)
+    locked = pyqtSignal(bool)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -340,6 +341,7 @@ class NetworkScene(QGraphicsScene):
     def lock(self, lock: bool=True):
         for node in self.nodes():
             node.setFlag(QGraphicsItem.ItemIsMovable, not lock)
+        self.locked.emit(lock)
             
     def unlock(self):
         self.lock(False)

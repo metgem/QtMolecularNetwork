@@ -19,6 +19,7 @@ signals:
    void scaleChanged(qreal);
    void layoutChanged();
    void pieChartsVisibilityChanged(bool);
+   void locked(bool);
 
 public:
     NetworkScene(QWidget *parent=nullptr);
