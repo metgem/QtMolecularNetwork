@@ -610,6 +610,17 @@ Edge *NetworkScene::edgeAt(qreal x, qreal y, const QTransform &deviceTransform) 
     return nullptr;
 }
 
+void NetworkScene::lock(bool lock)
+{
+    foreach (Node *node, nodes())
+    {
+        node->setFlag(QGraphicsItem::ItemIsMovable, !lock);
+    }
+}
+void NetworkScene::unlock(){
+    this->lock(false);
+}
+
 QRectF NetworkScene::itemsBoundingRect() const
 {
     QRectF boundingRect;

@@ -337,6 +337,13 @@ class NetworkScene(QGraphicsScene):
         if isinstance(item, Edge):
             return item
             
+    def lock(self, lock: bool=True):
+        for node in self.nodes():
+            node.setFlag(QGraphicsItem.ItemIsMovable, not lock)
+            
+    def unlock(self):
+        self.lock(False)
+            
     def itemsBoundingRect():
         rect = QRectF()
         for item in self.items():

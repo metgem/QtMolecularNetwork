@@ -226,6 +226,9 @@ setEdgesSelection(self, Iterable[Edge])
     Edge *edgeAt(const QPointF &position, const QTransform &deviceTransform) const;
     Edge *edgeAt(qreal x, qreal y, const QTransform &deviceTransform) const;
     
+    void lock(bool lock=true);
+    void unlock();
+    
     QRectF itemsBoundingRect() const;
 };
 
