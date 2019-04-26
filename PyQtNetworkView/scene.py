@@ -346,7 +346,7 @@ class NetworkScene(QGraphicsScene):
     def unlock(self):
         self.lock(False)
             
-    def itemsBoundingRect():
+    def itemsBoundingRect(self):
         rect = QRectF()
         for item in self.items():
             if not (item.flags & QGraphicsItem.ItemHasNoContents):
