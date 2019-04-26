@@ -24,6 +24,11 @@ IS_COMPILED = True
 if "--skip-build" in sys.argv:
     IS_COMPILED = False
     sys.argv.remove("--skip-build")
+    
+REQUIRE_PYQT = True
+if "--conda-recipe" in sys.argv:
+    REQUIRE_PYQT = False
+    sys.argv.remove("--conda-recipe")
 
 
 class HostPythonConfiguration(object):
@@ -235,13 +240,13 @@ def get_version_info():
     FULLVERSION = VERSION
     if os.path.exists('.git'):
         GIT_REVISION = git_version()
-    elif os.path.exists('libmetgem/version.py'):
+    elif os.path.exists('PyQtNetworkView/version.py'):
         # must be a source distribution, use existing version file
         try:
-            from libmetgem.version import git_revision as GIT_REVISION
+            from PyQtNetworkView.version import git_revision as GIT_REVISION
         except ImportError:
             raise ImportError("Unable to import git_revision. Try removing " \
-                              "libmetgem/version.py and the build directory " \
+                              "PyQtNetworkView/version.py and the build directory " \
                               "before building.")
     else:
         GIT_REVISION = "Unknown"
@@ -253,7 +258,7 @@ def get_version_info():
     
 
 def write_version_py(filename=os.path.join(SRC_PATH, '_version.py')):
-    cnt = ("# THIS FILE IS GENERATED FROM LIBMETGEM SETUP.PY\n\n"
+    cnt = ("# THIS FILE IS GENERATED FROM PyQtNetworkView SETUP.PY\n\n"
            "short_version = '%(version)s'\n"
            "version = '%(version)s'\n"
            "full_version = '%(full_version)s'\n"
@@ -272,7 +277,7 @@ def write_version_py(filename=os.path.join(SRC_PATH, '_version.py')):
                        'compiled': bool(IS_COMPILED)})
   
 if IS_COMPILED:
-    setup_requires = ["PyQt5"]
+    setup_requires = ["PyQt5"] if REQUIRE_PYQT else []
     ext_modules = [Extension(MODULE_NAME + ".NetworkView",
                              glob.glob("src/*.cpp") + 
                              [os.path.join("sip", "NetworkView.sip")])]
