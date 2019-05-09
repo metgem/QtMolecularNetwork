@@ -187,8 +187,10 @@ class build_ext(sipdistutils.build_ext):
                 extension.library_dirs += [self.qtconfig.QT_INSTALL_LIBS,
                                        self.inc_dir, self._sip_output_dir()]
             elif sys.platform == 'darwin':
-                extension.extra_compile_args += ['-F' + self.qtconfig.QT_INSTALL_LIBS, '-std=c++11']
-                extension.extra_link_args += ['-F' + self.qtconfig.QT_INSTALL_LIBS]
+                extension.extra_compile_args += ['-F' + self.qtconfig.QT_INSTALL_LIBS,
+                    '-std=c++11', '-stdlib=libc++', '-mmacosx-version-min=10.9']
+                extension.extra_link_args += ['-F' + self.qtconfig.QT_INSTALL_LIBS,
+                    '-mmacosx-version-min=10.9']
             elif sys.platform == 'linux':
                 extension.extra_compile_args += ['-std=c++11']
 

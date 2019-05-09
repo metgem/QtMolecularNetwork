@@ -45,9 +45,6 @@ before_install:
         fi;
         bash $HOME/download/miniconda.sh -b -p $HOME/miniconda;
       fi;
-    - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
-        export LDFLAGS="-mmacosx-version-min=10.8";
-      fi;
     
 install:
     - export PATH="$HOME/miniconda/bin:$PATH"
