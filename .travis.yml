@@ -45,6 +45,9 @@ before_install:
         fi;
         bash $HOME/download/miniconda.sh -b -p $HOME/miniconda;
       fi;
+    - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then
+        export LDFLAGS="-mmacosx-version-min=10.8";
+      fi;
     
 install:
     - export PATH="$HOME/miniconda/bin:$PATH"
@@ -67,7 +70,7 @@ install:
     
 script:
     - python setup.py develop
-    - python -m pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
+    #- python -m pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
     - python -m pytest tests --cov=PyQtNetworkView
     
     # Make CPP and PY source package for github deployment
