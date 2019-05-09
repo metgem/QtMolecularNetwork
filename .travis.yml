@@ -67,8 +67,8 @@ install:
     
 script:
     - python setup.py develop
-    - pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
-    - pytest tests --cov=PyQtNetworkView
+    - python -m pytest --pylint --pylint-rcfile=.pyrcfile --pylint-error-types=EF PyQtNetworkView
+    - python -m pytest tests --cov=PyQtNetworkView
     
     # Make CPP and PY source package for github deployment
     - if [[ $TRAVIS_TAG ]]; then
