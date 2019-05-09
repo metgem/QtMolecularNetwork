@@ -168,10 +168,9 @@ class NetworkScene(QGraphicsScene):
                     edge.setSelected(True)
             else:
                 edges = self.edges()
-                edges_len = len(edges)
-                for index in items:
-                    if 0 <= index < edges_len:
-                        edges[index].setSelected(True)
+                for edge in self.edges():
+                    if edge.index() in items:
+                        edge.setSelected(True)
 
     def setLayout(self, positions, scale=None, isolated_nodes=[]):
         scale = scale if scale is not None else self._scale
