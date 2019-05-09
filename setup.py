@@ -90,6 +90,7 @@ class build_ext(sipdistutils.build_ext):
         self.qmake_bin = 'qmake'
         self.sip_bin = None
         self.qt_include_dir = None
+        self.qt_libinfix = ''
         self.pyqt_sip_dir = None
         self.pyqt_sip_flags = None
         self.sip_files_dir = None
@@ -106,6 +107,15 @@ class build_ext(sipdistutils.build_ext):
 
         if not self.qt_include_dir:
             self.qt_include_dir = self.qtconfig.QT_INSTALL_HEADERS
+            
+        if not self.qt_libinfix:
+            try:
+                with open(os.path.join(self.qtconfig.QT_INSTALL_PREFIX, 'mkspecs', 'qconfig.pri'), 'r') as f:
+                    for line in f.readlines():
+                        if line.startswith('QT_LIBINFIX'):
+                            self.qt_libinfix = line.split('=')[1].strip('\n').strip()
+            except (FileNotFoundError, IndexError):
+                pass
 
         if not self.pyqt_sip_dir:
             self.pyqt_sip_dir = os.path.join(self.pyconfig.data_dir, 'sip', 'PyQt5')
@@ -169,7 +179,9 @@ class build_ext(sipdistutils.build_ext):
                             os.path.join(self.qt_include_dir, 'QtCore'),
                             os.path.join(self.qt_include_dir, 'QtGui'),
                             os.path.join(self.qt_include_dir, 'QtWidgets')]
-            extension.libraries += ['Qt5Core','Qt5Gui','Qt5Widgets']
+            extension.libraries += ['Qt5Core' + self.qt_libinfix,
+                                    'Qt5Gui' + self.qt_libinfix,
+                                    'Qt5Widgets' + self.qt_libinfix]
             
             if sys.platform == 'win32':
                 extension.library_dirs += [self.qtconfig.QT_INSTALL_LIBS,
