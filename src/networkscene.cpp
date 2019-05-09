@@ -241,12 +241,6 @@ QList<Edge *> NetworkScene::selectedEdges() const
 void NetworkScene::setEdgesSelection(QList<int> indexes)
 {
     clearSelection();
-    /*QList<Edge *> edges = this->edges();
-    foreach (int index, indexes)
-    {
-        if (0 <= index && index < edges.size())
-            edges[index]->setSelected(true);
-    }*/
     foreach(Edge * edge, edges())
     {
         if (indexes.contains(edge->index()))
