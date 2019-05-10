@@ -1,7 +1,7 @@
 import sys
 
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QPainter, QSurfaceFormat, QFocusEvent, QOpenGLContext
+from PyQt5.QtGui import QPainter, QSurfaceFormat, QFocusEvent
 from PyQt5.QtWidgets import QGraphicsView, QRubberBand, QOpenGLWidget, QFormLayout, QSizePolicy
 
 USE_OPENGL = True
@@ -83,7 +83,7 @@ class NetworkView(QGraphicsView):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        if USE_OPENGL and QOpenGLContext.currentContext() and not isRemoteSession():
+        if USE_OPENGL and not isRemoteSession():
             fmt = QSurfaceFormat()
             fmt.setSamples(4)
             self.setViewport(QOpenGLWidget())
