@@ -12,58 +12,115 @@ from .config import RADIUS
     
 class NetworkStyle:
     name = ""
-    node = {}
-    edge = {}
-    scene = {}
+    nb = QBrush(QColor(Qt.lightGray)) # Node Brush
+    nbs = QBrush(QColor())            # Node Brush Selected
+    ntc = QColor(Qt.black)            # Node Text Color
+    ntcs = QColor()                   # Node Text Color Selected
+    np = QPen(Qt.black, 1)            # Node Pen
+    nps = QPen(Qt.black, 1)           # Node Pen Selected
+    nf = QFont()                      # Node Font
+    nfs = QFont()                     # Node Font Selected
+    ep = QPen(Qt.darkGray)            # Edge Pen
+    eps = QPen(Qt.red)                # Edge Pen Selected
+    sb = QBrush(QColor(Qt.white))     # Scene Brush
 
     def __init__(self, name=None, node=None, edge=None, scene=None):
         if name is not None:
             self.name = name
+            
         if node is not None:
-            self.node = node
+            try:
+                d = node['bgcolor']
+                try:
+                    self.nb = d["normal"]
+                except KeyError:
+                    pass
+                try:
+                    self.nbs = d["selected"]
+                except KeyError:
+                    pass
+            except KeyError:
+                pass
+            
+            try:
+                d = node['txtcolor']
+                try:
+                    self.ntc = d["normal"]
+                except KeyError:
+                    pass
+                try:
+                    self.ntcs = d["selected"]
+                except KeyError:
+                    pass
+            except KeyError:
+                pass
+                
+            try:
+                d = node['border']
+                try:
+                    self.np = d["normal"]
+                except KeyError:
+                    pass
+                try:
+                    self.nps = d["selected"]
+                except KeyError:
+                    pass
+            except KeyError:
+                pass
+                
+            try:
+                d = node['font']
+                try:
+                    self.nf = d["normal"]
+                except KeyError:
+                    pass
+                try:
+                    self.nfs = d["selected"]
+                except KeyError:
+                    pass
+            except KeyError:
+                pass
+        
         if edge is not None:
-            self.edge = edge
+            try:
+                d = edge['color']
+                try:
+                    self.ep = d["normal"]
+                except KeyError:
+                    pass
+                try:
+                    self.eps = d["selected"]
+                except KeyError:
+                    pass
+            except KeyError:
+                pass
+                
         if scene is not None:
-            self.scene = scene
-
+            try:
+                self.sb = scene['color']
+            except KeyError:
+                pass
+        
     def styleName(self):
         return self.name
 
-    def nodeBrush(self, state='normal') -> QBrush:
-        try:
-            return self.node['bgcolor'][state]
-        except KeyError:
-            return None if state == 'selected' else QBrush(QColor(Qt.lightGray))
+    def nodeBrush(self, selected=False) -> QBrush:
+        return self.nbs if selected else self.nb
 
-    def nodeTextColor(self, state='normal') -> QColor:
-        try:
-            return self.node['txtcolor'][state]
-        except KeyError:
-            return None if state == 'selected' else QColor(Qt.black)
+    def nodeTextColor(self, selected: bool=False) -> QColor:
+        return self.ntcs if selected else self.ntc
 
-    def nodePen(self, state='normal') -> QPen:
-        try:
-            return self.node['border'][state]
-        except KeyError:
-            return QPen(Qt.black, 1)
+    def nodePen(self, selected: bool=False) -> QPen:
+        return self.nps if selected else self.np
 
-    def nodeFont(self, state='normal') -> QFont:
-        try:
-            return self.node['font'][state]
-        except KeyError:
-            return QFont()
+    def nodeFont(self, selected: bool=False) -> QFont:
+        return self.nfs if selected else self.nf
 
-    def edgePen(self, state='normal') -> QPen:
-        try:
-            return self.edge['color'][state]
-        except KeyError:
-            return QPen(Qt.red) if state == 'selected' else QPen(Qt.darkGray)
+    def edgePen(self, selected: bool=False) -> QPen:
+        return self.eps if selected else self.ep
 
     def backgroundBrush(self) -> QBrush:
-        try:
-            return self.scene['color']
-        except KeyError:
-            return QBrush(QColor(Qt.white))
+        return self.sb
 
 
 class DefaultStyle(NetworkStyle):

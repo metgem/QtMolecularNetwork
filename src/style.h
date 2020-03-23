@@ -19,18 +19,28 @@ public:
     NetworkStyle(QString name, QVariantMap node, QVariantMap edge, QMap<QString, QBrush> scene);
     NetworkStyle() {}
     QString styleName();
-    QBrush nodeBrush(const QString &state = "normal") const;
-    QColor nodeTextColor(const QString &state = "normal") const;
-    QPen nodePen(const QString &state = "normal") const;
-    QFont nodeFont(const QString &state = "normal");
-    QPen edgePen(const QString &state = "normal") const;
+    QBrush nodeBrush(const bool selected = false) const;
+    QColor nodeTextColor(const bool selected = false) const;
+    QPen nodePen(const bool selected = false) const;
+    QFont nodeFont(const bool selected = false);
+    QPen edgePen(const bool selected = false) const;
     QBrush backgroundBrush() const;
 
 protected:
     QString name = "";
-    QVariantMap node;
-    QVariantMap edge;
-    QMap<QString, QBrush> scene;
+    QBrush nb; // Node Brush
+    QBrush nbs; // Node Brush Selected
+    QColor ntc; // Node Text Color
+    QColor ntcs; // Node Text Color Selected
+    QPen np; // Node Pen
+    QPen nps; // Node Pen Selected
+    QFont nf; // Node Font
+    QFont nfs; // Node Font Selected
+
+    QPen ep; // Edge Pen
+    QPen eps; // Edge Pen Selected
+
+    QBrush sb; // Scene Brush
 };
 
 class Q_DECL_EXPORT DefaultStyle: public NetworkStyle
@@ -39,32 +49,22 @@ public:
     DefaultStyle() {
         name = "default";
 
-        QVariantMap bgcolor;
-        bgcolor["normal"]= QBrush(Qt::lightGray);
-        bgcolor["selected"]= QBrush(Qt::yellow);
-        node["bgcolor"] = bgcolor;
+        nb = QBrush(Qt::lightGray);
+        nbs = QBrush(Qt::yellow);
 
-        QVariantMap txtcolor;
-        txtcolor["normal"]= QColor(Qt::black);
-        txtcolor["selected"]= QColor(Qt::black);
-        node["txtcolor"] = txtcolor;
+        ntc = QColor(Qt::black);
+        ntcs = QColor(Qt::black);
 
-        QVariantMap border;
-        border["normal"]= QPen(Qt::black, 1, Qt::SolidLine);
-        border["selected"]= QPen(Qt::black, 1, Qt::SolidLine);
-        node["border"] = border;
+        np = QPen(Qt::black, 1, Qt::SolidLine);
+        nps = QPen(Qt::black, 1, Qt::SolidLine);
 
-        QVariantMap font;
-        font["normal"]= QPen(Qt::black, 1, Qt::SolidLine);
-        font["selected"]= QPen(Qt::black, 1, Qt::SolidLine);
-        node["font"] = font;
+        nf = QFont();
+        nfs = QFont();
 
-        QVariantMap epen;
-        epen["normal"] = QPen(QColor(Qt::darkGray));
-        epen["selected"] = QPen(QColor(Qt::red));
-        edge["color"] = epen;
+        ep = QPen(QColor(Qt::darkGray));
+        eps = QPen(QColor(Qt::red));
 
-        scene["color"] = QBrush(Qt::white);
+        sb = QBrush(Qt::white);
     }
 };
 

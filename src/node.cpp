@@ -151,7 +151,7 @@ QSet<Edge *> Node::edges() const
     return this->edges_;
 }
 
-void Node::updateStyle(NetworkStyle *style, NetworkStyle* old)
+void Node::updateStyle(NetworkStyle *style, NetworkStyle *old)
 {
     if (old == nullptr || this->brush().color() == old->nodeBrush().color())
     {
@@ -203,25 +203,29 @@ QPainterPath Node::shape() const
     return path;
 }
 
-void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *)
+void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    Q_UNUSED(widget);
+
     NetworkScene *scene = qobject_cast<NetworkScene *>(this->scene());
     if (scene == nullptr)
         return;
+
+    NetworkStyle *style(scene->networkStyle());
 
     // If selected, change brush to yellow and text to black
     QColor text_color;
     if (option->state & QStyle::State_Selected)
     {
-        QBrush brush = scene->networkStyle()->nodeBrush("selected");
-        text_color = scene->networkStyle()->nodeTextColor("selected");
+        QBrush brush = style->nodeBrush(true);
+        text_color = style->nodeTextColor(true);
         if (!brush.color().isValid())
         {
             brush = this->brush();
             text_color = this->textColor();
         }
         painter->setBrush(brush);
-        painter->setPen(scene->networkStyle()->nodePen("selected"));
+        painter->setPen(style->nodePen(true));
     }
     else
     {
@@ -230,13 +234,19 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         text_color = this->text_color;
     }
 
+    qreal lod(option->levelOfDetailFromTransform(painter->worldTransform()));
+
+    if (lod<0.1)
+    {
+        painter->fillRect(rect(), painter->brush());
+        return;
+    }
+
     // Draw ellipse
     if (spanAngle() != 0 && qAbs(spanAngle() % (360 * 16)) == 0)
         painter->drawEllipse(rect());
     else
         painter->drawPie(rect(), startAngle(), spanAngle());
-
-    qreal lod(option->levelOfDetailFromTransform(painter->worldTransform()));
 
     // Draw pie if any
     if (scene->pieChartsVisibility() && lod > 0.1 && this->pieList.size() > 0)

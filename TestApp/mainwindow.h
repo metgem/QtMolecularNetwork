@@ -48,19 +48,34 @@
 **
 ****************************************************************************/
 
-#include "mainwindow.h"
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
-#include <QApplication>
+#include <QWidget>
 
-int main(int argc, char *argv[])
+#include "../src/networkscene.h"
+#include "../src/node.h"
+#include "../src/edge.h"
+#include "../src/style.h"
+
+QT_BEGIN_NAMESPACE
+class NetworkScene;
+class QSplitter;
+QT_END_NAMESPACE
+
+class MainWindow : public QWidget
 {
-    Q_INIT_RESOURCE(images);
+    Q_OBJECT
+public:
+    MainWindow(QWidget *parent = 0);
 
-    QApplication app(argc, argv);
-    app.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+private:
+    void setupMatrix();
+    void populateScene();
 
-    MainWindow window;
-    window.show();
+    NetworkScene *scene;
+    QSplitter *h1Splitter;
+    QSplitter *h2Splitter;
+};
 
-    return app.exec();
-}
+#endif // MAINWINDOW_H

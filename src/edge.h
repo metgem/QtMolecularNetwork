@@ -29,8 +29,6 @@ public:
     enum { Type = UserType + 2 };
     int type() const override { return Type; }
 
-    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
-
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 

@@ -22,6 +22,7 @@ Edge::Edge(int index, Node *sourceNode, Node *destNode, qreal width)
 
     setAcceptedMouseButtons(Qt::LeftButton);
     setFlag(ItemIsSelectable);
+    setZValue(-1);
 }
 
 int Edge::index()
@@ -130,17 +131,6 @@ void Edge::updateStyle(NetworkStyle *style, NetworkStyle *old)
     update();
 }
 
-QVariant Edge::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    if (change == ItemSelectedChange)
-    {
-        setZValue(!isSelected());  // Bring item to front
-        setCacheMode(cacheMode()); // Force redraw
-    }
-
-    return QGraphicsItem::itemChange(change, value);
-}
-
 QRectF Edge::boundingRect() const
 {
     if (!source || !dest)
@@ -166,6 +156,13 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     if (!source || !dest)
         return;
 
+    qreal lod(option->levelOfDetailFromTransform(painter->worldTransform()));
+
+    if (lod<0.1)
+    {
+        return;
+    }
+
     NetworkScene *scene = qobject_cast<NetworkScene *>(this->scene());
     if (scene == nullptr)
         return;
@@ -176,7 +173,7 @@ void Edge::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 
     if (option->state & QStyle::State_Selected)
     {
-        QPen pen = scene->networkStyle()->edgePen("selected");
+        QPen pen = scene->networkStyle()->edgePen(true);
         pen.setWidthF(this->pen().widthF());
         painter->setPen(pen);
     }

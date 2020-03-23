@@ -18,6 +18,7 @@ public:
     void setNetworkStyle(NetworkStyle *style /KeepReference/ = nullptr);
     
     void clear();
+    void render(QPainter *painter, const QRectF &target = QRectF(), const QRectF &source = QRectF(), Qt::AspectRatioMode aspectRatioMode = Qt::KeepAspectRatio);
     
     void addNode(Node *node);
     void addEdge(Edge *edge);

@@ -10,7 +10,10 @@ from distutils import sysconfig, dir_util, spawn, log
 from distutils.dep_util import newer
 import sipdistutils
 import sipconfig
-from PyQt5.QtCore import PYQT_CONFIGURATION
+try:
+    from PyQt5.QtCore import PYQT_CONFIGURATION
+except ImportError:
+    PYQT_CONFIGURATION = {}
 
 MAJOR = 0
 MINOR = 3

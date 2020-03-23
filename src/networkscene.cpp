@@ -52,24 +52,29 @@ void NetworkScene::setNetworkStyle(NetworkStyle *style)
 void NetworkScene::clear()
 {
     QGraphicsScene::clear();
+}
 
-    nodesLayer = new GraphicsItemLayer;
-    edgesLayer = new GraphicsItemLayer;
-
-    addItem(nodesLayer);
-    nodesLayer->setZValue(1);
-    addItem(edgesLayer);
-    edgesLayer->setZValue(0);
+void NetworkScene::render(QPainter *painter, const QRectF &target, const QRectF &source, Qt::AspectRatioMode aspectRatioMode)
+{
+    foreach(Node* node, nodes())
+    {
+        node->setCacheMode(QGraphicsItem::NoCache);
+    }
+    QGraphicsScene::render(painter, target, source, aspectRatioMode);
+    foreach(Node* node, nodes())
+    {
+        node->setCacheMode(QGraphicsItem::DeviceCoordinateCache);
+    }
 }
 
 void NetworkScene::addNode(Node *node)
 {
-    node->setParentItem(nodesLayer);
+    addItem(node);
 }
 
 void NetworkScene::addEdge(Edge *edge)
 {
-    edge->setParentItem(edgesLayer);
+    addItem(edge);
 }
 
 QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels,
@@ -106,7 +111,7 @@ QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels,
                 node->setRadius(radius);
         }
 
-        node->setParentItem(nodesLayer);
+        addItem(node);
         nodes.append(node);
     }
 
@@ -121,7 +126,7 @@ QList<Edge *> NetworkScene::addEdges(QList<int> indexes, QList<Node *> sourceNod
         Edge *edge = new Edge(indexes[i], sourceNodes[i], destNodes[i], widths[i]);
         if (this->style_ != nullptr)
             edge->updateStyle(this->style_);
-        edge->setParentItem(edgesLayer);
+        addItem(edge);
         edge->adjust();
         edges.append(edge);
     }
@@ -164,10 +169,13 @@ void NetworkScene::removeEdges(QList<Edge *> edges)
 QList<Node *> NetworkScene::nodes() const
 {
     QList<Node *> nodes;
+    Node *node;
 
-    foreach(QGraphicsItem *item, nodesLayer->childItems())
+    foreach(QGraphicsItem *item, items())
     {
-        nodes.append(qgraphicsitem_cast<Node *>(item));
+        node = qgraphicsitem_cast<Node *>(item);
+        if (node != nullptr)
+            nodes.append(node);
     }
 
     std::sort(nodes.begin(), nodes.end(), NodeLessThan);
@@ -178,10 +186,13 @@ QList<Node *> NetworkScene::nodes() const
 QList<Node *> NetworkScene::selectedNodes() const
 {
     QList<Node *> nodes;
+    Node *node;
+
     foreach(QGraphicsItem *item, selectedItems())
     {
-        if (nodesLayer->isAncestorOf(item))
-            nodes.append(qgraphicsitem_cast<Node *>(item));
+        node = qgraphicsitem_cast<Node *>(item);
+        if (node != nullptr)
+            nodes.append(node);
     }
     return nodes;
 }
@@ -216,10 +227,15 @@ QRectF NetworkScene::selectedNodesBoundingRect()
 
 QList<Edge *> NetworkScene::edges() const
 {
+
     QList<Edge *> edges;
-    foreach(QGraphicsItem *item, edgesLayer->childItems())
+    Edge *edge;
+
+    foreach(QGraphicsItem *item, items())
     {
-        edges.append(qgraphicsitem_cast<Edge *>(item));
+        edge = qgraphicsitem_cast<Edge *>(item);
+        if (edge != nullptr)
+            edges.append(edge);
     }
 
     std::sort(edges.begin(), edges.end(), EdgeLessThan);
@@ -230,11 +246,15 @@ QList<Edge *> NetworkScene::edges() const
 QList<Edge *> NetworkScene::selectedEdges() const
 {
     QList<Edge *> edges;
+    Edge *edge;
+
     foreach(QGraphicsItem *item, selectedItems())
     {
-        if (edgesLayer->isAncestorOf(item))
-            edges.append(qgraphicsitem_cast<Edge *>(item));
+        edge = qgraphicsitem_cast<Edge *>(item);
+        if (edge != nullptr)
+            edges.append(edge);
     }
+
     return edges;
 }
 
@@ -579,34 +599,29 @@ void NetworkScene::setSelectedNodesRadius(int radius)
 Node *NetworkScene::nodeAt(const QPointF &position, const QTransform &deviceTransform) const
 {
     QGraphicsItem *item = itemAt(position, deviceTransform);
-    if (nodesLayer->isAncestorOf(item))
-        return qgraphicsitem_cast<Node *>(item);
-    return nullptr;
-
+    Node * node = qgraphicsitem_cast<Node *>(item);
+    return node;
 }
 
 Node *NetworkScene::nodeAt(qreal x, qreal y, const QTransform &deviceTransform) const
 {
     QGraphicsItem *item = itemAt(x, y, deviceTransform);
-    if (nodesLayer->isAncestorOf(item))
-        return qgraphicsitem_cast<Node *>(item);
-    return nullptr;
+    Node * node = qgraphicsitem_cast<Node *>(item);
+    return node;
 }
 
 Edge *NetworkScene::edgeAt(const QPointF &position, const QTransform &deviceTransform) const
 {
     QGraphicsItem *item = itemAt(position, deviceTransform);
-    if (edgesLayer->isAncestorOf(item))
-        return qgraphicsitem_cast<Edge *>(item);
-    return nullptr;
+    Edge *edge = qgraphicsitem_cast<Edge *>(item);
+    return edge;
 }
 
 Edge *NetworkScene::edgeAt(qreal x, qreal y, const QTransform &deviceTransform) const
 {
     QGraphicsItem *item = itemAt(x, y, deviceTransform);
-    if (edgesLayer->isAncestorOf(item))
-        return qgraphicsitem_cast<Edge *>(item);
-    return nullptr;
+    Edge *edge = qgraphicsitem_cast<Edge *>(item);
+    return edge;
 }
 
 void NetworkScene::lock(bool lock)
@@ -617,6 +632,7 @@ void NetworkScene::lock(bool lock)
     }
     emit this->locked(lock);
 }
+
 void NetworkScene::unlock(){
     this->lock(false);
 }

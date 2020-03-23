@@ -14,11 +14,11 @@ public:
                  QVariantMap edge, QMap<QString, QBrush> scene);
     NetworkStyle();
     QString styleName();
-    QBrush nodeBrush(const QString &state = "normal") const;
-    QColor nodeTextColor(const QString &state = "normal") const;
-    QPen nodePen(const QString &state = "normal") const;
-    QFont nodeFont(const QString &state = "normal");
-    QPen edgePen(const QString &state = "normal") const;
+    QBrush nodeBrush(const bool selected=false) const;
+    QColor nodeTextColor(const bool selected=false) const;
+    QPen nodePen(const bool selected=false) const;
+    QFont nodeFont(const bool selected=false);
+    QPen edgePen(const bool selected=false) const;
     QBrush backgroundBrush() const;
 };
 
@@ -30,11 +30,11 @@ class DefaultStyle : public NetworkStyle {
 
 public:
     QString styleName();
-    QBrush nodeBrush(const QString &state = "normal") const;
-    QColor nodeTextColor(const QString &state = "normal") const;
-    QPen nodePen(const QString &state = "normal") const;
-    QFont nodeFont(const QString &state = "normal");
-    QPen edgePen(const QString &state = "normal") const;
+    QBrush nodeBrush(const bool selected=false) const;
+    QColor nodeTextColor(const bool selected=false) const;
+    QPen nodePen(const bool selected=false) const;
+    QFont nodeFont(const bool selected=false);
+    QPen edgePen(const bool selected=false) const;
     QBrush backgroundBrush() const;
 };
 

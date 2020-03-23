@@ -3,6 +3,7 @@ from PyQt5.QtGui import QColor
 import itertools
 
 from PyQt5.QtCore import Qt, pyqtSignal, QRectF
+from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsItem
 
 from .config import RADIUS
@@ -50,6 +51,13 @@ class NetworkScene(QGraphicsScene):
         self.edgesLayer = GraphicsItemLayer()
         self.addItem(self.edgesLayer)
         self.edgesLayer.setZValue(0)
+        
+    def render(self, painter: QPainter, target: QRectF, source: QRectF, aspect_ratio_mode: Qt.AspectRatioMode):
+        for node in self.nodes():
+            node.setCacheMode(QGraphicsItem.NoCache)
+        super().render(painter, target, source, aspect_ratio_mode)
+        for node in self.nodes():
+            node.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         
     def addNode(self, node: Node):
         node.setParentItem(self.nodesLayer)

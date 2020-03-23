@@ -128,6 +128,12 @@ class Edge(QGraphicsPathItem):
 
     # noinspection PyMethodOverriding
     def paint(self, painter, option, widget):
+        # Get level of detail
+        lod = option.levelOfDetailFromTransform(painter.worldTransform())
+        
+        if lod < 0.1:
+            return
+    
         scene = self.scene()
         if scene is None:
             return
@@ -136,8 +142,8 @@ class Edge(QGraphicsPathItem):
         if option.state & QStyle.State_Selected:
             pen = scene.networkStyle().edgePen(state='selected')
             pen.setWidthF(self.pen().widthF())
+            painter.setPen(pen)
         else:
-            pen = self.pen()
+            painter.setPen(self.pen())
 
-        painter.setPen(pen)
         painter.drawPath(self.path())

@@ -31,7 +31,7 @@ class Node(QGraphicsEllipseItem):
         self.setFlag(QGraphicsItem.ItemIsMovable)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
         self.setFlag(QGraphicsItem.ItemSendsScenePositionChanges)
-        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+        # self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
         self.setBrush(Qt.lightGray)
         self.setPen(QPen(Qt.black, 1))
@@ -154,17 +154,24 @@ class Node(QGraphicsEllipseItem):
 
         # If selected, change brush to yellow
         if option.state & QStyle.State_Selected:
-            brush = scene.networkStyle().nodeBrush(state='selected')
-            text_color = scene.networkStyle().nodeTextColor(state='selected')
+            brush = scene.networkStyle().nodeBrush(True)
+            text_color = scene.networkStyle().nodeTextColor(True)
             if brush is None or not brush.color().isValid():
                 brush = self.brush()
                 text_color = self.textColor()
             painter.setBrush(brush)
-            painter.setPen(scene.networkStyle().nodePen(state='selected'))
+            painter.setPen(scene.networkStyle().nodePen(True))
         else:
             painter.setBrush(self.brush())
             painter.setPen(self.pen())
             text_color = self.textColor()
+            
+        # Get level of detail
+        lod = option.levelOfDetailFromTransform(painter.worldTransform())
+        
+        if lod < 0.1:
+            painter.fillRect(self.rect(), painter.brush())
+            return
 
         # Draw ellipse
         if self.spanAngle() != 0 and abs(self.spanAngle()) % (360 * 16) == 0:
@@ -172,11 +179,8 @@ class Node(QGraphicsEllipseItem):
         else:
             painter.drawPie(self.rect(), self.startAngle(), self.spanAngle())
 
-        # Get level of detail
-        lod = option.levelOfDetailFromTransform(painter.worldTransform())
-
         # Draw pies if any
-        if scene.pieChartVisibility() and lod > 0.1 and len(self._pie) > 0:
+        if scene.pieChartsVisibility() and lod > 0.1 and len(self._pie) > 0:
             radius = self.radius()
             rect = QRectF(-.85 * radius, -0.85 * radius, 1.7 * radius, 1.7 * radius)
             start = 0.

@@ -49,18 +49,82 @@
 ****************************************************************************/
 
 #include "mainwindow.h"
+#include "view.h"
 
-#include <QApplication>
+#include <QHBoxLayout>
+#include <QSplitter>
 
-int main(int argc, char *argv[])
+#include <ctime>
+#include <iostream>
+using namespace std;
+
+MainWindow::MainWindow(QWidget *parent)
+    : QWidget(parent)
 {
-    Q_INIT_RESOURCE(images);
+    populateScene();
 
-    QApplication app(argc, argv);
-    app.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+    h1Splitter = new QSplitter;
+    h2Splitter = new QSplitter;
 
-    MainWindow window;
-    window.show();
+    QSplitter *vSplitter = new QSplitter;
+    vSplitter->setOrientation(Qt::Vertical);
+    vSplitter->addWidget(h1Splitter);
+    vSplitter->addWidget(h2Splitter);
 
-    return app.exec();
+    View *view = new View("Top left view");
+    view->view()->setScene(scene);
+    h1Splitter->addWidget(view);
+
+    view = new View("Top right view");
+    view->view()->setScene(scene);
+    h1Splitter->addWidget(view);
+
+    view = new View("Bottom left view");
+    view->view()->setScene(scene);
+    h2Splitter->addWidget(view);
+
+    view = new View("Bottom right view");
+    view->view()->setScene(scene);
+    h2Splitter->addWidget(view);
+
+    QHBoxLayout *layout = new QHBoxLayout;
+    layout->addWidget(vSplitter);
+    setLayout(layout);
+
+    setWindowTitle(tr("Chip Example"));
+}
+
+void MainWindow::populateScene()
+{
+    cout << "Populate Scene: ";
+    clock_t begin = clock();
+    scene = new NetworkScene(this);
+
+    // Populate scene
+    QList<int> indexes;
+    QList<QString> labels;
+    QList<QPointF> positions;
+    int nitems = 0;
+    for (int i = -22000; i < 22000; i += 110) {
+        for (int j = -14000; j < 14000; j += 70) {
+
+            indexes.append(nitems);
+            labels.append(QString::number(nitems));
+            positions.append(QPointF(i, j));
+
+            ++nitems;
+        }
+    }
+    scene->addNodes(indexes, labels, positions);
+    clock_t end = clock();
+    double elapsed_secs = static_cast<double>((end - begin) / CLOCKS_PER_SEC);
+    cout << elapsed_secs << "s ";
+    cout << nitems << "items" << endl;
+
+    cout << "Get all nodes: ";
+    begin = clock();
+    cout << scene->nodes().size() << " ";
+    end = clock();
+    elapsed_secs = static_cast<double>((end - begin) / CLOCKS_PER_SEC);
+    cout << elapsed_secs << "s" << endl;
 }
