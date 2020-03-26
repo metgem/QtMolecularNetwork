@@ -28,42 +28,78 @@ class NetworkStyle:
 
     def styleName(self):
         return self.name
+    
+    def setStyleName(self, name):
+        self.name = str(name)
 
     def nodeBrush(self, state='normal') -> QBrush:
         try:
             return self.node['bgcolor'][state]
         except KeyError:
             return None if state == 'selected' else QBrush(QColor(Qt.lightGray))
+        
+    def setNodeBrush(self, brush: QBrush, state: str = 'normal'):
+        try:
+            self.node['bgcolor'][state] = brush
+        except KeyError:
+            self.node['bgcolor'] = {state: brush}
 
     def nodeTextColor(self, state='normal') -> QColor:
         try:
             return self.node['txtcolor'][state]
         except KeyError:
             return None if state == 'selected' else QColor(Qt.black)
+        
+    def setNodeTextColor(self, color: QColor, state: str = 'normal'):
+        try:
+            self.node['txtcolor'][state] = color
+        except KeyError:
+            self.node['txtcolor'] = {state: color}
 
     def nodePen(self, state='normal') -> QPen:
         try:
             return self.node['border'][state]
         except KeyError:
             return QPen(Qt.black, 1)
+        
+    def setNodePen(self, pen: QPen, state: str = 'normal'):
+        try:
+            self.node['border'][state] = pen
+        except KeyError:
+            self.node['border'] = {state: pen}
 
     def nodeFont(self, state='normal') -> QFont:
         try:
             return self.node['font'][state]
         except KeyError:
             return QFont()
+        
+    def setNodeFont(self, font: QFont, state: str = 'normal'):
+        try:
+            self.node['font'][state] = font
+        except KeyError:
+            self.node['font'] = {state: font}
 
     def edgePen(self, state='normal') -> QPen:
         try:
             return self.edge['color'][state]
         except KeyError:
             return QPen(Qt.red) if state == 'selected' else QPen(Qt.darkGray)
+        
+    def setEdgePen(self, pen: QPen, state: str = 'normal'):
+        try:
+            self.edge['color'][state] = pen
+        except KeyError:
+            self.edge['color'] = {state: pen}
 
     def backgroundBrush(self) -> QBrush:
         try:
             return self.scene['color']
         except KeyError:
             return QBrush(QColor(Qt.white))
+        
+    def setBackgroundBrush(self, brush: QBrush):
+        self.scene['color'] = brush
 
 
 class DefaultStyle(NetworkStyle):
