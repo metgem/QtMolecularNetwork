@@ -103,24 +103,60 @@ class NetworkStyle:
         
     def styleName(self):
         return self.name
+    
+    def setStyleName(self, name):
+        self.name = str(name)
 
     def nodeBrush(self, selected=False) -> QBrush:
         return self.nbs if selected else self.nb
+    
+    def setNodeBrush(self, brush: QBrush, selected=False):
+        if selected:
+            self.nbs = brush
+        else:
+            self.nb = brush
 
     def nodeTextColor(self, selected: bool=False) -> QColor:
         return self.ntcs if selected else self.ntc
+    
+    def setNodeTextColor(self, color: QColor, selected: bool=False):
+        if selected:
+            self.ntcs = color
+        else:
+            self.ntc = color
 
     def nodePen(self, selected: bool=False) -> QPen:
         return self.nps if selected else self.np
+    
+    def setNodePen(self, pen: QPen, selected: bool=False):
+        if selected:
+            self.nps = pen
+        else:
+            self.np = pen
 
     def nodeFont(self, selected: bool=False) -> QFont:
         return self.nfs if selected else self.nf
+    
+    def setNodeFont(self, font: QFont, selected: bool=False):
+        if selected:
+            self.nfs = font
+        else:
+            self.nf = font
 
     def edgePen(self, selected: bool=False) -> QPen:
         return self.eps if selected else self.ep
+    
+    def setEdgePen(self, pen: QPen, selected: bool=False):
+        if selected:
+            self.eps = pen
+        else:
+            self.ep = pen
 
     def backgroundBrush(self) -> QBrush:
         return self.sb
+    
+    def setBackgroundBrush(self, brush: QBrush):
+        self.sb = brush
 
 
 class DefaultStyle(NetworkStyle):

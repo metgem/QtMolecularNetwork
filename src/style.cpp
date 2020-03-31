@@ -76,12 +76,25 @@ QString NetworkStyle::styleName()
     return this->name;
 }
 
+void NetworkStyle::setStyleName(QString name)
+{
+    this->name = name;
+}
+
 QBrush NetworkStyle::nodeBrush(const bool selected) const
 {
     if (selected)
         return nbs;
     else
         return nb;
+}
+
+void NetworkStyle::setNodeBrush(const QBrush brush, const bool selected)
+{
+    if (selected)
+        this->nbs = brush;
+    else
+        this->nb = brush;
 }
 
 QColor NetworkStyle::nodeTextColor(const bool selected) const
@@ -92,12 +105,28 @@ QColor NetworkStyle::nodeTextColor(const bool selected) const
         return ntc;
 }
 
+void NetworkStyle::setNodeTextColor(const QColor color, const bool selected)
+{
+    if (selected)
+        this->nbs = color;
+    else
+        this->nb = color;
+}
+
 QPen NetworkStyle::nodePen(const bool selected) const
 {
     if (selected)
         return nps;
     else
         return np;
+}
+
+void NetworkStyle::setNodePen(const QPen pen, const bool selected)
+{
+    if (selected)
+        this->nps = pen;
+    else
+        this->np = pen;
 }
 
 QFont NetworkStyle::nodeFont(const bool selected)
@@ -108,6 +137,14 @@ QFont NetworkStyle::nodeFont(const bool selected)
         return nf;
 }
 
+void NetworkStyle::setNodeFont(const QFont font, const bool selected)
+{
+    if (selected)
+        this->nfs = font;
+    else
+        this->nf = font;
+}
+
 QPen NetworkStyle::edgePen(const bool selected) const
 {
     if (selected)
@@ -116,6 +153,19 @@ QPen NetworkStyle::edgePen(const bool selected) const
         return ep;
 }
 
+void NetworkStyle::setEdgePen(const QPen pen, const bool selected)
+{
+    if (selected)
+        this->eps = pen;
+    else
+        this->ep = pen;
+}
+
 QBrush NetworkStyle::backgroundBrush() const {
     return sb;
+}
+
+void NetworkStyle::setBackgroundBrush(const QBrush brush)
+{
+    this->sb = brush;
 }

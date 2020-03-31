@@ -16,7 +16,7 @@ except ImportError:
     PYQT_CONFIGURATION = {}
 
 MAJOR = 0
-MINOR = 3
+MINOR = 4
 MICRO = 0
 ISRELEASED = True
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
