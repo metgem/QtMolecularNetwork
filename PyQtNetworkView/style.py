@@ -382,15 +382,15 @@ def style_to_json(style: NetworkStyle):
                   }, {
                       "selector": "node:selected",
                       "css": {
-                          "background-color": style.nodeBrush('selected').color().name(),
-                          "border-width": style.nodePen('selected').width(),
-                          "font-size": style.nodeFont('selected').pointSize(),
+                          "background-color": style.nodeBrush(selected=True).color().name(),
+                          "border-width": style.nodePen(selected=True).width(),
+                          "font-size": style.nodeFont(selected=True).pointSize(),
                           "width": RADIUS * 2,
-                          "color": style.nodeTextColor('selected').name(),
+                          "color": style.nodeTextColor(selected=True).name(),
                           "height": RADIUS * 2,
-                          "border-color": style.nodePen('selected').color().name(),
-                          "font-family": style.nodeFont('selected').family(),
-                          "font-weight": QT_FONT_WEIGHTS_TO_JSON.get(style.nodeFont('selected').weight(), 'normal')
+                          "border-color": style.nodePen(selected=True).color().name(),
+                          "font-family": style.nodeFont(selected=True).family(),
+                          "font-weight": QT_FONT_WEIGHTS_TO_JSON.get(style.nodeFont(selected=True).weight(), 'normal')
                       }
                   }, {
                       "selector": "edge",
@@ -404,8 +404,8 @@ def style_to_json(style: NetworkStyle):
                   }, {
                       "selector": "edge:selected",
                       "css": {
-                          "line-color": style.edgePen('selected').color().name(),
-                          "line-style": QT_BORDER_STYLES_TO_JSON.get(style.edgePen('selected').style(), 'solid'),
+                          "line-color": style.edgePen(selected=True).color().name(),
+                          "line-style": QT_BORDER_STYLES_TO_JSON.get(style.edgePen(selected=True).style(), 'solid'),
                       }
                   }]
                   }
@@ -420,15 +420,15 @@ def style_to_cytoscape(style: NetworkStyle):
                        {'visualProperty': 'EDGE_LINE_TYPE', 'value': style.edgePen().style()},
                        {'visualProperty': 'EDGE_PAINT', 'value': style.edgePen().color().name()},
                        {'visualProperty': 'EDGE_SELECTED', 'value': False},
-                       {'visualProperty': 'EDGE_SELECTED_PAINT', 'value': style.edgePen('selected').color().name()},
+                       {'visualProperty': 'EDGE_SELECTED_PAINT', 'value': style.edgePen(selected=True).color().name()},
                        {'visualProperty': 'EDGE_VISIBLE', 'value': True},
                        {'visualProperty': 'EDGE_WIDTH', 'value': 12.0},
                        {'visualProperty': 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
                        {'visualProperty': 'EDGE_TARGET_ARROW_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
                        {'visualProperty': 'EDGE_STROKE_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
-                       {'visualProperty': 'EDGE_SOURCE_ARROW_SELECTED_PAINT', 'value': style.edgePen('selected').color().name()},
-                       {'visualProperty': 'EDGE_TARGET_ARROW_SELECTED_PAINT', 'value': style.edgePen('selected').color().name()},
-                       {'visualProperty': 'EDGE_STROKE_SELECTED_PAINT', 'value': style.edgePen('selected').color().name()},
+                       {'visualProperty': 'EDGE_SOURCE_ARROW_SELECTED_PAINT', 'value': style.edgePen(selected=True).color().name()},
+                       {'visualProperty': 'EDGE_TARGET_ARROW_SELECTED_PAINT', 'value': style.edgePen(selected=True).color().name()},
+                       {'visualProperty': 'EDGE_STROKE_SELECTED_PAINT', 'value': style.edgePen(selected=True).color().name()},
                        {'visualProperty': 'NETWORK_BACKGROUND_PAINT', 'value': style.backgroundBrush().color().name()},
                        {'visualProperty': 'NETWORK_CENTER_X_LOCATION', 'value': 0.0},
                        {'visualProperty': 'NETWORK_CENTER_Y_LOCATION', 'value': 0.0},
@@ -456,7 +456,7 @@ def style_to_cytoscape(style: NetworkStyle):
                        {'visualProperty': 'NODE_NESTED_NETWORK_IMAGE_VISIBLE', 'value': True},
                        {'visualProperty': 'NODE_PAINT', 'value': style.nodeBrush().color().name()},
                        {'visualProperty': 'NODE_SELECTED', 'value': False},
-                       {'visualProperty': 'NODE_SELECTED_PAINT', 'value': style.nodeBrush('selected').color().name()},
+                       {'visualProperty': 'NODE_SELECTED_PAINT', 'value': style.nodeBrush(selected=True).color().name()},
                        {'visualProperty': 'NODE_SHAPE', 'value': 'ELLIPSE'},
                        {'visualProperty': 'NODE_SIZE', 'value': RADIUS*2},
                        {'visualProperty': 'NODE_TOOLTIP', 'value': ''},
