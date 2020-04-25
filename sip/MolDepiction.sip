@@ -8,7 +8,7 @@
 %End
 
 QPixmap SvgToPixmap(const QByteArray &svg_data, const QSize &size = QSize(300, 300));
-QPixmap SmilesToPixmap(const QString &smiles, const QSize &size = QSize(300, 300)
-QPixmap InchiToPixmap(const QString &inchi, const QSize &size = QSize(300, 300)
+QPixmap SmilesToPixmap(const QString &smiles, const QSize &size = QSize(300, 300));
+QPixmap InchiToPixmap(const QString &inchi, const QSize &size = QSize(300, 300));
 
 %End

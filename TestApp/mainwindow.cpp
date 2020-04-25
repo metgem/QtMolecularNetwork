@@ -145,6 +145,8 @@ void MainWindow::populateScene()
                 break;
         }
     }
+    nodes[0]->setPixmapFromSmiles("N#N");
+    nodes[1]->setPixmapFromInchi("InChI=1S/C17H19NO3/c1-18-7-6-17-10-3-5-13(20)16(17)21-15-12(19)4-2-9(14(15)17)8-11(10)18/h2-5,10-11,13,16,19-20H,6-8H2,1H3/t10-,11+,13-,16-,17-/m0/s1");
     end = clock();
     elapsed_secs = static_cast<double>((end - begin) / CLOCKS_PER_SEC);
     cout << elapsed_secs << "s" << endl;

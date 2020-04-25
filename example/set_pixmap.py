@@ -29,13 +29,15 @@ for i in range(-1100, 1100, 110):
     for j in range(-700, 700, 70):
         node = Node(nitems, str(nitems))
         node.setPos(QPointF(i, j))
-        mod = nitems%3
+        mod = nitems%4
         if mod == 0:
             node.setPixmap(pixmap1)
         elif mod == 1:
             node.setPixmap(pixmap2)
+        elif mod == 2:
+            node.setPixmapFromSmiles("CN=C=O")
         else:
-            node.setPixmapFromSmiles("[Cu+2].[O-]S(=O)(=O)[O-]")
+            node.setPixmapFromInchi("InChI=1S/C10H16O/c1-6(2)10-4-8(10)7(3)9(11)5-10/h6-8H,4-5H2,1-3H3/t7-,8-,10+/m1/s1")
         scene.addItem(node)
 
         nitems += 1

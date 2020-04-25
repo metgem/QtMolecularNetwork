@@ -151,12 +151,14 @@ void Node::setPixmap(const QPixmap &pixmap)
 
 void Node::setPixmapFromSmiles(const QString &smiles, const QSize &size)
 {
-    this->pixmap_ = SmilesToPixmap(smiles, size);
+    QPixmap pixmap(SmilesToPixmap(smiles, size));
+    this->pixmap_ = pixmap;
 }
 
 void Node::setPixmapFromInchi(const QString &inchi, const QSize &size)
 {
-    this->pixmap_ = InchiToPixmap(inchi, size);
+    QPixmap pixmap(InchiToPixmap(inchi, size));
+    this->pixmap_ = pixmap;
 }
 
 void Node::addEdge(Edge *edge)
@@ -295,7 +297,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         painter->drawText(bounding_rect, Qt::AlignCenter, label_);
         if (scene->pixmapVisibility() && !this->pixmap_.isNull())
         {
-            painter->drawPixmap(bounding_rect, this->pixmap_, this->pixmap_.rect());
+            painter->drawPixmap(bounding_rect.toRect(), this->pixmap_, this->pixmap_.rect());
         }
     }
 }
