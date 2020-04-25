@@ -50,6 +50,7 @@
 
 #include "mainwindow.h"
 #include "view.h"
+#include "../src/mol_depiction.h"
 
 #include <QHBoxLayout>
 #include <QSplitter>
@@ -95,7 +96,7 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 void MainWindow::populateScene()
-{
+{   
     cout << "Populate Scene: ";
     clock_t begin = clock();
     scene = new NetworkScene(this);
@@ -124,6 +125,26 @@ void MainWindow::populateScene()
     cout << "Get all nodes: ";
     begin = clock();
     cout << scene->nodes().size() << " ";
+    end = clock();
+    elapsed_secs = static_cast<double>((end - begin) / CLOCKS_PER_SEC);
+    cout << elapsed_secs << "s" << endl;
+
+    cout << "Apply pixmap to all nodes: ";
+    begin = clock();
+    QPixmap pixmap1 = SmilesToPixmap(QString("c1nccc2n1ccc2"), QSize(300, 300));
+    QPixmap pixmap2 = InchiToPixmap(QString("InChI=1S/C17H19NO3/c1-18-7-6-17-10-3-5-13(20)16(17)21-15-12(19)4-2-9(14(15)17)8-11(10)18/h2-5,10-11,13,16,19-20H,6-8H2,1H3/t10-,11+,13-,16-,17-/m0/s1"),
+                                    QSize(300, 300));
+    QList<Node *> nodes = scene->nodes();
+    for (int i=0; i<nodes.size(); i++) {
+        switch (i%2) {
+            case 0:
+                nodes[i]->setPixmap(pixmap1);
+                break;
+            case 1:
+                nodes[i]->setPixmap(pixmap2);
+                break;
+        }
+    }
     end = clock();
     elapsed_secs = static_cast<double>((end - begin) / CLOCKS_PER_SEC);
     cout << elapsed_secs << "s" << endl;

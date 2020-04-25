@@ -1,13 +1,14 @@
 from .edge import Edge
 from .style import NetworkStyle
 from .config import RADIUS
+from .mol_depiction import SmilesToPixmap, InchiToPixmap
 
 from typing import Set
 
-from PyQt5.QtGui import QPen, QColor, QFont, QBrush, QFontMetrics
+from PyQt5.QtGui import QPen, QColor, QFont, QBrush, QFontMetrics, QPixmap
 from PyQt5.QtWidgets import (QGraphicsItem, QGraphicsEllipseItem, QStyle,
                              QApplication)
-from PyQt5.QtCore import Qt, QRectF
+from PyQt5.QtCore import Qt, QRectF, QSize
 
 
 class Node(QGraphicsEllipseItem):
@@ -21,6 +22,7 @@ class Node(QGraphicsEllipseItem):
 
         self._font = QApplication.font()
         self._text_color = QColor()
+        self._pixmap = QPixmap()
 
         self.id = index
         if label is None:
@@ -47,6 +49,7 @@ class Node(QGraphicsEllipseItem):
         fm = QFontMetrics(self.font())
         width = fm.width(self.label())
         height = fm.height()
+        # noinspection PyAttributeOutsideInit
         self._label_rect = QRectF(-width/2, -height/2, width, height)
 
         self.invalidateShape()
@@ -92,6 +95,7 @@ class Node(QGraphicsEllipseItem):
         return self._label
 
     def setLabel(self, label: str):
+        # noinspection PyAttributeOutsideInit
         self._label = label
         self.updateLabelRect()
 
@@ -106,6 +110,18 @@ class Node(QGraphicsEllipseItem):
         else:
             self._pie = []
         self.update()
+
+    def pixmap(self):
+        return self._pixmap
+
+    def setPixmap(self, pixmap: QPixmap):
+        self._pixmap = pixmap
+
+    def setPixmapFromSmiles(self, smiles: str, size: QSize = QSize(300, 300)):
+        self._pixmap = SmilesToPixmap(smiles, self.rect().size().toSize())
+
+    def setPixmapFromInchi(self, smiles: str, size: QSize = QSize(300, 300)):
+        self._pixmap = InchiToPixmap(smiles, self.rect().size().toSize())
 
     def addEdge(self, edge: Edge):
         self._edges.add(edge)
@@ -193,6 +209,9 @@ class Node(QGraphicsEllipseItem):
 
         # Draw text
         if lod > 0.4:
+            bounding_rect = self.boundingRect()
             painter.setFont(self.font())
             painter.setPen(QPen(text_color, 0))
-            painter.drawText(self.boundingRect(), Qt.AlignCenter, self._label)
+            painter.drawText(bounding_rect, Qt.AlignCenter, self._label)
+            if scene.pixmapVisibility() and not self._pixmap.isNull():
+                painter.drawPixmap(bounding_rect, self._pixmap, self._pixmap.rect())

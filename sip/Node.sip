@@ -24,10 +24,14 @@ public:
     void setLabel(const QString &label);
     QList<qreal> pie();
     void setPie(QList<qreal> values);
+    QPixmap pixmap();
+    void setPixmap(const QPixmap &pixmap);
+    void setPixmapFromSmiles(const QString &smiles, const QSize &size = QSize(300, 300));
+    void setPixmapFromInchi(const QString &inchi, const QSize &size = QSize(300, 300));
     void addEdge(Edge *edge);
     void removeEdge(Edge *edge);
     QSet<Edge *> edges() const;
-    void updateStyle(NetworkStyle *style, NetworkStyle* old=nullptr);
+    void updateStyle(NetworkStyle *style, NetworkStyle* old = nullptr);
 };
 
 %End

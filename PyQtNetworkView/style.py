@@ -9,25 +9,26 @@ from PyQt5.QtCore import Qt, QCoreApplication
 from PyQt5.QtGui import QColor, QFont, QPen, QBrush
 
 from .config import RADIUS
-    
+
+
 class NetworkStyle:
     name = ""
-    nb = QBrush(QColor(Qt.lightGray)) # Node Brush
-    nbs = QBrush(QColor())            # Node Brush Selected
-    ntc = QColor(Qt.black)            # Node Text Color
-    ntcs = QColor()                   # Node Text Color Selected
-    np = QPen(Qt.black, 1)            # Node Pen
-    nps = QPen(Qt.black, 1)           # Node Pen Selected
-    nf = QFont()                      # Node Font
-    nfs = QFont()                     # Node Font Selected
-    ep = QPen(Qt.darkGray)            # Edge Pen
-    eps = QPen(Qt.red)                # Edge Pen Selected
-    sb = QBrush(QColor(Qt.white))     # Scene Brush
+    nb = QBrush(QColor(Qt.lightGray))  # Node Brush
+    nbs = QBrush(QColor())  # Node Brush Selected
+    ntc = QColor(Qt.black)  # Node Text Color
+    ntcs = QColor()  # Node Text Color Selected
+    np = QPen(Qt.black, 1)  # Node Pen
+    nps = QPen(Qt.black, 1)  # Node Pen Selected
+    nf = QFont()  # Node Font
+    nfs = QFont()  # Node Font Selected
+    ep = QPen(Qt.darkGray)  # Edge Pen
+    eps = QPen(Qt.red)  # Edge Pen Selected
+    sb = QBrush(QColor(Qt.white))  # Scene Brush
 
     def __init__(self, name=None, node=None, edge=None, scene=None):
         if name is not None:
             self.name = name
-            
+
         if node is not None:
             try:
                 d = node['bgcolor']
@@ -41,7 +42,7 @@ class NetworkStyle:
                     pass
             except KeyError:
                 pass
-            
+
             try:
                 d = node['txtcolor']
                 try:
@@ -54,7 +55,7 @@ class NetworkStyle:
                     pass
             except KeyError:
                 pass
-                
+
             try:
                 d = node['border']
                 try:
@@ -67,7 +68,7 @@ class NetworkStyle:
                     pass
             except KeyError:
                 pass
-                
+
             try:
                 d = node['font']
                 try:
@@ -80,7 +81,7 @@ class NetworkStyle:
                     pass
             except KeyError:
                 pass
-        
+
         if edge is not None:
             try:
                 d = edge['color']
@@ -94,59 +95,59 @@ class NetworkStyle:
                     pass
             except KeyError:
                 pass
-                
+
         if scene is not None:
             try:
                 self.sb = scene['color']
             except KeyError:
                 pass
-        
+
     def styleName(self):
         return self.name
-    
+
     def setStyleName(self, name):
         self.name = str(name)
 
     def nodeBrush(self, selected=False) -> QBrush:
         return self.nbs if selected else self.nb
-    
+
     def setNodeBrush(self, brush: QBrush, selected=False):
         if selected:
             self.nbs = brush
         else:
             self.nb = brush
 
-    def nodeTextColor(self, selected: bool=False) -> QColor:
+    def nodeTextColor(self, selected: bool = False) -> QColor:
         return self.ntcs if selected else self.ntc
-    
-    def setNodeTextColor(self, color: QColor, selected: bool=False):
+
+    def setNodeTextColor(self, color: QColor, selected: bool = False):
         if selected:
             self.ntcs = color
         else:
             self.ntc = color
 
-    def nodePen(self, selected: bool=False) -> QPen:
+    def nodePen(self, selected: bool = False) -> QPen:
         return self.nps if selected else self.np
-    
-    def setNodePen(self, pen: QPen, selected: bool=False):
+
+    def setNodePen(self, pen: QPen, selected: bool = False):
         if selected:
             self.nps = pen
         else:
             self.np = pen
 
-    def nodeFont(self, selected: bool=False) -> QFont:
+    def nodeFont(self, selected: bool = False) -> QFont:
         return self.nfs if selected else self.nf
-    
-    def setNodeFont(self, font: QFont, selected: bool=False):
+
+    def setNodeFont(self, font: QFont, selected: bool = False):
         if selected:
             self.nfs = font
         else:
             self.nf = font
 
-    def edgePen(self, selected: bool=False) -> QPen:
+    def edgePen(self, selected: bool = False) -> QPen:
         return self.eps if selected else self.ep
-    
-    def setEdgePen(self, pen: QPen, selected: bool=False):
+
+    def setEdgePen(self, pen: QPen, selected: bool = False):
         if selected:
             self.eps = pen
         else:
@@ -154,7 +155,7 @@ class NetworkStyle:
 
     def backgroundBrush(self) -> QBrush:
         return self.sb
-    
+
     def setBackgroundBrush(self, brush: QBrush):
         self.sb = brush
 
@@ -173,6 +174,7 @@ class DefaultStyle(NetworkStyle):
     edge = {'color': {'normal': QPen(QColor(Qt.darkGray)),
                       'selected': QPen(QColor(Qt.red))}}
     scene = {'color': QBrush(Qt.white)}
+
 
 # Code to load theme from css
 CSS_FONT_WEIGHTS_TO_QT = {100: 0, 200: 12, 300: 25, 400: 50, 500: 57, 600: 63, 700: 75, 800: 81, 900: 87, 1000: 99,
@@ -344,19 +346,20 @@ def read_css(css):
 
     return stylename, node, edge, scene
 
-    
+
 def style_from_css(css):
     result = read_css(css)
-    
+
     if result is None:
         return DefaultStyle()
-    
+
     return NetworkStyle(*result)
-    
+
 
 def style_to_json(style: NetworkStyle):
     style_dict = {"format_version": 1.0,
-                  "generated_by": "{} {}".format(QCoreApplication.applicationName(), QCoreApplication.applicationVersion()),
+                  "generated_by": "{} {}".format(QCoreApplication.applicationName(),
+                                                 QCoreApplication.applicationVersion()),
                   "target_cytoscapejs_version": "~2.1",
                   "title": style.styleName(),
                   "style": [{
@@ -413,65 +416,66 @@ def style_to_json(style: NetworkStyle):
 
 
 def style_to_cytoscape(style: NetworkStyle):
-    return  {'title': QCoreApplication.applicationName() + "-" + style.styleName(),
-                  'defaults':
-                      [{'visualProperty': 'COMPOUND_NODE_SHAPE', 'value': 'ROUND_RECTANGLE'},
-                       {'visualProperty': 'EDGE_LABEL', 'value': ''},
-                       {'visualProperty': 'EDGE_LINE_TYPE', 'value': style.edgePen().style()},
-                       {'visualProperty': 'EDGE_PAINT', 'value': style.edgePen().color().name()},
-                       {'visualProperty': 'EDGE_SELECTED', 'value': False},
-                       {'visualProperty': 'EDGE_SELECTED_PAINT', 'value': style.edgePen(selected=True).color().name()},
-                       {'visualProperty': 'EDGE_VISIBLE', 'value': True},
-                       {'visualProperty': 'EDGE_WIDTH', 'value': 12.0},
-                       {'visualProperty': 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
-                       {'visualProperty': 'EDGE_TARGET_ARROW_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
-                       {'visualProperty': 'EDGE_STROKE_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
-                       {'visualProperty': 'EDGE_SOURCE_ARROW_SELECTED_PAINT', 'value': style.edgePen(selected=True).color().name()},
-                       {'visualProperty': 'EDGE_TARGET_ARROW_SELECTED_PAINT', 'value': style.edgePen(selected=True).color().name()},
-                       {'visualProperty': 'EDGE_STROKE_SELECTED_PAINT', 'value': style.edgePen(selected=True).color().name()},
-                       {'visualProperty': 'NETWORK_BACKGROUND_PAINT', 'value': style.backgroundBrush().color().name()},
-                       {'visualProperty': 'NETWORK_CENTER_X_LOCATION', 'value': 0.0},
-                       {'visualProperty': 'NETWORK_CENTER_Y_LOCATION', 'value': 0.0},
-                       {'visualProperty': 'NETWORK_CENTER_Z_LOCATION', 'value': 0.0},
-                       {'visualProperty': 'NETWORK_DEPTH', 'value': 0.0},
-                       {'visualProperty': 'NETWORK_EDGE_SELECTION', 'value': True},
-                       {'visualProperty': 'NETWORK_HEIGHT', 'value': 400.0},
-                       {'visualProperty': 'NETWORK_NODE_SELECTION', 'value': True},
-                       {'visualProperty': 'NETWORK_SCALE_FACTOR', 'value': 1.0},
-                       {'visualProperty': 'NETWORK_SIZE', 'value': 550.0},
-                       {'visualProperty': 'NETWORK_TITLE', 'value': ''},
-                       {'visualProperty': 'NETWORK_WIDTH', 'value': 550.0},
-                       {'visualProperty': 'NODE_BORDER_PAINT', 'value': style.nodePen().color().name()},
-                       {'visualProperty': 'NODE_BORDER_STROKE', 'value': style.nodePen().style()},
-                       {'visualProperty': 'NODE_BORDER_TRANSPARENCY', 'value': 255},
-                       {'visualProperty': 'NODE_BORDER_WIDTH', 'value': style.nodePen().width()},
-                       {'visualProperty': 'NODE_DEPTH', 'value': 0.0},
-                       {'visualProperty': 'NODE_FILL_COLOR', 'value': style.nodeBrush().color().name()},
-                       {'visualProperty': 'NODE_HEIGHT', 'value': RADIUS*2},
-                       {'visualProperty': 'NODE_LABEL', 'value': ''},
-                       {'visualProperty': 'NODE_LABEL_COLOR', 'value': style.nodeTextColor().name()},
-                       {'visualProperty': 'NODE_LABEL_FONT_FACE', 'value': style.nodeFont().family()},
-                       {'visualProperty': 'NODE_LABEL_FONT_SIZE', 'value': style.nodeFont().pointSize()},
-                       {'visualProperty': 'NODE_LABEL_TRANSPARENCY', 'value': 255},
-                       {'visualProperty': 'NODE_NESTED_NETWORK_IMAGE_VISIBLE', 'value': True},
-                       {'visualProperty': 'NODE_PAINT', 'value': style.nodeBrush().color().name()},
-                       {'visualProperty': 'NODE_SELECTED', 'value': False},
-                       {'visualProperty': 'NODE_SELECTED_PAINT', 'value': style.nodeBrush(selected=True).color().name()},
-                       {'visualProperty': 'NODE_SHAPE', 'value': 'ELLIPSE'},
-                       {'visualProperty': 'NODE_SIZE', 'value': RADIUS*2},
-                       {'visualProperty': 'NODE_TOOLTIP', 'value': ''},
-                       {'visualProperty': 'NODE_TRANSPARENCY', 'value': 255},
-                       {'visualProperty': 'NODE_VISIBLE', 'value': True},
-                       {'visualProperty': 'NODE_WIDTH', 'value': RADIUS*2},
-                       {'visualProperty': 'NODE_X_LOCATION', 'value': 0.0},
-                       {'visualProperty': 'NODE_Y_LOCATION', 'value': 0.0},
-                       {'visualProperty': 'NODE_Z_LOCATION', 'value': 0.0}],
-                  'mappings': [{'mappingType': 'passthrough',
-                                'mappingColumn': 'interaction',
-                                'mappingColumnType': 'String',
-                                'visualProperty': 'EDGE_LABEL'},
-                               {'mappingType': 'passthrough',
-                                'mappingColumn': 'name',
-                                'mappingColumnType': 'String',
-                                'visualProperty': 'NODE_LABEL'}]}
-
+    return {'title': QCoreApplication.applicationName() + "-" + style.styleName(),
+            'defaults':
+                [{'visualProperty': 'COMPOUND_NODE_SHAPE', 'value': 'ROUND_RECTANGLE'},
+                 {'visualProperty': 'EDGE_LABEL', 'value': ''},
+                 {'visualProperty': 'EDGE_LINE_TYPE', 'value': style.edgePen().style()},
+                 {'visualProperty': 'EDGE_PAINT', 'value': style.edgePen().color().name()},
+                 {'visualProperty': 'EDGE_SELECTED', 'value': False},
+                 {'visualProperty': 'EDGE_SELECTED_PAINT', 'value': style.edgePen(selected=True).color().name()},
+                 {'visualProperty': 'EDGE_VISIBLE', 'value': True},
+                 {'visualProperty': 'EDGE_WIDTH', 'value': 12.0},
+                 {'visualProperty': 'EDGE_SOURCE_ARROW_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
+                 {'visualProperty': 'EDGE_TARGET_ARROW_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
+                 {'visualProperty': 'EDGE_STROKE_UNSELECTED_PAINT', 'value': style.edgePen().color().name()},
+                 {'visualProperty': 'EDGE_SOURCE_ARROW_SELECTED_PAINT',
+                  'value': style.edgePen(selected=True).color().name()},
+                 {'visualProperty': 'EDGE_TARGET_ARROW_SELECTED_PAINT',
+                  'value': style.edgePen(selected=True).color().name()},
+                 {'visualProperty': 'EDGE_STROKE_SELECTED_PAINT', 'value': style.edgePen(selected=True).color().name()},
+                 {'visualProperty': 'NETWORK_BACKGROUND_PAINT', 'value': style.backgroundBrush().color().name()},
+                 {'visualProperty': 'NETWORK_CENTER_X_LOCATION', 'value': 0.0},
+                 {'visualProperty': 'NETWORK_CENTER_Y_LOCATION', 'value': 0.0},
+                 {'visualProperty': 'NETWORK_CENTER_Z_LOCATION', 'value': 0.0},
+                 {'visualProperty': 'NETWORK_DEPTH', 'value': 0.0},
+                 {'visualProperty': 'NETWORK_EDGE_SELECTION', 'value': True},
+                 {'visualProperty': 'NETWORK_HEIGHT', 'value': 400.0},
+                 {'visualProperty': 'NETWORK_NODE_SELECTION', 'value': True},
+                 {'visualProperty': 'NETWORK_SCALE_FACTOR', 'value': 1.0},
+                 {'visualProperty': 'NETWORK_SIZE', 'value': 550.0},
+                 {'visualProperty': 'NETWORK_TITLE', 'value': ''},
+                 {'visualProperty': 'NETWORK_WIDTH', 'value': 550.0},
+                 {'visualProperty': 'NODE_BORDER_PAINT', 'value': style.nodePen().color().name()},
+                 {'visualProperty': 'NODE_BORDER_STROKE', 'value': style.nodePen().style()},
+                 {'visualProperty': 'NODE_BORDER_TRANSPARENCY', 'value': 255},
+                 {'visualProperty': 'NODE_BORDER_WIDTH', 'value': style.nodePen().width()},
+                 {'visualProperty': 'NODE_DEPTH', 'value': 0.0},
+                 {'visualProperty': 'NODE_FILL_COLOR', 'value': style.nodeBrush().color().name()},
+                 {'visualProperty': 'NODE_HEIGHT', 'value': RADIUS * 2},
+                 {'visualProperty': 'NODE_LABEL', 'value': ''},
+                 {'visualProperty': 'NODE_LABEL_COLOR', 'value': style.nodeTextColor().name()},
+                 {'visualProperty': 'NODE_LABEL_FONT_FACE', 'value': style.nodeFont().family()},
+                 {'visualProperty': 'NODE_LABEL_FONT_SIZE', 'value': style.nodeFont().pointSize()},
+                 {'visualProperty': 'NODE_LABEL_TRANSPARENCY', 'value': 255},
+                 {'visualProperty': 'NODE_NESTED_NETWORK_IMAGE_VISIBLE', 'value': True},
+                 {'visualProperty': 'NODE_PAINT', 'value': style.nodeBrush().color().name()},
+                 {'visualProperty': 'NODE_SELECTED', 'value': False},
+                 {'visualProperty': 'NODE_SELECTED_PAINT', 'value': style.nodeBrush(selected=True).color().name()},
+                 {'visualProperty': 'NODE_SHAPE', 'value': 'ELLIPSE'},
+                 {'visualProperty': 'NODE_SIZE', 'value': RADIUS * 2},
+                 {'visualProperty': 'NODE_TOOLTIP', 'value': ''},
+                 {'visualProperty': 'NODE_TRANSPARENCY', 'value': 255},
+                 {'visualProperty': 'NODE_VISIBLE', 'value': True},
+                 {'visualProperty': 'NODE_WIDTH', 'value': RADIUS * 2},
+                 {'visualProperty': 'NODE_X_LOCATION', 'value': 0.0},
+                 {'visualProperty': 'NODE_Y_LOCATION', 'value': 0.0},
+                 {'visualProperty': 'NODE_Z_LOCATION', 'value': 0.0}],
+            'mappings': [{'mappingType': 'passthrough',
+                          'mappingColumn': 'interaction',
+                          'mappingColumnType': 'String',
+                          'visualProperty': 'EDGE_LABEL'},
+                         {'mappingType': 'passthrough',
+                          'mappingColumn': 'name',
+                          'mappingColumnType': 'String',
+                          'visualProperty': 'NODE_LABEL'}]}

@@ -30,6 +30,10 @@ public:
     void setLabel(const QString &label);
     QList<qreal> pie();
     void setPie(QList<qreal> values);
+    QPixmap pixmap();
+    void setPixmap(const QPixmap &pixmap);
+    void setPixmapFromSmiles(const QString &smiles, const QSize &size = QSize(300, 300));
+    void setPixmapFromInchi(const QString &inchi, const QSize &size = QSize(300, 300));
 
     void addEdge(Edge *edge);
     void removeEdge(Edge *edge);
@@ -56,6 +60,7 @@ private:
     QColor text_color;
     QSet<Edge *> edges_;
     QList<qreal> pieList;
+    QPixmap pixmap_;
 };
 
 Q_DECLARE_METATYPE(Node *);

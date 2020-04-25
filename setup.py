@@ -16,7 +16,7 @@ except ImportError:
     PYQT_CONFIGURATION = {}
 
 MAJOR = 0
-MINOR = 4
+MINOR = 5
 MICRO = 0
 ISRELEASED = True
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
@@ -177,14 +177,22 @@ class build_ext(sipdistutils.build_ext):
 
         # Add the local include directory to the include path
         if extension is not None:
-            extension.extra_compile_args += ['-D', 'QT_CORE_LIB', '-D', 'QT_GUI_LIB', '-D', 'QT_WIDGETS_LIB']
+            extension.extra_compile_args += ['-D', 'QT_CORE_LIB', '-D', 'QT_GUI_LIB', '-D', 'QT_WIDGETS_LIB', '-D', 'QT_SVG_LIB']
             extension.include_dirs += [self.qt_include_dir, self.inc_dir,
                             os.path.join(self.qt_include_dir, 'QtCore'),
                             os.path.join(self.qt_include_dir, 'QtGui'),
-                            os.path.join(self.qt_include_dir, 'QtWidgets')]
+                            os.path.join(self.qt_include_dir, 'QtWidgets'),
+                            os.path.join(self.qt_include_dir, 'QtSvg'),
+                            os.path.join(os.path.dirname(self.sip_inc_dir), 'rdkit'),
+                            os.path.join(os.path.dirname(self.sip_inc_dir), 'cairo'),
+                            ]
             extension.libraries += ['Qt5Core' + self.qt_libinfix,
                                     'Qt5Gui' + self.qt_libinfix,
-                                    'Qt5Widgets' + self.qt_libinfix]
+                                    'Qt5Widgets' + self.qt_libinfix,
+                                    'Qt5Svg' + self.qt_libinfix,
+                                    'RDKitDepictor', 'RDKitMolDraw2D',
+                                    'RDKitRDGeneral', 'RDKitSmilesParse',
+                                    'RDKitRDInchiLib', 'RDKitInchi']
             
             if sys.platform == 'win32':
                 extension.library_dirs += [self.qtconfig.QT_INSTALL_LIBS,

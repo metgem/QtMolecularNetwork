@@ -65,16 +65,16 @@ scene
     
 def check_style(style):
     assert style.styleName() == "test"
-    assert style.nodeBrush("normal") == QBrush(Qt.red)
-    assert style.nodeBrush("selected") == QBrush(Qt.green)
-    assert style.nodeTextColor("normal") == QColor(Qt.blue)
-    assert style.nodeTextColor("selected") == QColor(Qt.darkYellow)
-    assert style.nodePen("normal") == QPen(Qt.darkMagenta, 10, Qt.DashLine)
-    assert style.nodePen("selected") == QPen(Qt.magenta, 45, Qt.DotLine)
-    assert style.nodeFont("normal") == QFont('Times', 60)
-    assert style.nodeFont("selected") == QFont('Helvetica', 42)
-    assert style.edgePen("normal") == QPen(QColor(Qt.darkRed))
-    assert style.edgePen("selected") == QPen(QColor(Qt.cyan))
+    assert style.nodeBrush() == QBrush(Qt.red)
+    assert style.nodeBrush(selected=True) == QBrush(Qt.green)
+    assert style.nodeTextColor() == QColor(Qt.blue)
+    assert style.nodeTextColor(selected=True) == QColor(Qt.darkYellow)
+    assert style.nodePen() == QPen(Qt.darkMagenta, 10, Qt.DashLine)
+    assert style.nodePen(selected=True) == QPen(Qt.magenta, 45, Qt.DotLine)
+    assert style.nodeFont() == QFont('Times', 60)
+    assert style.nodeFont(selected=True) == QFont('Helvetica', 42)
+    assert style.edgePen() == QPen(QColor(Qt.darkRed))
+    assert style.edgePen(selected=True) == QPen(QColor(Qt.cyan))
     assert style.backgroundBrush() == QBrush(Qt.darkCyan)
    
    
@@ -89,21 +89,21 @@ def test_style_default_init(mod):
     
     style = mod.DefaultStyle()
     assert style.styleName() == "default"
-    assert isinstance(style.nodeBrush("normal"), QBrush)
-    assert isinstance(style.nodeBrush("selected"), QBrush)
-    assert id(style.nodeBrush("normal")) != id(style.nodeBrush("selected"))
-    assert isinstance(style.nodeTextColor("normal"), QColor)
-    assert isinstance(style.nodeTextColor("selected"), QColor)
-    assert id(style.nodeTextColor("normal")) != id(style.nodeTextColor("selected"))
-    assert isinstance(style.nodePen("normal"), QPen)
-    assert isinstance(style.nodePen("selected"), QPen)
-    assert id(style.nodePen("normal")) != id(style.nodePen("selected"))
-    assert isinstance(style.nodeFont("normal"), QFont)
-    assert isinstance(style.nodeFont("selected"), QFont)
-    assert id(style.nodeFont("normal")) != id(style.nodeFont("selected"))
-    assert isinstance(style.edgePen("normal"), QPen)
-    assert isinstance(style.edgePen("selected"), QPen)
-    assert id(style.edgePen("normal")) != id(style.edgePen("selected"))
+    assert isinstance(style.nodeBrush(), QBrush)
+    assert isinstance(style.nodeBrush(selected=True), QBrush)
+    assert id(style.nodeBrush()) != id(style.nodeBrush(selected=True))
+    assert isinstance(style.nodeTextColor(), QColor)
+    assert isinstance(style.nodeTextColor(selected=True), QColor)
+    assert id(style.nodeTextColor()) != id(style.nodeTextColor(selected=True))
+    assert isinstance(style.nodePen(), QPen)
+    assert isinstance(style.nodePen(selected=True), QPen)
+    assert id(style.nodePen()) != id(style.nodePen(selected=True))
+    assert isinstance(style.nodeFont(), QFont)
+    assert isinstance(style.nodeFont(selected=True), QFont)
+    assert id(style.nodeFont()) != id(style.nodeFont(selected=True))
+    assert isinstance(style.edgePen(), QPen)
+    assert isinstance(style.edgePen(selected=True), QPen)
+    assert id(style.edgePen()) != id(style.edgePen(selected=True))
     assert isinstance(style.backgroundBrush(), QBrush)
 
     
@@ -150,17 +150,18 @@ def test_style_to_json(mod, style):
         else:
             selector, state = s['selector'], 'normal'
             
+        selected = (state == 'selected')
         css = s['css']
         
         if selector == 'node':
-            assert css['background-color'] == style.nodeBrush(state).color().name()
-            assert css['border-width'] == style.nodePen(state).width()
-            assert css['font-size'] == style.nodeFont(state).pointSize()
+            assert css['background-color'] == style.nodeBrush(selected=selected).color().name()
+            assert css['border-width'] == style.nodePen(selected=selected).width()
+            assert css['font-size'] == style.nodeFont(selected=selected).pointSize()
             assert css['width'] == css['height'] == mod.RADIUS * 2
-            assert css['color'] == style.nodeTextColor(state).name()
-            assert css['border-color'] == style.nodePen(state).color().name()
-            assert css['font-family'] == style.nodeFont(state).family()
-            # assert css['font-weight'] == style.nodeFont(state).weight() # TODO
+            assert css['color'] == style.nodeTextColor(selected=selected).name()
+            assert css['border-color'] == style.nodePen(selected=selected).color().name()
+            assert css['font-family'] == style.nodeFont(selected=selected).family()
+            # assert css['font-weight'] == style.nodeFont(selected=selected).weight() # TODO
             
             if state == 'normal':
                 assert css['text-opacity'] == 1.0
@@ -171,8 +172,8 @@ def test_style_to_json(mod, style):
                 assert css['background-opacity'] == 1.0
                 assert css['content'] == "data(name)"                
         elif selector == 'edge':            
-            assert css['line-color'] == style.edgePen(state).color().name()
-            # assert css['line-style'] == style.edgePen(state).style() #TODO
+            assert css['line-color'] == style.edgePen(selected=selected).color().name()
+            # assert css['line-style'] == style.edgePen(selected=selected).style() #TODO
             
             if state == 'normal':
                 assert css['opacity'] == 1.0
@@ -196,7 +197,7 @@ def test_style_to_cytoscape(mod, style):
         elif name == 'EDGE_PAINT':
             assert value == style.edgePen().color().name()
         elif name == 'EDGE_SELECTED_PAINT':
-            assert value == style.edgePen('selected').color().name()
+            assert value == style.edgePen(selected=True).color().name()
         elif name == 'EDGE_VISIBLE':
             assert value == True
         elif name == 'EDGE_SELECTED':
@@ -208,7 +209,7 @@ def test_style_to_cytoscape(mod, style):
         elif name in ('EDGE_SOURCE_ARROW_SELECTED_PAINT',
                       'EDGE_TARGET_ARROW_SELECTED_PAINT',
                       'EDGE_STROKE_SELECTED_PAINT'):
-            assert value == style.edgePen('selected').color().name()
+            assert value == style.edgePen(selected=True).color().name()
         elif name == 'NETWORK_BACKGROUND_PAINT':
             assert value == style.backgroundBrush().color().name()
         elif name == 'NODE_BORDER_PAINT':
@@ -230,6 +231,6 @@ def test_style_to_cytoscape(mod, style):
         elif name == 'NODE_PAINT':
             assert value == style.nodeBrush().color().name()
         elif name == 'NODE_SELECTED_PAINT':
-            assert value == style.nodeBrush('selected').color().name()
+            assert value == style.nodeBrush(selected=True).color().name()
         elif name == 'NODE_SHAPE':
             assert value == 'ELLIPSE'

@@ -23,6 +23,7 @@ NetworkScene::NetworkScene(QWidget *)
     this->style_ = new DefaultStyle();
     this->scale_ = 1;
     this->pie_charts_visibility = true;
+    this->pixmap_visibility = true;
 }
 
 NetworkStyle *NetworkScene::networkStyle()
@@ -467,6 +468,20 @@ void NetworkScene::setPieChartsVisibility(bool visibility)
     {
         this->pie_charts_visibility = visibility;
         emit this->pieChartsVisibilityChanged(visibility);
+    }
+}
+
+bool NetworkScene::pixmapVisibility()
+{
+    return this->pixmap_visibility;
+}
+
+void NetworkScene::setPixmapVisibility(bool visibility)
+{
+    if (visibility != this->pixmap_visibility)
+    {
+        this->pixmap_visibility = visibility;
+        emit this->pixmapVisibilityChanged(visibility);
     }
 }
 

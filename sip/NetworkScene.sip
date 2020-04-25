@@ -207,6 +207,8 @@ setEdgesSelection(self, Iterable[Edge])
     void resetPieCharts();
     bool pieChartsVisibility();
     void setPieChartsVisibility(bool visibility=true);
+    bool pixmapVisibility();
+    void setPixmapVisibility(bool visibility=true);
     
     void hideItems(QList<QGraphicsItem *> items);
     void showItems(QList<QGraphicsItem *> items);

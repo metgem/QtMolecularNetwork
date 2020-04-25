@@ -1,8 +1,10 @@
-from PyQt5.QtGui import QColor, QFont, QBrush, QFontMetrics
+from PyQt5.QtGui import QColor, QFont, QBrush, QFontMetrics, QPixmap
 from PyQt5.QtCore import Qt
 
 import pytest
 import hashlib
+
+from resources import MOLECULES
 
 @pytest.mark.parametrize("index", range(10))
 def test_node_init(mod, qapp, index):
@@ -92,6 +94,20 @@ def test_node_set_pie(mod, pie):
         assert pytest.approx(sum(p)) == 1
     for i in range(len(pie)):
         assert pie[i] / max(pie) == pytest.approx(p[i] / max(p))
+        
+
+@pytest.mark.parametrize("molecule", MOLECULES)
+def test_node_set_pixmap(mod, molecule):
+    """Check that setPixmap successfully change pixmap."""
+    
+    node = mod.Node(32)
+    assert node.pixmap().isNull()
+    pixmap = QPixmap(molecule['image'])
+    node.setPixmap(pixmap)
+    p = node.pixmap()
+    assert not p.isNull()
+    assert p.size() == pixmap.size()
+    assert p.cacheKey() == pixmap.cacheKey()
     
     
 def test_node_shape_set_label(mod):

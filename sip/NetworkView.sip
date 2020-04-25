@@ -5,3 +5,4 @@
 %Include Edge.sip
 %Include Style.sip
 %Include NetworkScene.sip
+%Include MolDepiction.sip

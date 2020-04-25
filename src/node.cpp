@@ -3,10 +3,13 @@
 #include "networkscene.h"
 #include "style.h"
 #include "config.h"
+#include "mol_depiction.h"
 
 #include <QtWidgets>
 #include <QtCore>
 #include <QString>
+#include <QPixmap>
+#include <QtSvg/QSvgRenderer>
 
 Node::Node(int index, const QString &label)
     : QGraphicsEllipseItem(-RADIUS, -RADIUS, 2*RADIUS, 2*RADIUS)
@@ -134,6 +137,26 @@ void Node::setPie(QList<qreal> values)
         values = QList<qreal>();
     this->pieList = values;
     this->update();
+}
+
+QPixmap Node::pixmap()
+{
+    return this->pixmap_;
+}
+
+void Node::setPixmap(const QPixmap &pixmap)
+{
+    this->pixmap_ = pixmap;
+}
+
+void Node::setPixmapFromSmiles(const QString &smiles, const QSize &size)
+{
+    this->pixmap_ = SmilesToPixmap(smiles, size);
+}
+
+void Node::setPixmapFromInchi(const QString &inchi, const QSize &size)
+{
+    this->pixmap_ = InchiToPixmap(inchi, size);
 }
 
 void Node::addEdge(Edge *edge)
@@ -266,8 +289,13 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     // Draw text
     if (lod > 0.4)
     {
+        QRectF bounding_rect = boundingRect();
         painter->setFont(this->font_);
         painter->setPen(QPen(text_color, 0));
-        painter->drawText(boundingRect(), Qt::AlignCenter, label_);
+        painter->drawText(bounding_rect, Qt::AlignCenter, label_);
+        if (scene->pixmapVisibility() && !this->pixmap_.isNull())
+        {
+            painter->drawPixmap(bounding_rect, this->pixmap_, this->pixmap_.rect());
+        }
     }
 }

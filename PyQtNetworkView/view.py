@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QGraphicsView, QRubberBand, QOpenGLWidget, QFormLayo
 
 USE_OPENGL = True
 
+
 def isRemoteSession():
     """Detect Remote session in windows"""
 
@@ -15,7 +16,8 @@ def isRemoteSession():
         if GetSystemMetrics(0x1000) != 0:  # 0x1000 is SM_REMOTESESSION
             return True
     return False
-    
+
+
 def disable_opengl(val: bool=True):
     global USE_OPENGL
     USE_OPENGL = not val

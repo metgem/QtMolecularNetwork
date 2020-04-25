@@ -20,6 +20,7 @@ signals:
    void scaleChanged(qreal);
    void layoutChanged();
    void pieChartsVisibilityChanged(bool);
+   void pixmapVisibilityChanged(bool);
    void locked(bool);
 
 public:
@@ -70,6 +71,8 @@ public:
     void resetPieCharts();
     bool pieChartsVisibility();
     void setPieChartsVisibility(bool visibility=true);
+    bool pixmapVisibility();
+    void setPixmapVisibility(bool visibility=true);
 
     void hideItems(QList<QGraphicsItem *> items);
     void showItems(QList<QGraphicsItem *> items);
@@ -100,6 +103,7 @@ private:
     qreal scale_;
     QList <QColor> colors_;
     bool pie_charts_visibility;
+    bool pixmap_visibility;
 };
 
 #endif // NETWORKSCENE_H

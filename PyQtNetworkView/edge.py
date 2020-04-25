@@ -105,6 +105,7 @@ class Edge(QGraphicsPathItem):
             path.lineTo(self.dest_point)
         self.setPath(path)
 
+    # noinspection PyUnusedLocal
     def updateStyle(self, style: NetworkStyle, old: NetworkStyle = None):
         self.setPen(style.edgePen())
         self.update()

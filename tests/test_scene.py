@@ -273,6 +273,23 @@ def test_scene_set_pie_charts_visibility(qtbot, scene):
     with qtbot.waitSignal(scene.pieChartsVisibilityChanged):
         scene.setPieChartsVisibility(True)
         assert scene.pieChartsVisibility() == True
+        
+        
+def test_scene_set_pixmap_visibility(qtbot, scene):
+    """Check that setPixmapVisibility effectively changed pixmap visibility."""
+    
+    assert scene.pixmapVisibility() == True
+    with qtbot.waitSignal(scene.pixmapVisibilityChanged):
+        scene.setPixmapVisibility(False)
+        assert scene.pixmapVisibility() == False
+        
+    with qtbot.assertNotEmitted(scene.pixmapVisibilityChanged):
+        scene.setPixmapVisibility(False)
+        assert scene.pixmapVisibility() == False
+        
+    with qtbot.waitSignal(scene.pixmapVisibilityChanged):
+        scene.setPixmapVisibility(True)
+        assert scene.pixmapVisibility() == True
 
             
 def test_scene_show_hide_items(scene):

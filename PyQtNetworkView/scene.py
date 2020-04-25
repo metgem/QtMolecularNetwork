@@ -17,6 +17,7 @@ class NetworkScene(QGraphicsScene):
     scaleChanged = pyqtSignal(float)
     layoutChanged = pyqtSignal()
     pieChartsVisibilityChanged = pyqtSignal(bool)
+    pixmapVisibilityChanged = pyqtSignal(bool)
     locked = pyqtSignal(bool)
 
     def __init__(self, *args, **kwargs):
@@ -26,13 +27,14 @@ class NetworkScene(QGraphicsScene):
         self._colors = []
         self._scale = 1
         self._pie_charts_visibility = True
+        self._pixmap_visibility = True
 
         self.clear()
 
     def networkStyle(self):
         return self._style
 
-    def setNetworkStyle(self, style: NetworkStyle=None):
+    def setNetworkStyle(self, style: NetworkStyle = None):
         new_style = style if style is not None else DefaultStyle()
         for node in self.nodes():
             node.updateStyle(new_style, old=self._style)
@@ -44,15 +46,17 @@ class NetworkScene(QGraphicsScene):
     def clear(self):
         super().clear()
 
+        # noinspection PyAttributeOutsideInit
         self.nodesLayer = GraphicsItemLayer()
         self.addItem(self.nodesLayer)
         self.nodesLayer.setZValue(1)
 
+        # noinspection PyAttributeOutsideInit
         self.edgesLayer = GraphicsItemLayer()
         self.addItem(self.edgesLayer)
         self.edgesLayer.setZValue(0)
-        
-    def render(self, painter: QPainter, target: QRectF, source: QRectF, aspect_ratio_mode: Qt.AspectRatioMode):
+
+    def render(self, painter: QPainter, target: QRectF = ..., source: QRectF = ..., mode: Qt.AspectRatioMode = ...):
         for node in self.nodes():
             node.setCacheMode(QGraphicsItem.NoCache)
         super().render(painter, target, source, aspect_ratio_mode)
@@ -65,7 +69,16 @@ class NetworkScene(QGraphicsScene):
     def addEdge(self, node: Edge):
         node.setParentItem(self.edgesLayer)
 
-    def addNodes(self, indexes, labels=[], positions=[], colors=[], radii=[]):
+    def addNodes(self, indexes, labels=None, positions=None, colors=None, radii=None):
+        if radii is None:
+            radii = []
+        if colors is None:
+            colors = []
+        if positions is None:
+            positions = []
+        if labels is None:
+            labels = []
+
         nodes = []
         for index, label, pos, color, radius in itertools.zip_longest(indexes, labels, positions, colors, radii):
             node = Node(index, label=label)
@@ -76,6 +89,7 @@ class NetworkScene(QGraphicsScene):
                 node.updateStyle(self._style)
 
             if isinstance(color, QColor) and color.isValid():
+                # noinspection PyTypeChecker
                 node.setBrush(color)
 
             if radius is not None and radius > 0:
@@ -134,6 +148,7 @@ class NetworkScene(QGraphicsScene):
             break
 
         if len(items) > 0:
+            # noinspection PyUnboundLocalVariable
             if is_nodes:
                 for node in items:
                     node.setSelected(True)
@@ -145,10 +160,10 @@ class NetworkScene(QGraphicsScene):
                         nodes[index].setSelected(True)
 
     def selectedNodesBoundingRect(self):
-        boundingRect = QRectF()
+        bounding_rect = QRectF()
         for node in self.selectedNodes():
-            boundingRect |= node.sceneBoundingRect()
-        return boundingRect
+            bounding_rect |= node.sceneBoundingRect()
+        return bounding_rect
 
     def edges(self):
         try:
@@ -171,16 +186,20 @@ class NetworkScene(QGraphicsScene):
             break
 
         if len(items) > 0:
+            # noinspection PyUnboundLocalVariable
             if is_edges:
                 for edge in items:
                     edge.setSelected(True)
             else:
                 edges = self.edges()
-                for edge in self.edges():
+                for edge in edges:
                     if edge.index() in items:
                         edge.setSelected(True)
 
-    def setLayout(self, positions, scale=None, isolated_nodes=[]):
+    def setLayout(self, positions, scale=None, isolated_nodes=None):
+        if isolated_nodes is None:
+            isolated_nodes = []
+
         scale = scale if scale is not None else self._scale
         isolated_nodes = set(isolated_nodes)
         
@@ -273,10 +292,18 @@ class NetworkScene(QGraphicsScene):
     def pieChartsVisibility(self):
         return self._pie_charts_visibility
         
-    def setPieChartsVisibility(self, visibility: bool=True):
-        if (visibility != self._pie_charts_visibility):
+    def setPieChartsVisibility(self, visibility: bool = True):
+        if visibility != self._pie_charts_visibility:
             self._pie_charts_visibility = bool(visibility)
             self.pieChartsVisibilityChanged.emit(visibility)
+
+    def pixmapVisibility(self):
+        return self._pixmap_visibility
+
+    def setPixmapVisibility(self, visibility: bool = True):
+        if visibility != self._pixmap_visibility:
+            self._pixmap_visibility = bool(visibility)
+            self.pixmapVisibilityChanged.emit(visibility)
 
     def hideItems(self, items):
         for item in items:
@@ -345,7 +372,7 @@ class NetworkScene(QGraphicsScene):
         if isinstance(item, Edge):
             return item
             
-    def lock(self, lock: bool=True):
+    def lock(self, lock: bool = True):
         for node in self.nodes():
             node.setFlag(QGraphicsItem.ItemIsMovable, not lock)
         self.locked.emit(lock)
@@ -356,7 +383,7 @@ class NetworkScene(QGraphicsScene):
     def itemsBoundingRect(self):
         rect = QRectF()
         for item in self.items():
-            if not (item.flags & QGraphicsItem.ItemHasNoContents):
+            if not (item.flags() & QGraphicsItem.ItemHasNoContents):
                 rect |= item.sceneBoundingRect()
         
         return rect
