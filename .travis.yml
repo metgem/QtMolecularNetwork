@@ -59,7 +59,7 @@ install:
     - source activate test-env
     
     - conda install -q conda conda-build conda-verify anaconda-client setuptools
-    - conda install -q -c anaconda pyqt sip
+    - conda install -q pyqt sip rdkit
     - conda install -q tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
     - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
           conda install pytest-xvfb;
