@@ -26,7 +26,7 @@ install:
     - conda install -q conda conda-build conda-verify anaconda-client
     - conda create -q -n test-env python=%MYCONDAPY%
     - activate test-env
-    - conda install -q pyqt sip rdkit
+    - conda install -q pyqt sip rdkit -c conda-forge
     - conda install -q tinycss2 pywin32 pytest pylint pytest-pylint pytest-qt pytest-mock pytest-cov codecov
     - python setup.py develop
 
