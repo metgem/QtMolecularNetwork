@@ -22,10 +22,10 @@ init:
     
 install:
     - conda config --set always_yes true --set changeps1 no
+    - conda install -q conda conda-build conda-verify anaconda-client setuptools
     - conda create -q -n test-env python=%MYCONDAPY%
     - activate test-env
     - conda config --add channels conda-forge
-    - conda install -q conda conda-build conda-verify anaconda-client setuptools
     - conda install -q pyqt sip rdkit -c conda-forge
     - conda install -q tinycss2 pywin32 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
     - python setup.py develop
