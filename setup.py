@@ -46,9 +46,13 @@ class HostPythonConfiguration(object):
         if sys.platform == 'win32':
             self.data_dir = sys.prefix
             self.lib_dir = sys.prefix +'\\libs'
+            self.module_inc_dir = os.environ.get('LIBRARY_INC')
+            if self.module_inc_dir is None:
+                self.module_inc_dir = sysconfig.get_config_var('INCLUDEPY')
         else:
             self.data_dir = sys.prefix + '/share'
             self.lib_dir = sys.prefix + '/lib'
+            self.module_inc_dir = sysconfig.get_config_var('INCLUDEDIR')
             
 
 class TargetQtConfiguration(object):
@@ -99,6 +103,7 @@ class build_ext(sipdistutils.build_ext):
         self.sip_files_dir = None
         self.sip_inc_dir = None
         self.inc_dir = None
+        self.module_inc_dir = None
         self.pyconfig = HostPythonConfiguration()
         self.qtconfig = TargetQtConfiguration(self.qmake_bin)
         self.config = sipconfig.Configuration()    
@@ -131,6 +136,9 @@ class build_ext(sipdistutils.build_ext):
             
         if not self.sip_inc_dir:
             self.sip_inc_dir = self.pyconfig.venv_inc_dir
+            
+        if not self.module_inc_dir:
+            self.module_inc_dir = self.pyconfig.module_inc_dir
             
         if not self.inc_dir:
             self.inc_dir = os.path.abspath(os.path.join(".", "src"))
@@ -183,8 +191,9 @@ class build_ext(sipdistutils.build_ext):
                             os.path.join(self.qt_include_dir, 'QtGui'),
                             os.path.join(self.qt_include_dir, 'QtWidgets'),
                             os.path.join(self.qt_include_dir, 'QtSvg'),
-                            os.path.join(os.path.dirname(self.qt_include_dir), 'rdkit'),
-                            os.path.join(os.path.dirname(self.qt_include_dir), 'cairo'),
+                            self.module_inc_dir,
+                            os.path.join(self.module_inc_dir, 'rdkit'),
+                            os.path.join(self.module_inc_dir, 'cairo'),
                             ]
             extension.libraries += ['Qt5Core' + self.qt_libinfix,
                                     'Qt5Gui' + self.qt_libinfix,
