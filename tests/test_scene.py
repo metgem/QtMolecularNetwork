@@ -1,9 +1,11 @@
-from PyQt5.QtGui import QPen, QColor, QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QPen, QColor, QStandardItemModel, QStandardItem, QPixmap
 from PyQt5.QtCore import Qt, QPoint
 
+
 import pytest
-  
 import hashlib
+
+from resources import MOLECULES
   
 @pytest.fixture
 def scene(mod, qapp):
@@ -274,6 +276,23 @@ def test_scene_set_pie_charts_visibility(qtbot, scene):
         scene.setPieChartsVisibility(True)
         assert scene.pieChartsVisibility() == True
         
+@pytest.mark.parametrize("molecule", MOLECULES)
+def test_scene_reset_pixmaps(scene, molecule):
+    """Check that reset pixmaps sucessfully reset pixmaps for all nodes in scene"""
+    
+    for node in scene.nodes():
+        assert node.pixmap().isNull()
+        
+    for node in scene.nodes():
+        node.setPixmap(QPixmap(molecule['image']))
+        
+    for node in scene.nodes():
+        assert not node.pixmap().isNull()
+        
+    scene.resetPixmaps()
+    
+    for node in scene.nodes():
+        assert node.pixmap().isNull()
         
 def test_scene_set_pixmap_visibility(qtbot, scene):
     """Check that setPixmapVisibility effectively changed pixmap visibility."""
