@@ -52,6 +52,7 @@ install:
     
     # Configure conda and get a few essentials
     - conda config --set always_yes yes
+    - conda config --add channels conda-forge
     - conda install -q conda conda-build conda-verify anaconda-client setuptools
         
     - conda remove --name test-env --all

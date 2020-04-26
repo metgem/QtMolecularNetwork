@@ -183,8 +183,8 @@ class build_ext(sipdistutils.build_ext):
                             os.path.join(self.qt_include_dir, 'QtGui'),
                             os.path.join(self.qt_include_dir, 'QtWidgets'),
                             os.path.join(self.qt_include_dir, 'QtSvg'),
-                            os.path.join(os.path.dirname(self.sip_inc_dir), 'rdkit'),
-                            os.path.join(os.path.dirname(self.sip_inc_dir), 'cairo'),
+                            os.path.join(os.path.dirname(self.qt_include_dir), 'rdkit'),
+                            os.path.join(os.path.dirname(self.qt_include_dir), 'cairo'),
                             ]
             extension.libraries += ['Qt5Core' + self.qt_libinfix,
                                     'Qt5Gui' + self.qt_libinfix,
