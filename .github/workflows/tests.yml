@@ -1,0 +1,39 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master dev ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.5, 3.6, 3.7, 3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }} (Miniconda)
+      uses: goanpeca/setup-miniconda@v1
+      with:
+        auto-update-conda: true
+        python-version: ${{ matrix.python-version }}
+        channels: conda-forge
+    - name: Conda info
+      shell: bash -l {0}
+      run: |
+        conda info
+        conda list
+        conda config --show-sources
+        conda config --show
+    - name: Install dependencies
+      run: |
+        conda install -q pyqt sip rdkit tinycss2 pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock pytest-xvfb
+    - name: build
+      run: python setup.py develop
+    - name: Test with pytest
+      run: |
+        python -m pytest tests --cov=PyQtNetworkView
