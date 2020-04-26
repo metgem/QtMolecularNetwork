@@ -5,8 +5,8 @@ env:
     - MYCONDAPY=3.7
   global:
     - secure: "Rrseenv58UBt/+sW3p2ToaksHes5Jr3OqLEa1pglDSX347u1rUfyBr2L358dVJgw7nkXXSaTfQ9hz5cboVmLIToJCaY3W82I3vaRDvLhbEs4bj/lLa8p3ZFx4klnIz4cntY3296xaa05AYJ3ghHmeOIKz0dBrfv3snrz2L//Foxgli9I2iSD+9Wt2yN567+ypWhGjfa4VOrU4DiR+hdCKwY2kX6/JtH6ZeOHvnefyDMU3Seu0qmZr+NzucRsMWNs1NwuiejA2/4jnix2zu3DIOGQgUV0IqqeeEXGAKAs9gf+6K5RGSDs3OwKhiAmeoiFs0jYNkT725NHuQfb7h2KVMz1lAZS1wt2x0aEIVvT7loIYdiXNvUVAZ/XdT15PhRw/HqREkwviUQtsDzMyGaxComH6in2+8C5IuNunawhWmtOdzSTuUOKA4332vh02acVc/r0Pj70ZJJiycg0ARdCcMh++yJFercz+KBPAU/KjM5qbaMvN3gx8aY9i3fEQZcVrRzPqBOR77UC/q1D0VdULXUXzSi3JtImx/ToN4uPAakE4G6XGMf3ApGxGiHC5i6m8x3LVqOS0wjZyBZU86TrU0c1wwHCrBADyounTTgXqxitAYZA2YrCo8HCH/IXYFJZ2iOkQelkMHTvovgejLNymVOXM9ryJfQFujZr4jzUKMk=" 
-    - PROJECT_NAME=libmetgem
-    - GITHUB_REPO_NAME=metgem/libmetgem
+    - PROJECT_NAME=PyGetNetworkView
+    - GITHUB_REPO_NAME=metgem/PyGetNetworkView
     - PYPI_LOGIN=n-elie
     - CFLAGS=-std=c++11
     - CXXFLAGS=-std=c++11

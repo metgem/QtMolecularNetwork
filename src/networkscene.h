@@ -73,6 +73,7 @@ public:
     void setPieChartsVisibility(bool visibility=true);
     bool pixmapVisibility();
     void setPixmapVisibility(bool visibility=true);
+    void resetPixmaps();
 
     void hideItems(QList<QGraphicsItem *> items);
     void showItems(QList<QGraphicsItem *> items);

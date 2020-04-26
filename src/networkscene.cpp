@@ -485,6 +485,13 @@ void NetworkScene::setPixmapVisibility(bool visibility)
     }
 }
 
+void NetworkScene::resetPixmaps()
+{
+    foreach (Node* node, this->nodes()) {
+        node->setPixmap(QPixmap());
+    }
+}
+
 void NetworkScene::hideItems(QList<QGraphicsItem *> items)
 {
     foreach(QGraphicsItem *item, items)
