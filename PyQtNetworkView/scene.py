@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QPixmap
 
 import itertools
 
@@ -304,6 +304,10 @@ class NetworkScene(QGraphicsScene):
         if visibility != self._pixmap_visibility:
             self._pixmap_visibility = bool(visibility)
             self.pixmapVisibilityChanged.emit(visibility)
+            
+    def resetPixmaps(self):
+        for node in self.nodes():
+            node.setPixmap(QPixmap())
 
     def hideItems(self, items):
         for item in items:
