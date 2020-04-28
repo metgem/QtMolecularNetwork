@@ -40,7 +40,7 @@ jobs:
       run: conda build recipe
     - name: Install test dependencies
       shell: bash -l {0}
-      run: conda install -q pytest pylint pytest-pylint pytest-qt pytest-cov codecov pytest-mock
+      run: conda install -q pytest pylint pytest-pylint toml pytest-qt pytest-cov codecov pytest-mock
     - name: Install xvfb
       shell: bash -l {0}
       run: conda install pytest-xvfb
