@@ -12,13 +12,13 @@ def isRemoteSession():
 
     if sys.platform.startswith('win'):
         # See https://msdn.microsoft.com/en-us/library/aa380798%28v=vs.85%29.aspx
-        from win32api import GetSystemMetrics # pylint: disable=import-error
+        from win32api import GetSystemMetrics  # pylint: disable=import-error
         if GetSystemMetrics(0x1000) != 0:  # 0x1000 is SM_REMOTESESSION
             return True
     return False
 
 
-def disable_opengl(val: bool=True):
+def disable_opengl(val: bool = True):
     global USE_OPENGL
     USE_OPENGL = not val
 
@@ -27,9 +27,9 @@ class MiniMapGraphicsView(QGraphicsView):
 
     def __init__(self, parent):
         super().__init__(parent)
-        
+
         self._drag_start_pos = None
-        
+
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setFixedSize(200, 200)
         self.viewport().setFixedSize(self.contentsRect().size())
@@ -37,17 +37,17 @@ class MiniMapGraphicsView(QGraphicsView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setInteractive(False)
         self.setFocusProxy(parent)
-        
+
         self.band = QRubberBand(QRubberBand.Rectangle, self)
         self.band.hide()
-        
+
     def centerOn(self, pos):
         if self.band.isVisible():
             self.parent().centerOn(self.mapToScene(pos))
             rect = self.band.geometry()
             rect.moveCenter(pos)
             self.band.setGeometry(rect)
-        
+
     def mousePressEvent(self, event):
         if self.band.isVisible() and event.button() == Qt.LeftButton:
             rect = self.band.geometry()
@@ -55,11 +55,12 @@ class MiniMapGraphicsView(QGraphicsView):
                 self._drag_start_pos = event.pos()
             else:
                 self.centerOn(event.pos())
-    
+
     def mouseMoveEvent(self, event):
-        if self.band.isVisible() and event.buttons() == Qt.MouseButtons(Qt.LeftButton) and self._drag_start_pos is not None:
+        if self.band.isVisible() and event.buttons() == Qt.MouseButtons(
+                Qt.LeftButton) and self._drag_start_pos is not None:
             self.centerOn(event.pos())
-    
+
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton and self.band.isVisible():
             self.viewport().unsetCursor()
@@ -73,13 +74,12 @@ class MiniMapGraphicsView(QGraphicsView):
             self.band.show()
         else:
             self.band.hide()
-        
+
     def zoomToFit(self):
         self.fitInView(self.scene().sceneRect().adjusted(-20, -20, 20, 20), Qt.KeepAspectRatio)
 
 
 class NetworkView(QGraphicsView):
-
     focusedIn = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -105,7 +105,7 @@ class NetworkView(QGraphicsView):
         self.setRenderHint(QPainter.Antialiasing)
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
-        
+
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setOptimizationFlags(QGraphicsView.DontSavePainterState | QGraphicsView.DontAdjustForAntialiasing)
@@ -114,26 +114,29 @@ class NetworkView(QGraphicsView):
             """NetworkView:focus {
                 border: 3px solid palette(highlight);
             }""")
-        
+
     def setScene(self, scene):
         super().setScene(scene)
         self.minimap.setScene(scene)
-        
+
         # Connect events
         scene.scaleChanged.connect(self.on_scale_changed)
         scene.layoutChanged.connect(self.on_layout_changed)
-            
+
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton and not self.itemAt(event.pos()):
             self.setDragMode(QGraphicsView.ScrollHandDrag)
         elif event.button() == Qt.RightButton:
-            self.setDragMode(QGraphicsView.RubberBandDrag)
-            self.setRubberBandSelectionMode(Qt.IntersectsItemBoundingRect)
+            if self.itemAt(event.pos()):
+                return  # ignore event if right click occurs on an item to prevent selection to be lost
+            else:
+                self.setDragMode(QGraphicsView.RubberBandDrag)
+                self.setRubberBandSelectionMode(Qt.IntersectsItemBoundingRect)
         super().mousePressEvent(event)
-        
+
     def mouseReleaseEvent(self, event):
         super().mouseReleaseEvent(event)
-        
+
         if event.button() == Qt.LeftButton:
             self.setDragMode(QGraphicsView.NoDrag)
             self.viewport().unsetCursor()
@@ -145,7 +148,7 @@ class NetworkView(QGraphicsView):
             self.minimap.adjustRubberband()
 
         super().mouseMoveEvent(event)
-        
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.minimap.adjustRubberband()
@@ -162,25 +165,25 @@ class NetworkView(QGraphicsView):
         self.scene().setSceneRect(self.scene().itemsBoundingRect().adjusted(-30, -30, 30, 30))
         self.zoomToFit()
         self.minimap.zoomToFit()
-        
+
     def translate(self, x, y):
         super().translate(x, y)
         self.minimap.adjustRubberband()
-        
+
     def scale(self, factor_x, factor_y):
         super().scale(factor_x, factor_y)
         self.minimap.adjustRubberband()
-                
+
     def zoomToFit(self):
         self.fitInView(self.scene().sceneRect(), Qt.KeepAspectRatio)
         self.minimap.adjustRubberband()
-        
+
     def wheelEvent(self, event):
-        self.scaleView(2**(event.angleDelta().y() / 240.0))
+        self.scaleView(2 ** (event.angleDelta().y() / 240.0))
 
     def scaleView(self, scaleFactor):
         self.scale(scaleFactor, scaleFactor)
-        
+
     def updateVisibleItems(self):
         for item in self.items(self.viewport().rect()):
             item.update()
