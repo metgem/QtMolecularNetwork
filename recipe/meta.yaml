@@ -15,17 +15,15 @@ requirements:
     build:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
+        - pyqt
+        - rdkit-dev
     host:
         - python
-        - pyqt
-        - sip
-        - rdkit
         - boost-cpp
         - mesalib  # [unix]
     run:
         - python
         - pyqt
-        - sip
         - pywin32  # [win]
         - rdkit
         - tinycss2
