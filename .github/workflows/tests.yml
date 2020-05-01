@@ -59,7 +59,7 @@ jobs:
         python setup.py develop
     - name: Install test dependencies
       shell: bash -l {0}
-      run: conda install -q pytest pylint pytest-pylint toml pytest-cov codecov pytest-mock tinycss2
+      run: conda install -q pytest pylint pytest-pylint toml pytest-qt pytest-cov codecov pytest-mock tinycss2
     - name: Install xvfb
       shell: bash -l {0}
       run: conda install pytest-xvfb
