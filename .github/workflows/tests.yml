@@ -36,10 +36,7 @@ jobs:
       shell: bash -l {0}
       run: |
         conda install -n base conda-build conda-verify pyqt sip
-        conda install boost-cpp c-compiler cxx-compiler pyqt sip rdkit
-    - name: Get sipconfig
-      shell: bash -l {0}
-      run: python -c "import sipconfig; print(sipconfig.Configuration().sip_bin)"
+        conda install boost-cpp c-compiler cxx-compiler pyqt sip rdkit-dev
     - name: Install mesalib
       shell: bash -l {0}
       run: conda install mesalib
@@ -47,10 +44,16 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.0
       if: runner.os == 'Windows'
-    - name: Build
+    - name: Build (Unix)
       shell: bash -l {0}
       run: |
         python setup.py build_ext --inplace
+        python setup.py develop
+      if: runner.os != 'Windows'
+    - name: Build (Windows)
+      shell: bash -l {0}
+      run: |
+        python setup.py build_ext --inplace --sip-bin=$CONDA_PREFIX/Library/bin/sip.exe --sip-dir=$CONDA_PREFIX/sip
         python setup.py develop
     - name: Install test dependencies
       shell: bash -l {0}
