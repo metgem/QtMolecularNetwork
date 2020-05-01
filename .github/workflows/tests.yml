@@ -32,14 +32,14 @@ jobs:
         conda list
         conda config --show-sources
         conda config --show
-    - name: Get sipconfig
-      shell: bash -l {0}
-      run: python -c "import sipconfig; print(sipconfig.Configuration().sip_bin)"
     - name: Install build dependencies
       shell: bash -l {0}
       run: |
         conda install -n base conda-build conda-verify pyqt sip
         conda install boost-cpp c-compiler cxx-compiler pyqt sip rdkit
+    - name: Get sipconfig
+      shell: bash -l {0}
+      run: python -c "import sipconfig; print(sipconfig.Configuration().sip_bin)"
     - name: Install mesalib
       shell: bash -l {0}
       run: conda install mesalib
