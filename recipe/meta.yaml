@@ -19,7 +19,7 @@ requirements:
         - python
         - pyqt
         - sip
-        - rdkit
+        - rdkit-dev
         - boost-cpp
         - mesalib  # [unix]
     run:
