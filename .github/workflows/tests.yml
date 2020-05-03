@@ -53,7 +53,7 @@ jobs:
     - name: Build (Windows)
       shell: bash -l {0}
       run: |
-        echo "::set-env name=LIBRARY_INC::$CONDA_PREFIX\Library\include"
+        export LIBRARY_INC=$CONDA_PREFIX\Library\include
         python setup.py build_ext --inplace --sip-bin=$CONDA_PREFIX/Library/bin/sip.exe -I .
         python setup.py develop
     - name: Install test dependencies

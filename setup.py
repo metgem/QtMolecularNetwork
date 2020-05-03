@@ -202,7 +202,7 @@ class build_ext(sipdistutils.build_ext):
                                    ]
             
             rdkit_libraries = ['Depictor', 'MolDraw2D', 'RDGeneral', 'SmilesParse',
-                               'InchiLib', 'Inchi']
+                               'RDInchiLib', 'Inchi']
             if not sys.platform.startswith('win'):
                 rdkit_libraries = ['RDKit' + lib for lib in rdkit_libraries]
             extension.libraries += rdkit_libraries
