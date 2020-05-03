@@ -198,10 +198,14 @@ class build_ext(sipdistutils.build_ext):
             extension.libraries += ['Qt5Core' + self.qt_libinfix,
                                     'Qt5Gui' + self.qt_libinfix,
                                     'Qt5Widgets' + self.qt_libinfix,
-                                    'Qt5Svg' + self.qt_libinfix,
-                                    'RDKitDepictor', 'RDKitMolDraw2D',
-                                    'RDKitRDGeneral', 'RDKitSmilesParse',
-                                    'RDKitRDInchiLib', 'RDKitInchi']
+                                    'Qt5Svg' + self.qt_libinfix
+                                   ]
+            
+            rdkit_libraries = ['Depictor', 'MolDraw2D', 'RDGeneral', 'SmilesParse',
+                               'InchiLib', 'Inchi']
+            if not sys.platform.startswith('win'):
+                rdkit_libraries = ['RDKit' + lib for lib in rdkit_libraries]
+            extensions.libraries += rdkit_libraries
             
             if sys.platform == 'win32':
                 extension.library_dirs += [self.qtconfig.QT_INSTALL_LIBS,

@@ -14,8 +14,8 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7] #[3.5, 3.6, 3.7, 3.8]
-        os: [windows-latest] #[ubuntu-latest, windows-latest, macos-latest]
-      #fail-fast: false
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false
 
     steps:
     - uses: actions/checkout@v2
@@ -54,7 +54,7 @@ jobs:
       shell: bash -l {0}
       run: |
         echo "::set-env name=LIBRARY_INC::$CONDA_PREFIX\Library\include"
-        python setup.py build_ext --inplace --sip-bin=$CONDA_PREFIX/Library/bin/sip.exe
+        python setup.py build_ext --inplace --sip-bin=$CONDA_PREFIX/Library/bin/sip.exe -I .
         python setup.py develop
     - name: Install test dependencies
       shell: bash -l {0}
