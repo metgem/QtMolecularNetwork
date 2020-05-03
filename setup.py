@@ -205,7 +205,7 @@ class build_ext(sipdistutils.build_ext):
                                'InchiLib', 'Inchi']
             if not sys.platform.startswith('win'):
                 rdkit_libraries = ['RDKit' + lib for lib in rdkit_libraries]
-            extensions.libraries += rdkit_libraries
+            extension.libraries += rdkit_libraries
             
             if sys.platform == 'win32':
                 extension.library_dirs += [self.qtconfig.QT_INSTALL_LIBS,
