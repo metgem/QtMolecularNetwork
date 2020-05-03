@@ -43,6 +43,8 @@ jobs:
       if: runner.os == 'Linux'
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.0
+        with:
+          vs-version: [14.16]
       if: runner.os == 'Windows'
     - name: Build (Unix)
       shell: bash -l {0}
