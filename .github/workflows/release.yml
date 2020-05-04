@@ -10,9 +10,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.5, 3.6, 3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8]
         os: [ubuntu-latest, windows-latest, macos-latest]
-      fail-fast: false # Windows build will fail because of missing lib for rdkit
+      fail-fast: false
 
     steps:
     - uses: actions/checkout@v2
