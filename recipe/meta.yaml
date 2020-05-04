@@ -16,7 +16,8 @@ requirements:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
     host:
-        - rdkit-dev >=2020.03
+        - rdkit-dev
+        - rdkit
         - python
         - pyqt
         - boost-cpp
@@ -25,7 +26,7 @@ requirements:
         - python
         - pyqt
         - pywin32  # [win]
-        - rdkit >=2020.03
+        - rdkit
         - tinycss2
 
 test:
@@ -38,7 +39,7 @@ about:
     license_family: GPL
     license_file: 'LICENSE'
     summary: 'Widgets used for visualisation of graph in MetGem'
-    description: 'Widgets used for visualisation of graph in `MetGem`_'
+    description: 'Widgets used for visualisation of graph in `MetGem`'
     doc_url: ''
     dev_url: 'http://github.com/metgem/PyQtNetworkView'
 
