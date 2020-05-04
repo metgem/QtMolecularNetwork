@@ -15,10 +15,10 @@ requirements:
     build:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
-        - pyqt
-        - rdkit-dev
     host:
+        - rdkit-dev
         - python
+        - pyqt
         - boost-cpp
         - mesalib  # [unix]
     run:
