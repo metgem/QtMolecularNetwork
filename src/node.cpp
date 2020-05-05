@@ -281,7 +281,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         float start = 0;
         QList<QColor> colors = scene->pieColors();
         painter->setPen(QPen(Qt::NoPen));
-        for (int i=0; i<this->pieList.size(); i++) {
+        for (int i=0; i<std::min(this->pieList.size(), colors.size()); i++) {
             painter->setBrush(colors[i]);
             painter->drawPie(rect, int(start*5760), int(pieList[i]*5760));
             start += this->pieList[i];

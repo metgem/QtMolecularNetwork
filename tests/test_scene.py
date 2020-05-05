@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QPen, QColor, QStandardItemModel, QStandardItem, QPixmap
+from PyQt5.QtGui import QPen, QColor, QStandardItemModel, QStandardItem, QPixmap, QPainter
 from PyQt5.QtCore import Qt, QPoint
 
 
@@ -460,3 +460,64 @@ def test_scene_selected_edges(scene):
     
     r = scene.selectedEdges()
     assert set(r) == selected_edges
+
+
+def test_scene_paint_no_scene(mod, qtbot):
+    """Check that painting scene does not throw an error."""
+    
+    v = mod.NetworkView()
+    qtbot.addWidget(v)
+    v.show()
+    qtbot.waitForWindowShown(v)
+    
+ 
+@pytest.mark.parametrize('select, span_angle',
+                         [
+                             [False, 0],
+                             [True, 0],
+                             [False, 15],
+                             [False, 0]
+                         ])
+def test_scene_paint(mod, scene, qtbot, select, span_angle):
+    """Check that painting scene does not throw an error."""
+    
+    v = mod.NetworkView()
+    qtbot.addWidget(v)
+    v.setScene(scene)
+    n = scene.nodes()[0]
+    n.setSelected(select)
+    n.setSpanAngle(span_angle)            
+    v.show()
+    qtbot.waitForWindowShown(v)
+    
+@pytest.mark.parametrize('pies, set_nodes_colors',
+                         [
+                            [None, False], [[0., .2], False], [[.5, .6], True]
+                         ])
+def test_scene_paint_pies(mod, scene, qtbot, pies, set_nodes_colors):
+    """Check that painting scene with nodes pies does not throw an error."""
+    
+    v = mod.NetworkView()
+    qtbot.addWidget(v)
+    v.setScene(scene)
+    n = scene.nodes()[0]
+    if set_nodes_colors: # Setting pies without settings scene nodes colors should be fine
+        scene.setPieColors([QColor() for p in pies])
+    if pies is not None:
+        n.setPie(pies)
+
+    v.show()
+    qtbot.waitForWindowShown(v)
+    
+@pytest.mark.parametrize("molecule", MOLECULES)
+def test_scene_paint_pixmap(mod, scene, qtbot, molecule):
+    """Check that painting scene with nodes pies does not throw an error."""
+    
+    v = mod.NetworkView()
+    qtbot.addWidget(v)
+    v.setScene(scene)
+    n = scene.nodes()[0]
+    n.setPixmap(QPixmap(molecule['image']))
+            
+    v.show()
+    qtbot.waitForWindowShown(v)

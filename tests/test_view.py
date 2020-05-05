@@ -1,7 +1,8 @@
 import pytest
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QGraphicsView
+from PyQt5.QtWidgets import QGraphicsView, QWidget, QOpenGLWidget
+import PyQtNetworkView
 
 @pytest.fixture
 def view(qtbot, mod):
@@ -25,11 +26,9 @@ def test_view_left_mouse_press(view, qtbot):
     """Check mousePress and mouseRelease events with left button"""
 
     qtbot.mousePress(view.viewport(), Qt.LeftButton)
-    
     assert view.dragMode() == QGraphicsView.ScrollHandDrag
     
     qtbot.mouseRelease(view.viewport(), Qt.LeftButton)
-    
     assert view.dragMode() == QGraphicsView.NoDrag
     
     
@@ -37,12 +36,10 @@ def test_view_right_mouse_press(view, qtbot):
     """Check mousePress and mouseRelease events with right button"""
     
     qtbot.mousePress(view.viewport(), Qt.RightButton)
-    
     assert view.dragMode() == QGraphicsView.RubberBandDrag
     assert view.rubberBandSelectionMode() == Qt.IntersectsItemBoundingRect
     
     qtbot.mouseRelease(view.viewport(), Qt.RightButton)
-    
     assert view.dragMode() == QGraphicsView.NoDrag
     
     
@@ -69,3 +66,27 @@ def test_view_focus_in(view, qtbot):
     
     with qtbot.waitSignal(view.focusedIn):
         qtbot.setFocus(view)
+
+def test_remote_session():
+    """Check that `isRemoteSession` returns False when not in remote session."""
+    is_remote = PyQtNetworkView.view.isRemoteSession()
+    assert is_remote == False
+    
+def test_disable_opengl(monkeypatch):
+    """Check that `disable_opengl` set the `USE_OPENGL` flag to False."""
+    
+    monkeypatch.setattr(PyQtNetworkView.view, 'USE_OPENGL', True)
+    assert PyQtNetworkView.view.USE_OPENGL == True
+    PyQtNetworkView.view.disable_opengl()
+    assert PyQtNetworkView.view.USE_OPENGL == False
+    
+@pytest.mark.parametrize('use_opengl', [True, False])
+def test_opengl_disabled(mod, monkeypatch, use_opengl):
+    """Check that if `USE_OPENGL` flag is False, usage of OpenGL is effectively disabled."""
+    
+    monkeypatch.setattr(PyQtNetworkView.view, 'USE_OPENGL', use_opengl)
+    view = mod.NetworkView()
+    if use_opengl:
+        assert isinstance(view.viewport(), QOpenGLWidget)
+    else:
+        assert isinstance(view.viewport(), QWidget)

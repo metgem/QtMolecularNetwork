@@ -34,11 +34,11 @@ class NetworkStyle:
                 d = node['bgcolor']
                 try:
                     self.nb = d["normal"]
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
                 try:
                     self.nbs = d["selected"]
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
             except KeyError:
                 pass
@@ -47,11 +47,11 @@ class NetworkStyle:
                 d = node['txtcolor']
                 try:
                     self.ntc = d["normal"]
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
                 try:
                     self.ntcs = d["selected"]
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
             except KeyError:
                 pass
@@ -60,11 +60,11 @@ class NetworkStyle:
                 d = node['border']
                 try:
                     self.np = d["normal"]
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
                 try:
                     self.nps = d["selected"]
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
             except KeyError:
                 pass
@@ -73,11 +73,11 @@ class NetworkStyle:
                 d = node['font']
                 try:
                     self.nf = d["normal"]
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
                 try:
                     self.nfs = d["selected"]
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
             except KeyError:
                 pass
@@ -87,11 +87,11 @@ class NetworkStyle:
                 d = edge['color']
                 try:
                     self.ep = d["normal"]
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
                 try:
                     self.eps = d["selected"]
-                except KeyError:
+                except (KeyError, TypeError):
                     pass
             except KeyError:
                 pass
@@ -99,7 +99,7 @@ class NetworkStyle:
         if scene is not None:
             try:
                 self.sb = scene['color']
-            except KeyError:
+            except (KeyError, TypeError):
                 pass
 
     def styleName(self):
@@ -336,7 +336,7 @@ def read_css(css):
         if node['font'][state]['unit'] == 'px':
             f.setPixelSize(node['font'][state]['size'])
         else:
-            f.setPointSize(node['font'][state]['size'])
+            f.setPointSize(int(node['font'][state]['size']))
         f.setCapitalization(node['font'][state]['variant'])
         f.setWeight(node['font'][state]['weight'])
         f.setStyle(node['font'][state]['style'])

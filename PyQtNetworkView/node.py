@@ -202,9 +202,9 @@ class Node(QGraphicsEllipseItem):
             start = 0.
             colors = self.scene().pieColors()
             painter.setPen(QPen(Qt.NoPen))
-            for i, v in enumerate(self._pie):
-                painter.setBrush(colors[i])
-                painter.drawPie(rect, start * 5760, v * 5760)
+            for v, color in zip(self._pie, colors):
+                painter.setBrush(color)
+                painter.drawPie(rect, int(start * 5760), int(v * 5760))
                 start += v
 
         # Draw text
@@ -214,4 +214,4 @@ class Node(QGraphicsEllipseItem):
             painter.setPen(QPen(text_color, 0))
             painter.drawText(bounding_rect, Qt.AlignCenter, self._label)
             if scene.pixmapVisibility() and not self._pixmap.isNull():
-                painter.drawPixmap(bounding_rect, self._pixmap, self._pixmap.rect())
+                painter.drawPixmap(bounding_rect.toRect(), self._pixmap, self._pixmap.rect())

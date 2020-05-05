@@ -4,13 +4,29 @@ import PyQtNetworkView._pure
 from PyQt5.QtCore import Qt, QPoint, QEvent
 from PyQt5.QtGui import QMouseEvent, QResizeEvent, QFocusEvent
 
+from contextlib import contextmanager
 import pytest
+
+@contextmanager
+def not_raises(ExpectedException):
+    """Raise AssertionError if ExpectedException occurs"""
+    
+    try:
+        yield
+
+    except ExpectedException as error:
+        raise AssertionError(f"Raised exception {error} when it should not!")
+
+    except Exception as error:
+        raise AssertionError(f"An unexpected exception {error} raised.")
+    
+pytest.not_raises = not_raises
+    
 
 def pytest_generate_tests(metafunc):        
     if 'mod' in metafunc.fixturenames:
         metafunc.parametrize("mod",
-                             [PyQtNetworkView, PyQtNetworkView._pure])
-         
+                             [PyQtNetworkView, PyQtNetworkView._pure])       
          
 @pytest.hookimpl(tryfirst=True)
 def pytest_collection_modifyitems(items):
