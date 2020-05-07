@@ -9,9 +9,14 @@ if IS_COMPILED:
                               NetworkScene as BaseNetworkScene,
                               NetworkStyle, DefaultStyle)
     from .style import read_css, style_to_json, style_to_cytoscape
+    
+    import numpy as np
                               
     class NetworkScene(BaseNetworkScene):
         def setLayout(self, layout, scale=0, isolated_nodes=[]):
+            if isinstance(layout, list):
+                layout = np.asarray(layout)
+                
             super().setLayout(layout.ravel(), scale,
                               isolated_nodes if isolated_nodes is not None else [])
             

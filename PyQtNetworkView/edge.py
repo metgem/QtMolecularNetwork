@@ -2,16 +2,14 @@ from .style import NetworkStyle
 
 from PyQt5.QtGui import QPainterPath, QPen
 from PyQt5.QtWidgets import QGraphicsItem, QGraphicsPathItem, QStyle
-from PyQt5.QtCore import Qt, QPointF, QLineF, QRectF
+from PyQt5.QtCore import Qt, QPointF, QLineF, QRectF, qFuzzyCompare
 
 
 class Edge(QGraphicsPathItem):
     Type = QGraphicsItem.UserType + 2
 
-    def __init__(self, index, source_node, dest_node, width=1):
+    def __init__(self, index, source_node, dest_node, width=1.):
         super().__init__()
-
-        self.__is_self_loop = False
 
         self.id = index
         self.source_point = QPointF()
@@ -19,8 +17,10 @@ class Edge(QGraphicsPathItem):
 
         self._source = source_node
         self._dest = dest_node
-        self._source.addEdge(self)
-        if self._source != self._dest:
+        
+        if source_node is not None:
+            self._source.addEdge(self)
+        if dest_node is not None and source_node != dest_node:
             self._dest.addEdge(self)
 
         self.setPen(QPen(Qt.darkGray))
@@ -28,6 +28,7 @@ class Edge(QGraphicsPathItem):
 
         self.setAcceptedMouseButtons(Qt.LeftButton)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
+        self.setZValue(-1)
 
     def index(self):
         return self.id
@@ -60,18 +61,21 @@ class Edge(QGraphicsPathItem):
 
     def setWidth(self, width):
         pen = self.pen()
-        if self._source != self._dest and width is not None:
+        if self._source != self._dest and width >= 0:
             pen.setWidthF(width)
         else:
             pen.setWidth(1)
         super().setPen(pen)
+        
+    def isSelfLoop(self) -> bool:
+        return self._source == self._dest and self._source is not None
 
     def adjust(self):
         if not self._source or not self._dest:
             return
 
-        line = QLineF(self.mapFromItem(self._source, 0, 0),
-                      self.mapFromItem(self._dest, 0, 0))
+        line = QLineF(self.mapFromItem(self._source, 0., 0.),
+                      self.mapFromItem(self._dest, 0., 0.))
         length = line.length()
 
         self.prepareGeometryChange()
@@ -88,8 +92,7 @@ class Edge(QGraphicsPathItem):
             self.source_point = self.dest_point = line.p1()
 
         path = QPainterPath()
-        if self.sourceNode() == self.destNode():  # Draw self-loops
-            self.__is_self_loop = True
+        if self._source == self._dest:  # Draw self-loops
             radius = self._source.radius()
             path.moveTo(self.source_point.x() - radius - 2 * self._source.pen().widthF(),
                         self.source_point.y())
@@ -100,7 +103,6 @@ class Edge(QGraphicsPathItem):
                          QPointF(self.dest_point.x(),
                                  self.dest_point.y() - radius - 2 * self._source.pen().widthF()))
         else:
-            self.__is_self_loop = False
             path.moveTo(self.source_point)
             path.lineTo(self.dest_point)
         self.setPath(path)
@@ -117,18 +119,24 @@ class Edge(QGraphicsPathItem):
         return super().itemChange(change, value)
 
     def boundingRect(self):
+        if self._source is None or self._dest is None:
+            return QRectF()
+        
         brect = super().boundingRect()
-        if self.__is_self_loop:
+        if self._source == self._dest:
             w = self.pen().widthF()
             radius = self._source.radius()
             width = self._source.pen().widthF()
-            delta = 2 * radius - 2 * width - w
-            size = 2 * (radius + width + 1 + w)
-            brect = QRectF(brect.x() + delta, brect.y() + delta, size, size)
+            delta = int(2 * radius - 2 * width - w)
+            size = int(2 * (radius + width + 1 + w))
+            return QRectF(brect.x() + delta, brect.y() + delta, size, size)
         return brect
 
     # noinspection PyMethodOverriding
     def paint(self, painter, option, widget):
+        if self._source is None or self._dest is None:
+            return
+        
         # Get level of detail
         lod = option.levelOfDetailFromTransform(painter.worldTransform())
         
@@ -138,10 +146,14 @@ class Edge(QGraphicsPathItem):
         scene = self.scene()
         if scene is None:
             return
+        
+        line = QLineF(self.source_point, self.dest_point)
+        if self._source != self._dest and qFuzzyCompare(line.length(), 0.):
+            return
 
         # If selected, change color to red
         if option.state & QStyle.State_Selected:
-            pen = scene.networkStyle().edgePen(state='selected')
+            pen = scene.networkStyle().edgePen(selected=True)
             pen.setWidthF(self.pen().widthF())
             painter.setPen(pen)
         else:

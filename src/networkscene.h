@@ -6,7 +6,6 @@
 #include <QWidget>
 #include <QAbstractTableModel>
 
-#include "graphicsitem.h"
 #include "style.h"
 
 class Node;
@@ -29,17 +28,18 @@ public:
     NetworkStyle *networkStyle();
     void setNetworkStyle(NetworkStyle *style=nullptr);
 
-    void clear();
     void render(QPainter *painter, const QRectF &target = QRectF(), const QRectF &source = QRectF(), Qt::AspectRatioMode aspectRatioMode = Qt::KeepAspectRatio);
 
     void addNode(Node *node);
     void addEdge(Edge *edge);
-    QList<Node *> addNodes(QList<int> indexes,
+    void addNodes(QList<Node*> nodes);
+    void addEdges(QList<Edge*> edges);
+    QList<Node *> createNodes(QList<int> indexes,
                            QList<QString> labels = QList<QString>(),
                            QList<QPointF> positions = QList<QPointF>(),
                            QList<QVariant> colors = QList<QVariant>(),
                            QList<QVariant> radii = QList<QVariant>());
-    QList<Edge *> addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> widths);
+    QList<Edge *> createEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> widths);
     void removeAllNodes();
     void removeNodes(QList<Node *> nodes);
     void removeAllEdges();
@@ -89,15 +89,9 @@ public:
     void setNodesRadii(QList<int> radii);
     void setSelectedNodesRadius(int radius);
 
-    Node *nodeAt(const QPointF &position, const QTransform &deviceTransform) const;
-    Node *nodeAt(qreal x, qreal y, const QTransform &deviceTransform) const;
-    Edge *edgeAt(const QPointF &position, const QTransform &deviceTransform) const;
-    Edge *edgeAt(qreal x, qreal y, const QTransform &deviceTransform) const;
-
     void lock(bool lock=true);
     void unlock();
-
-    QRectF itemsBoundingRect() const;
+    bool isLocked();
 
 private:
     NetworkStyle *style_;
@@ -105,6 +99,7 @@ private:
     QList <QColor> colors_;
     bool pie_charts_visibility;
     bool pixmap_visibility;
+    bool is_locked;
 };
 
 #endif // NETWORKSCENE_H

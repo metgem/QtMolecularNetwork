@@ -2,7 +2,7 @@ import PyQtNetworkView
 import PyQtNetworkView._pure
 
 from PyQt5.QtCore import Qt, QPoint, QEvent
-from PyQt5.QtGui import QMouseEvent, QResizeEvent, QFocusEvent
+from PyQt5.QtGui import QMouseEvent, QWheelEvent, QResizeEvent, QFocusEvent
 
 from contextlib import contextmanager
 import pytest
@@ -42,7 +42,11 @@ def qtbot(qapp, qtbot):
     # Monkey patch qtbot.mouseMove to allow sending mouseMove events without
     # window manager
     def mouseMove(widget, pos=QPoint(), delay=-1):
-        event = QMouseEvent(QEvent.MouseMove, pos, Qt.NoButton, Qt.NoButton, Qt.NoModifier)
+        event = QMouseEvent(QEvent.MouseMove, pos, Qt.NoButton, Qt.LeftButton, Qt.NoModifier)
+        qapp.sendEvent(widget, event)
+        
+    def mouseWheel(widget, pos=QPoint(), delta=QPoint(10, 10), inverted=False, source=Qt.MouseEventNotSynthesized):
+        event = QWheelEvent(pos, widget.mapToGlobal(pos), delta, delta, Qt.NoButton, Qt.NoModifier, Qt.NoScrollPhase, source)
         qapp.sendEvent(widget, event)
         
     def resizeWidget(widget, size):
@@ -54,7 +58,18 @@ def qtbot(qapp, qtbot):
         qapp.sendEvent(widget, event)
         
     qtbot.mouseMove = mouseMove
+    qtbot.mouseWheel = mouseWheel
     qtbot.resizeWidget = resizeWidget
     qtbot.setFocus = setFocus
     
     return qtbot
+
+
+@pytest.fixture
+def view(qtbot, mod):
+    v = mod.NetworkView()
+    v.isVisible = lambda: True
+    v.setScene(mod.NetworkScene())
+    qtbot.addWidget(v)
+    
+    return v

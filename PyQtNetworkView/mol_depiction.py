@@ -10,6 +10,9 @@ if INCHI_AVAILABLE:
 
 
 def SvgToPixmap(svg_data: str, size: QSize):
+    if size.isNull():
+        return QPixmap()
+    
     svg_renderer = QSvgRenderer()
     svg_renderer.load(svg_data.encode('utf-8'))
     pixmap = QPixmap(size)
@@ -24,6 +27,9 @@ def SvgToPixmap(svg_data: str, size: QSize):
 
 
 def MolToPixmap(mol: Mol, size: QSize):
+    if size.isNull():
+        return QPixmap()
+    
     if not mol.GetNumConformers():
         rdDepictor.Compute2DCoords(mol)
 
@@ -36,8 +42,14 @@ def MolToPixmap(mol: Mol, size: QSize):
 
 
 def SmilesToPixmap(smiles: str, size: QSize):
+    if size.isNull():
+        return QPixmap()
+    
     return MolToPixmap(MolFromSmiles(smiles), size)
 
 
 def InchiToPixmap(inchi: str, size: QSize):
+    if size.isNull():
+        return QPixmap()
+    
     return MolToPixmap(MolFromInchi(inchi), size)

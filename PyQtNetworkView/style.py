@@ -162,18 +162,17 @@ class NetworkStyle:
 
 class DefaultStyle(NetworkStyle):
     name = "default"
-    node = {'bgcolor': {'normal': QBrush(Qt.lightGray),
-                        'selected': QBrush(Qt.yellow)},
-            'txtcolor': {'normal': QColor(Qt.black),
-                         'selected': QColor(Qt.black)},
-            'border': {'normal': QPen(Qt.black, 1, Qt.SolidLine),
-                       'selected': QPen(Qt.black, 1, Qt.SolidLine)},
-            'font': {'normal': QFont('Arial', 10),
-                     'selected': QFont('Arial', 10)},
-            }
-    edge = {'color': {'normal': QPen(QColor(Qt.darkGray)),
-                      'selected': QPen(QColor(Qt.red))}}
-    scene = {'color': QBrush(Qt.white)}
+    nb = QBrush(Qt.lightGray)  # Node Brush
+    nbs = QBrush(Qt.yellow)    # Node Brush Selected
+    ntc = QColor(Qt.black)     # Node Text Color
+    ntcs = QColor(Qt.black)    # Node Text Color Selected
+    np = QPen(Qt.black, 1, Qt.SolidLine)     # Node Pen
+    nps = QPen(Qt.black, 1, Qt.SolidLine)    # Node Pen Selected
+    nf = QFont('Arial', 10)    # Node Font
+    nfs = QFont('Arial', 10)   # Node Font Selected
+    ep = QPen(Qt.darkGray)     # Edge Pen
+    eps = QPen(Qt.red)         # Edge Pen Selected
+    sb = QBrush(Qt.white)      # Scene Brush
 
 
 # Code to load theme from css

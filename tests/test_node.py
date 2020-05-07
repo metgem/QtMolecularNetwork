@@ -1,10 +1,13 @@
 from PyQt5.QtGui import QColor, QFont, QBrush, QFontMetrics, QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 
 import pytest
 import hashlib
+import PyQtNetworkView
 
 from resources import MOLECULES
+
+SIZES = [QSize(0, 0), QSize(1, 1), QSize(20, 50), QSize(100, 100), QSize(300, 300)]
 
 @pytest.mark.parametrize("index", range(10))
 def test_node_init(mod, qapp, index):
@@ -108,7 +111,30 @@ def test_node_set_pixmap(mod, molecule):
     assert not p.isNull()
     assert p.size() == pixmap.size()
     assert p.cacheKey() == pixmap.cacheKey()
+
+@pytest.mark.parametrize("molecule", MOLECULES)
+@pytest.mark.parametrize("size", SIZES)
+def test_node_set_pixmap_from_smiles(mod, molecule, size):
+    """Check that setPixmapFromSmiles successfully change pixmap."""
     
+    node = mod.Node(58)
+    assert node.pixmap().isNull()
+    node.setPixmapFromSmiles(molecule['smiles'], size)
+    p = node.pixmap()
+    assert p.isNull() == size.isNull()
+    assert p.size() == size
+
+@pytest.mark.parametrize("molecule", MOLECULES)
+@pytest.mark.parametrize("size", SIZES)
+def test_node_set_pixmap_from_inchi(mod, molecule, size):
+    """Check that setPixmapFromInchi successfully change pixmap."""
+    
+    node = mod.Node(45)
+    assert node.pixmap().isNull()
+    node.setPixmapFromInchi(molecule['inchi'], size)
+    p = node.pixmap()
+    assert p.isNull() == size.isNull()
+    assert p.size() == size
     
 def test_node_shape_set_label(mod):
     """Check that shape is modified when label is changed"""

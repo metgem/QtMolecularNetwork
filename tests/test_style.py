@@ -104,22 +104,38 @@ def test_style_default_init(mod):
     
     style = mod.DefaultStyle()
     assert style.styleName() == "default"
+    
     assert isinstance(style.nodeBrush(), QBrush)
+    assert style.nodeBrush().color().isValid()
     assert isinstance(style.nodeBrush(selected=True), QBrush)
+    assert style.nodeBrush(selected=True).color().isValid()
     assert id(style.nodeBrush()) != id(style.nodeBrush(selected=True))
+    
     assert isinstance(style.nodeTextColor(), QColor)
+    assert style.nodeTextColor().isValid()
     assert isinstance(style.nodeTextColor(selected=True), QColor)
+    assert style.nodeTextColor(selected=True).isValid()
     assert id(style.nodeTextColor()) != id(style.nodeTextColor(selected=True))
+    
     assert isinstance(style.nodePen(), QPen)
+    assert style.nodePen().color().isValid()
     assert isinstance(style.nodePen(selected=True), QPen)
+    assert style.nodePen(selected=True).color().isValid()
     assert id(style.nodePen()) != id(style.nodePen(selected=True))
+    
     assert isinstance(style.nodeFont(), QFont)
     assert isinstance(style.nodeFont(selected=True), QFont)
     assert id(style.nodeFont()) != id(style.nodeFont(selected=True))
+    
+    
     assert isinstance(style.edgePen(), QPen)
+    assert style.edgePen().color().isValid()
     assert isinstance(style.edgePen(selected=True), QPen)
+    assert style.edgePen(selected=True).color().isValid()
     assert id(style.edgePen()) != id(style.edgePen(selected=True))
+    
     assert isinstance(style.backgroundBrush(), QBrush)
+    assert style.backgroundBrush().color().isValid()
     
     
 def test_style_empty_dicts(mod):
@@ -147,10 +163,10 @@ def test_style_set_style(mod, style):
     """Check that networkStyle can be changed."""
         
     scene = mod.NetworkScene()
-    scene.addNodes(range(10))
+    scene.createNodes(range(10))
     sources = scene.nodes()[:5]
     dests = scene.nodes()[5:]
-    scene.addEdges(range(5), sources, dests, range(5))
+    scene.createEdges(range(5), sources, dests, range(5))
     assert scene.networkStyle() != style
     scene.setNetworkStyle(style)
     assert scene.networkStyle() == style

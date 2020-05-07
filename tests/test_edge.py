@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QPen
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QPoint, QRectF
 
 import pytest
 
@@ -67,12 +67,13 @@ def test_edge_set_node(mod):
     node2 = mod.Node(41)
     node3 = mod.Node(58)
     node4 = mod.Node(58)
+    node5 = mod.Node(45)
     
     edge = mod.Edge(0, node1, node2)
     assert edge.sourceNode() == node1
     assert edge.destNode() == node2
     assert node1.edges() == node2.edges() == {edge}
-    assert node3.edges() == node4.edges() == set()
+    assert node3.edges() == node4.edges() == node5.edges() == set()
     
     edge.setSourceNode(node3)
     assert edge.sourceNode() == node3
@@ -81,14 +82,20 @@ def test_edge_set_node(mod):
     assert node2.edges() == {edge}
     assert node3.edges() == {edge}
     assert node4.edges() == set()
+    assert node5.edges() == set()
     
     edge.setDestNode(node4)
     assert edge.sourceNode() == node3
     assert edge.destNode() == node4
-    assert node1.edges() == set()
-    assert node2.edges() == set()
-    assert node3.edges() == {edge}
-    assert node4.edges() == {edge}
+    assert node1.edges() == node2.edges() == set()
+    assert node3.edges() == node4.edges() == {edge}
+    assert node5.edges() == set()
+    
+    edge.setSourceNode(node5)
+    edge.setDestNode(node5)
+    assert edge.sourceNode() == edge.destNode() == node5
+    assert node1.edges() == node2.edges() == node3.edges() == node4.edges() == set()
+    assert node5.edges() == {edge}
     
 
 def test_edge_set_pen(mod):
@@ -119,3 +126,49 @@ def test_edge_set_width(mod, width):
     edge.setWidth(width)
     
     assert edge.width() == width
+
+
+def test_edge_self_loop(mod):
+    """Check that adding a node with same node as source and dest
+    result in same sourceNode and destNode"""
+    node = mod.Node(74)
+    edge = mod.Edge(0, node, node)
+    
+    assert edge.sourceNode() == edge.destNode()
+    assert edge.isSelfLoop()
+    
+    
+def test_edge_no_node(mod):
+    """Creating and edge with no node should not throw any error"""
+    edge = mod.Edge(0, None, None)
+    edge.adjust()
+    assert edge.sourceNode() is None
+    assert edge.destNode() is None
+    assert not edge.isSelfLoop()
+    
+    
+def test_edge_bounding_rect(mod):
+    """Check that edge bounding rect are bigger if it's a self loop."""
+
+    scene = mod.NetworkScene()
+
+    node1 = mod.Node(48)
+    scene.addNode(node1)
+    node1.setPos(QPoint(0, 0))
+    node2 = mod.Node(85)
+    scene.addNode(node2)
+    node1.setPos(QPoint(100, 100))
+    
+    edge1 = mod.Edge(1, node1, node2)
+    edge1.adjust()
+    scene.addEdge(edge1)
+    edge2 = mod.Edge(2, node1, node1)
+    edge2.adjust()
+    scene.addEdge(edge2)
+    
+    assert not edge1.isSelfLoop()
+    assert edge2.isSelfLoop()
+
+    assert QRectF(0, 0, 100, 100).contains(edge1.boundingRect())
+    assert QRectF(37, 37, 66, 66) == edge2.boundingRect()
+    print(edge1.boundingRect())
