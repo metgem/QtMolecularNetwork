@@ -85,7 +85,7 @@ void Edge::setWidth(qreal width)
 
 bool Edge::isSelfLoop()
 {
-    return source == dest and source;
+    return (source == dest) && source;
 }
 
 void Edge::adjust()
