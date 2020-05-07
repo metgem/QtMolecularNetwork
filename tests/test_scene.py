@@ -791,12 +791,6 @@ def test_scene_items_bounding_rect(mod):
 def test_scene_lock(scene, qtbot):
     """Check that nodes in a locked scene can't be moved."""
     
-    assert scene.isLocked()
-    for node in scene.nodes():
-        assert node.flags() | QGraphicsItem.ItemIsMovable
-        
-    with qtbot.waitSignal(scene.locked, check_params_cb=lambda lock: not lock):
-        scene.lock(False)
     assert not scene.isLocked()
     for node in scene.nodes():
         assert node.flags() & QGraphicsItem.ItemIsMovable
@@ -808,16 +802,22 @@ def test_scene_lock(scene, qtbot):
         assert node.flags() | QGraphicsItem.ItemIsMovable
         
     with qtbot.waitSignal(scene.locked, check_params_cb=lambda lock: not lock):
-        scene.unlock()
+        scene.lock(False)
     assert not scene.isLocked()
     for node in scene.nodes():
         assert node.flags() & QGraphicsItem.ItemIsMovable
         
-    with qtbot.assertNotEmitted(scene.locked):
-        scene.unlock()
-    assert not scene.isLocked()
+    with qtbot.waitSignal(scene.locked, check_params_cb=lambda lock: lock):
+        scene.lock()
+    assert scene.isLocked()
     for node in scene.nodes():
-        assert node.flags() & QGraphicsItem.ItemIsMovable
+        assert node.flags() | QGraphicsItem.ItemIsMovable
+        
+    with qtbot.assertNotEmitted(scene.locked):
+        scene.lock()
+    assert scene.isLocked()
+    for node in scene.nodes():
+        assert node.flags() | QGraphicsItem.ItemIsMovable
         
         
 @pytest.mark.parametrize("scale", [-1, 0, 1, 0.245, 1000])

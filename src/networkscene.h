@@ -99,7 +99,7 @@ private:
     QList <QColor> colors_;
     bool pie_charts_visibility;
     bool pixmap_visibility;
-    bool is_locked;
+    bool is_locked = false;
 };
 
 #endif // NETWORKSCENE_H

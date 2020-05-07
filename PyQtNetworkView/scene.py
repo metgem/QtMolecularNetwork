@@ -28,7 +28,7 @@ class NetworkScene(QGraphicsScene):
         self._scale = 1
         self._pie_charts_visibility = True
         self._pixmap_visibility = True
-        self._is_locked = True
+        self._is_locked = False
 
         self.clear()
 
