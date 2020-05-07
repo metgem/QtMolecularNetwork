@@ -876,30 +876,30 @@ def test_scene_set_layout_list(scene, qtbot, positions):
         
 @pytest.mark.parametrize("scale", [-1, 0, 1, 0.245, 1000])
 def test_scene_set_layout_no_flags_change(scene, qtbot, scale):
-    """Check that setLayout don't change flags of nodes."""
+    """Check that setLayout don't change ItemIsMovable flag of nodes."""
     
     flags = {}
     for node in scene.nodes():
-        flags[node.index()] = node.flags()
+        flags[node.index()] = node.flags() | QGraphicsItem.ItemIsMovable
     
     positions = np.asarray([(random.randrange(0, 100), random.randrange(0, 100)) for _ in scene.nodes()])
     
     with qtbot.waitSignal(scene.layoutChanged):
         scene.setLayout(positions, scale)
     for node in scene.nodes():
-        assert node.flags() == flags[node.index()]
+        assert node.flags() | QGraphicsItem.ItemIsMovable == flags[node.index()]
     
     scene.lock(not scene.lock())
     with qtbot.waitSignal(scene.layoutChanged):
         scene.setLayout(positions, scale)
     for node in scene.nodes():
-        assert node.flags() == flags[node.index()]
+        assert node.flags() | QGraphicsItem.ItemIsMovable == flags[node.index()]
     
     scene.lock(not scene.lock())
     with qtbot.waitSignal(scene.layoutChanged):
         scene.setLayout(positions, scale)
     for node in scene.nodes():
-        assert node.flags() == flags[node.index()]
+        assert node.flags() | QGraphicsItem.ItemIsMovable == flags[node.index()]
         
         
 def test_scene_render(scene):
