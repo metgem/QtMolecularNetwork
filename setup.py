@@ -229,7 +229,7 @@ class build_ext(sipdistutils.build_ext):
             if not sys.platform.startswith('win'):
                 rdkit_libraries = ['RDKit' + lib for lib in rdkit_libraries]
             else:
-                rdkit_libraries += ['GraphMol', 'RDGeometryLib', 'SubstructMatch', 'RingDecomposerLib', 'DataStructs', 'coordgen', 'ChemReactions', 'FileParsers']
+                rdkit_libraries += ['GraphMol', 'RDGeometryLib', 'SubstructMatch', 'RingDecomposerLib', 'DataStructs', 'coordgen', 'ChemReactions', 'FileParsers', 'RDGeom', 'MolTransforms']
             extension.libraries += rdkit_libraries
             
             if sys.platform == 'win32':
