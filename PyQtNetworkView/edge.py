@@ -114,7 +114,7 @@ class Edge(QGraphicsPathItem):
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemSelectedChange:
-            self.setZValue(not self.isSelected())  # Bring item to front
+            self.setZValue(0 if self.isSelected() else -1)  # Bring item to front
             self.setCacheMode(self.cacheMode())  # Force redraw
         return super().itemChange(change, value)
 
