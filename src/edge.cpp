@@ -141,7 +141,7 @@ QVariant Edge::itemChange(QGraphicsItem::GraphicsItemChange change, const QVaria
 {
     if (change == QGraphicsItem::ItemSelectedChange)
     {
-        setZValue(!isSelected()); // Bring item to front
+        setZValue(isSelected() ? 0 : -1); // Bring item to front
         setCacheMode(cacheMode()); // Force redraw
     }
     return QGraphicsPathItem::itemChange(change, value);

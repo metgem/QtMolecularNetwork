@@ -35,6 +35,7 @@ class Node(QGraphicsEllipseItem):
 
         self.setBrush(Qt.lightGray)
         self.setPen(QPen(Qt.black, 1))
+        self.setZValue(1)
 
     def invalidateShape(self):
         # TODO: Can't find a good way to update shape
@@ -143,7 +144,7 @@ class Node(QGraphicsEllipseItem):
             for edge in self._edges:
                 edge.adjust()
         elif change == QGraphicsItem.ItemSelectedChange:
-            self.setZValue(not self.isSelected())  # Bring item to front
+            self.setZValue(1 if self.isSelected() else 0)  # Bring item to front
             self.setCacheMode(self.cacheMode())  # Force redraw
         return super().itemChange(change, value)
 
