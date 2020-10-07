@@ -7,7 +7,6 @@ class NetworkScene : public QGraphicsScene {
 
 %TypeHeaderCode
 #include "networkscene.h"
-#include "graphicsitem.h"
 #include "style.h"
 %End
 
@@ -17,17 +16,18 @@ public:
     NetworkStyle *networkStyle();
     void setNetworkStyle(NetworkStyle *style /KeepReference/ = nullptr);
     
-    void clear();
     void render(QPainter *painter, const QRectF &target = QRectF(), const QRectF &source = QRectF(), Qt::AspectRatioMode aspectRatioMode = Qt::KeepAspectRatio);
     
-    void addNode(Node *node);
-    void addEdge(Edge *edge);
-    QList<Node *> addNodes(QList<int> indexes,
+    void addNode(Node *node /Transfer/);
+    void addEdge(Edge *edge /Transfer/);
+    void addNodes(QList<Node*> nodes /Transfer/);
+    void addEdges(QList<Edge*> edges /Transfer/);
+    QList<Node *> createNodes(QList<int> indexes,
                            QList<QString> labels=QList<QString>(),
                            QList<QPointF> positions = QList<QPointF>(),
                            QList<QVariant> colors = QList<QVariant>(),
                            QList<QVariant> radii = QList<QVariant>());
-    QList<Edge *> addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> widths);
+    QList<Edge *> createEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> widths);
     void removeAllNodes();
     void removeNodes(QList<Node *> nodes);
     void removeAllEdges();
@@ -225,15 +225,9 @@ setEdgesSelection(self, Iterable[Edge])
     void setNodesRadii(QList<int> radii);
     void setSelectedNodesRadius(int radius);
     
-    Node *nodeAt(const QPointF &position, const QTransform &deviceTransform) const;
-    Node *nodeAt(qreal x, qreal y, const QTransform &deviceTransform) const;
-    Edge *edgeAt(const QPointF &position, const QTransform &deviceTransform) const;
-    Edge *edgeAt(qreal x, qreal y, const QTransform &deviceTransform) const;
-    
     void lock(bool lock=true);
     void unlock();
-    
-    QRectF itemsBoundingRect() const;
+    bool isLocked();
 };
 
 %End

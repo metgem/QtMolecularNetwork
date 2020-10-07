@@ -3,7 +3,8 @@
 
 %If (Qt_5_0_0 -)
 
-class Node : public QGraphicsEllipseItem {
+class Node : QGraphicsEllipseItem
+{
 
 %TypeHeaderCode
 #include "node.h"
@@ -32,6 +33,13 @@ public:
     void removeEdge(Edge *edge);
     QSet<Edge *> edges() const;
     void updateStyle(NetworkStyle *style, NetworkStyle* old = nullptr);
+    
+    int type() const;
+
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
+    QPainterPath shape() const;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
 };
 
 %End

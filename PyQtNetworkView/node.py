@@ -30,10 +30,8 @@ class Node(QGraphicsEllipseItem):
         else:
             self.setLabel(label)
 
-        self.setFlag(QGraphicsItem.ItemIsMovable)
-        self.setFlag(QGraphicsItem.ItemIsSelectable)
-        self.setFlag(QGraphicsItem.ItemSendsScenePositionChanges)
-        # self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
+        self.setFlags(QGraphicsItem.ItemIsMovable | QGraphicsItem.ItemIsSelectable | QGraphicsItem.ItemSendsScenePositionChanges)
+        self.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
 
         self.setBrush(Qt.lightGray)
         self.setPen(QPen(Qt.black, 1))
@@ -58,7 +56,7 @@ class Node(QGraphicsEllipseItem):
         return self.id
 
     def radius(self) -> int:
-        return self.rect().width() // 2
+        return int(self.rect().width() / 2)
 
     def setRadius(self, radius: int):
         self.prepareGeometryChange()
@@ -118,10 +116,10 @@ class Node(QGraphicsEllipseItem):
         self._pixmap = pixmap
 
     def setPixmapFromSmiles(self, smiles: str, size: QSize = QSize(300, 300)):
-        self._pixmap = SmilesToPixmap(smiles, self.rect().size().toSize())
+        self._pixmap = SmilesToPixmap(smiles, size)
 
     def setPixmapFromInchi(self, smiles: str, size: QSize = QSize(300, 300)):
-        self._pixmap = InchiToPixmap(smiles, self.rect().size().toSize())
+        self._pixmap = InchiToPixmap(smiles, size)
 
     def addEdge(self, edge: Edge):
         self._edges.add(edge)
@@ -202,9 +200,9 @@ class Node(QGraphicsEllipseItem):
             start = 0.
             colors = self.scene().pieColors()
             painter.setPen(QPen(Qt.NoPen))
-            for i, v in enumerate(self._pie):
-                painter.setBrush(colors[i])
-                painter.drawPie(rect, start * 5760, v * 5760)
+            for v, color in zip(self._pie, colors):
+                painter.setBrush(color)
+                painter.drawPie(rect, int(start * 5760), int(v * 5760))
                 start += v
 
         # Draw text
@@ -214,4 +212,4 @@ class Node(QGraphicsEllipseItem):
             painter.setPen(QPen(text_color, 0))
             painter.drawText(bounding_rect, Qt.AlignCenter, self._label)
             if scene.pixmapVisibility() and not self._pixmap.isNull():
-                painter.drawPixmap(bounding_rect, self._pixmap, self._pixmap.rect())
+                painter.drawPixmap(bounding_rect.toRect(), self._pixmap, self._pixmap.rect())

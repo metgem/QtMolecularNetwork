@@ -1,5 +1,6 @@
 from PyQt5.QtGui import QPen, QColor, QBrush, QFont
 from PyQt5.QtCore import Qt, QPoint
+import PyQtNetworkView
 
 import pytest
 
@@ -78,6 +79,20 @@ def check_style(style):
     assert style.backgroundBrush() == QBrush(Qt.darkCyan)
    
    
+def compare_styles(style, ref_style):
+    assert style.styleName() == ref_style.styleName()
+    assert style.nodeBrush() == ref_style.nodeBrush()
+    assert style.nodeBrush(selected=True) == ref_style.nodeBrush(selected=True)
+    assert style.nodeTextColor() == ref_style.nodeTextColor()
+    assert style.nodeTextColor(selected=True) == ref_style.nodeTextColor(selected=True)
+    assert style.nodePen() == ref_style.nodePen()
+    assert style.nodePen(selected=True) == ref_style.nodePen(selected=True)
+    assert style.nodeFont() == ref_style.nodeFont()
+    assert style.nodeFont(selected=True) == ref_style.nodeFont(selected=True)
+    assert style.edgePen() == ref_style.edgePen()
+    assert style.edgePen(selected=True) == ref_style.edgePen(selected=True)
+    assert style.backgroundBrush() == ref_style.backgroundBrush()
+    
 def test_style_init(mod, style, qapp):
     """Check initialization of style."""
     
@@ -89,32 +104,69 @@ def test_style_default_init(mod):
     
     style = mod.DefaultStyle()
     assert style.styleName() == "default"
+    
     assert isinstance(style.nodeBrush(), QBrush)
+    assert style.nodeBrush().color().isValid()
     assert isinstance(style.nodeBrush(selected=True), QBrush)
+    assert style.nodeBrush(selected=True).color().isValid()
     assert id(style.nodeBrush()) != id(style.nodeBrush(selected=True))
+    
     assert isinstance(style.nodeTextColor(), QColor)
+    assert style.nodeTextColor().isValid()
     assert isinstance(style.nodeTextColor(selected=True), QColor)
+    assert style.nodeTextColor(selected=True).isValid()
     assert id(style.nodeTextColor()) != id(style.nodeTextColor(selected=True))
+    
     assert isinstance(style.nodePen(), QPen)
+    assert style.nodePen().color().isValid()
     assert isinstance(style.nodePen(selected=True), QPen)
+    assert style.nodePen(selected=True).color().isValid()
     assert id(style.nodePen()) != id(style.nodePen(selected=True))
+    
     assert isinstance(style.nodeFont(), QFont)
     assert isinstance(style.nodeFont(selected=True), QFont)
     assert id(style.nodeFont()) != id(style.nodeFont(selected=True))
+    
+    
     assert isinstance(style.edgePen(), QPen)
+    assert style.edgePen().color().isValid()
     assert isinstance(style.edgePen(selected=True), QPen)
+    assert style.edgePen(selected=True).color().isValid()
     assert id(style.edgePen()) != id(style.edgePen(selected=True))
+    
     assert isinstance(style.backgroundBrush(), QBrush)
-
+    assert style.backgroundBrush().color().isValid()
+    
+    
+def test_style_empty_dicts(mod):
+    """Using empty dict should give the same results than no dict at all."""
+    
+    with pytest.not_raises(KeyError):
+        style = mod.NetworkStyle("", {}, {}, {})
+    
+    compare_styles(style, mod.NetworkStyle())
+    
+@pytest.mark.parametrize('value', [None, {}])
+def test_style_broken_dicts(mod, value):
+    """Using invalid dicts should give the same results than no dict at all."""
+    
+    node = {'bgcolor': value, 'txtcolor': value, 'border': value, 'font': value}
+    edge = {'color': value}
+    
+    with pytest.not_raises(KeyError):
+        style = mod.NetworkStyle("", node, edge, {})
+    
+    compare_styles(style, mod.NetworkStyle())
+    
     
 def test_style_set_style(mod, style):
     """Check that networkStyle can be changed."""
         
     scene = mod.NetworkScene()
-    scene.addNodes(range(10))
+    scene.createNodes(range(10))
     sources = scene.nodes()[:5]
     dests = scene.nodes()[5:]
-    scene.addEdges(range(5), sources, dests, range(5))
+    scene.createEdges(range(5), sources, dests, range(5))
     assert scene.networkStyle() != style
     scene.setNetworkStyle(style)
     assert scene.networkStyle() == style
@@ -129,6 +181,43 @@ def test_style_set_style(mod, style):
         
     assert scene.backgroundBrush() == style.backgroundBrush()
     
+    
+def test_style_setters(mod, style):
+    """Check that style attributes can be changed."""
+    
+    name = style.styleName()
+    name += "_new"
+    style.setStyleName(name)
+    assert style.styleName() == name
+    
+    for selected in (False, True):
+        brush = QBrush(Qt.darkBlue)
+        style.setNodeBrush(brush, selected=selected)
+        assert style.nodeBrush(selected=selected) == brush
+    
+    for selected in (False, True):
+        color = QColor(Qt.darkGreen)
+        style.setNodeTextColor(color, selected=selected)
+        assert style.nodeTextColor(selected=selected) == color
+        
+    for selected in (False, True):
+        pen = QPen(Qt.darkYellow, 5, Qt.SolidLine)
+        style.setNodePen(pen, selected=selected)
+        assert style.nodePen(selected=selected) == pen
+        
+    for selected in (False, True):
+        font = QFont('Arial', 10)
+        style.setNodeFont(font, selected=selected)
+        assert style.nodeFont(selected=selected) == font
+        
+    for selected in (False, True):
+        pen = QPen(Qt.darkYellow, 5, Qt.SolidLine)
+        style.setEdgePen(pen, selected=selected)
+        assert style.edgePen(selected=selected) == pen
+        
+    brush = QBrush(Qt.darkRed)
+    style.setBackgroundBrush(brush)
+    assert style.backgroundBrush() == brush
 
 def test_style_css(mod, css):
     """Test reading style from css."""
@@ -137,6 +226,23 @@ def test_style_css(mod, css):
     
     check_style(style)
     
+    
+@pytest.mark.parametrize('value', ["", "invalid", None])
+def test_style_css_invalid_file(mod, value):
+    """If file does not exists `style_from_css` should not throw an error
+    but return `DefaultStyle`."""
+    
+    with pytest.not_raises(FileNotFoundError):
+        style = mod.style_from_css(value)
+        
+    compare_styles(style, mod.DefaultStyle())
+    
+def test_style_css_no_tinycss(mod, css, monkeypatch):
+    """If tinycss2 module is not found, `style_from_css` should return `DefaultStyle`"""
+            
+    assert PyQtNetworkView.style.HAS_TINYCSS2 == True
+    monkeypatch.setattr(PyQtNetworkView.style, 'HAS_TINYCSS2', False)
+    compare_styles(mod.style_from_css(str(css)), mod.DefaultStyle())
     
 def test_style_to_json(mod, style):
     json = mod.style_to_json(style)

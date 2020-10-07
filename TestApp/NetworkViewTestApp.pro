@@ -3,7 +3,6 @@ RESOURCES += images.qrc
 HEADERS += mainwindow.h view.h \
     ../src/config.h \
     ../src/edge.h \
-    ../src/graphicsitem.h \
     ../src/mol_depiction.h \
     ../src/networkscene.h \
     ../src/node.h \

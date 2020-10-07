@@ -13,8 +13,9 @@ Edge::Edge(int index, Node *sourceNode, Node *destNode, qreal width)
     this->source = sourceNode;
     this->dest = destNode;
 
-    source->addEdge(this);
-    if (source != dest)
+    if (sourceNode)
+        source->addEdge(this);
+    if (destNode && source != dest)
         dest->addEdge(this);
 
     setPen(QPen(Qt::darkGray));
@@ -82,12 +83,17 @@ void Edge::setWidth(qreal width)
     QGraphicsPathItem::setPen(pen);
 }
 
+bool Edge::isSelfLoop()
+{
+    return (source == dest) && source;
+}
+
 void Edge::adjust()
 {
     if (!source || !dest)
         return;
 
-    QLineF line(mapFromItem(source, 0, 0), mapFromItem(dest, 0, 0));
+    QLineF line(mapFromItem(source, 0., 0.), mapFromItem(dest, 0., 0.));
     qreal length = line.length();
 
     prepareGeometryChange();
@@ -98,8 +104,8 @@ void Edge::adjust()
         QPointF offset((line.dx() * (source->radius() + source->pen().widthF() + 1)) / length,
                            (line.dy() * (source->radius() + source->pen().width() + 1)) / length);
         sourcePoint = line.p1() + offset;
-        offset = QPointF((line.dx() * (dest->radius() + dest->pen().widthF())) / length,
-                         (line.dy() * (dest->radius() + dest->pen().widthF())) / length);
+        offset = QPointF((line.dx() * (dest->radius() + dest->pen().widthF() + 1)) / length,
+                         (line.dy() * (dest->radius() + dest->pen().widthF() + 1)) / length);
         destPoint = line.p2() - offset;
     } else {
         sourcePoint = destPoint = line.p1();
@@ -131,6 +137,16 @@ void Edge::updateStyle(NetworkStyle *style, NetworkStyle *old)
     update();
 }
 
+QVariant Edge::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
+{
+    if (change == QGraphicsItem::ItemSelectedChange)
+    {
+        setZValue(!isSelected()); // Bring item to front
+        setCacheMode(cacheMode()); // Force redraw
+    }
+    return QGraphicsPathItem::itemChange(change, value);
+}
+
 QRectF Edge::boundingRect() const
 {
     if (!source || !dest)
@@ -141,11 +157,11 @@ QRectF Edge::boundingRect() const
     if (source == dest)
     {
         qreal w(pen().widthF());
-        int radius = source->radius();
+        qreal radius = (qreal) source->radius();
         qreal width = source->pen().widthF();
         qreal delta = int(2 * radius - 2 * width - w);
         qreal size = int(2 * (radius + width + 1 + w));
-        return QRectF(brect.x()+delta, brect.y() + delta, size, size);
+        return QRectF(brect.x() + delta, brect.y() + delta, size, size);
     }
 
     return brect;

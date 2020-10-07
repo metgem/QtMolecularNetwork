@@ -17,7 +17,7 @@ except ImportError:
 
 MAJOR = 0
 MINOR = 5
-MICRO = 0
+MICRO = 1
 ISRELEASED = True
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 MODULE_NAME = "PyQtNetworkView"
@@ -33,6 +33,20 @@ if "--conda-recipe" in sys.argv:
     REQUIRE_PYQT = False
     sys.argv.remove("--conda-recipe")
 
+
+def which(name):
+    """
+    Return the path of program named 'name' on the $PATH.
+    """
+    if os.name == "nt" and not name.endswith(".exe"):
+        name += ".exe"
+        
+    for path in os.environ["PATH"].split(os.pathsep):
+        path = os.path.join(path, name)
+        if os.path.isfile(path) and os.access(path, os.X_OK):
+            return path
+            
+    return None
 
 class HostPythonConfiguration(object):
     def __init__(self):
@@ -158,14 +172,23 @@ class build_ext(sipdistutils.build_ext):
         
     def _find_sip(self):
         """override _find_sip to allow for manually speficied sip path."""
-        return self.sip_bin or super()._find_sip()
+        if self.sip_bin:
+            return self.sip_bin
+            
+        sip_bin = super()._find_sip()
+        if os.path.isfile(sip_bin):
+            return sip_bin
+        
+        return which('sip')
         
     def _sip_compile(self, sip_bin, source, sbf): 
         cmd = [sip_bin]
         if hasattr(self, 'sip_opts'):
             cmd += self.sip_opts
         if hasattr(self, '_sip_sipfiles_dir'):
-            cmd += ['-I', self._sip_sipfiles_dir()]
+            _sip_sipfiles_dir = self._sip_sipfiles_dir()
+            if os.path.exists(_sip_sipfiles_dir):
+                cmd += ['-I', _sip_sipfiles_dir]
         cmd += [
             "-I", self.sip_files_dir,
             "-I", self.pyqt_sip_dir,
@@ -205,6 +228,8 @@ class build_ext(sipdistutils.build_ext):
                                'RDInchiLib', 'Inchi']
             if not sys.platform.startswith('win'):
                 rdkit_libraries = ['RDKit' + lib for lib in rdkit_libraries]
+            else:
+                rdkit_libraries += ['GraphMol', 'RDGeometryLib', 'SubstructMatch', 'RingDecomposerLib', 'DataStructs', 'coordgen', 'ChemReactions', 'FileParsers']
             extension.libraries += rdkit_libraries
             
             if sys.platform == 'win32':

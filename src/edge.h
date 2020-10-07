@@ -12,7 +12,7 @@ class Node;
 class Q_DECL_EXPORT Edge : public QGraphicsPathItem
 {
 public:
-    Edge(int index, Node *sourceNode, Node *destNode, qreal width=1);
+    Edge(int index, Node *sourceNode, Node *destNode, qreal width=1.);
 
     int index();
     Node *sourceNode() const;
@@ -22,9 +22,11 @@ public:
     void setWidth(qreal width);
     void setSourceNode(Node *node);
     void setDestNode(Node *node);
+    bool isSelfLoop();
     void adjust();
 
     void updateStyle(NetworkStyle *style, NetworkStyle *old=nullptr);
+    QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value) override;
 
     enum { Type = UserType + 2 };
     int type() const override { return Type; }

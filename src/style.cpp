@@ -108,9 +108,9 @@ QColor NetworkStyle::nodeTextColor(const bool selected) const
 void NetworkStyle::setNodeTextColor(const QColor color, const bool selected)
 {
     if (selected)
-        this->nbs = color;
+        this->ntcs = color;
     else
-        this->nb = color;
+        this->ntc = color;
 }
 
 QPen NetworkStyle::nodePen(const bool selected) const

@@ -1,4 +1,5 @@
 from PyQt5.QtGui import QColor, QPixmap
+from typing import List
 
 import itertools
 
@@ -9,7 +10,6 @@ from PyQt5.QtWidgets import QGraphicsScene, QGraphicsItem
 from .config import RADIUS
 from .node import Node
 from .edge import Edge
-from .graphicsitem import GraphicsItemLayer
 from .style import NetworkStyle, DefaultStyle
 
 
@@ -28,6 +28,7 @@ class NetworkScene(QGraphicsScene):
         self._scale = 1
         self._pie_charts_visibility = True
         self._pixmap_visibility = True
+        self._is_locked = False
 
         self.clear()
 
@@ -43,33 +44,29 @@ class NetworkScene(QGraphicsScene):
         self.setBackgroundBrush(new_style.backgroundBrush())
         self._style = new_style
 
-    def clear(self):
-        super().clear()
-
-        # noinspection PyAttributeOutsideInit
-        self.nodesLayer = GraphicsItemLayer()
-        self.addItem(self.nodesLayer)
-        self.nodesLayer.setZValue(1)
-
-        # noinspection PyAttributeOutsideInit
-        self.edgesLayer = GraphicsItemLayer()
-        self.addItem(self.edgesLayer)
-        self.edgesLayer.setZValue(0)
-
-    def render(self, painter: QPainter, target: QRectF = ..., source: QRectF = ..., mode: Qt.AspectRatioMode = ...):
+    def render(self, painter: QPainter, target: QRectF = QRectF(), source: QRectF = QRectF(),
+               mode: Qt.AspectRatioMode = Qt.KeepAspectRatio):
+        
         for node in self.nodes():
             node.setCacheMode(QGraphicsItem.NoCache)
-        super().render(painter, target, source, aspect_ratio_mode)
+        super().render(painter, target, source, mode)
         for node in self.nodes():
             node.setCacheMode(QGraphicsItem.DeviceCoordinateCache)
         
     def addNode(self, node: Node):
-        node.setParentItem(self.nodesLayer)
+        self.addItem(node)
         
-    def addEdge(self, node: Edge):
-        node.setParentItem(self.edgesLayer)
+    def addEdge(self, edge: Edge):
+        self.addItem(edge)
+        
+    def addNodes(self, nodes: List[Node]):
+        for node in nodes:
+            self.addItem(node)
 
-    def addNodes(self, indexes, labels=None, positions=None, colors=None, radii=None):
+    def createNodes(self, indexes, labels=None, positions=None, colors=None, radii=None):
+        if not indexes:
+            return []
+        
         if radii is None:
             radii = []
         if colors is None:
@@ -95,18 +92,25 @@ class NetworkScene(QGraphicsScene):
             if radius is not None and radius > 0:
                 node.setRadius(radius)
 
-            node.setParentItem(self.nodesLayer)
+            self.addItem(node)
             nodes.append(node)
 
         return nodes
+    
+    def addEdges(self, edges: List[Edge]):
+        for edge in edges:
+            self.addItem(edge)
 
-    def addEdges(self, indexes, sourceNodes, destNodes, widths):
+    def createEdges(self, indexes, sourceNodes, destNodes, widths):
+        if not indexes:
+            return []
+            
         edges = []
         for index, source, dest, width in zip(indexes, sourceNodes, destNodes, widths):
             edge = Edge(index, source, dest, width)
             if self._style is not None:
                 edge.updateStyle(self._style)
-            edge.setParentItem(self.edgesLayer)
+            self.addItem(edge)
             edge.adjust()
             edges.append(edge)
         return edges
@@ -128,16 +132,11 @@ class NetworkScene(QGraphicsScene):
             self.removeItem(edge)
 
     def nodes(self):
-        try:
-            return sorted(self.nodesLayer.childItems(), key=lambda node: node.index())
-        except RuntimeError:
-            return []
+        nodes = [item for item in self.items() if isinstance(item, Node)]
+        return sorted(nodes, key=lambda node: node.index())
 
     def selectedNodes(self):
-        try:
-            return [item for item in self.selectedItems() if self.nodesLayer.isAncestorOf(item)]
-        except RuntimeError:
-            return []
+        return [item for item in self.selectedItems() if isinstance(item, Node)]
 
     def setNodesSelection(self, items):
         self.clearSelection()
@@ -164,18 +163,13 @@ class NetworkScene(QGraphicsScene):
         for node in self.selectedNodes():
             bounding_rect |= node.sceneBoundingRect()
         return bounding_rect
-
+    
     def edges(self):
-        try:
-            return sorted(self.edgesLayer.childItems(), key=lambda node: node.index())
-        except RuntimeError:
-            return []
+        nodes = [item for item in self.items() if isinstance(item, Edge)]
+        return sorted(nodes, key=lambda node: node.index())
 
     def selectedEdges(self):
-        try:
-            return [item for item in self.selectedItems() if self.edgesLayer.isAncestorOf(item)]
-        except RuntimeError:
-            return []
+        return [item for item in self.selectedItems() if isinstance(item, Edge)]
 
     def setEdgesSelection(self, items):
         self.clearSelection()
@@ -197,13 +191,21 @@ class NetworkScene(QGraphicsScene):
                         edge.setSelected(True)
 
     def setLayout(self, positions, scale=None, isolated_nodes=None):
+        if scale is None or scale <= 0:
+            scale = self._scale
+            
         if isolated_nodes is None:
             isolated_nodes = []
+            
+        nodes = self.nodes()
+        
+        if len(positions) < len(nodes):
+            return
 
         scale = scale if scale is not None else self._scale
         isolated_nodes = set(isolated_nodes)
         
-        for node in self.nodes():
+        for node in nodes:
             i = node.index()
             if i in isolated_nodes:
                 node.setFlag(QGraphicsItem.ItemHasNoContents, True)
@@ -213,7 +215,7 @@ class NetworkScene(QGraphicsScene):
             else:
                 node.setFlag(QGraphicsItem.ItemHasNoContents, False)
                 node.setFlag(QGraphicsItem.ItemIsSelectable, True)
-                node.setFlag(QGraphicsItem.ItemIsMovable, True)
+                node.setFlag(QGraphicsItem.ItemIsMovable, self._is_locked)
                 node.setFlag(QGraphicsItem.ItemIgnoresTransformations, False)
                 
                 node.setFlag(QGraphicsItem.ItemSendsScenePositionChanges, False)
@@ -354,7 +356,11 @@ class NetworkScene(QGraphicsScene):
         return [node.radius() if node.radius() != RADIUS else 0 for node in self.nodes()]
 
     def setNodesRadii(self, radii):
-        for node in self.nodes():
+        nodes = self.nodes()
+        if len(radii) < len(nodes):
+            return
+        
+        for node in nodes:
             radius = radii[node.index()]
             node.setRadius(radius)
             for edge in node.edges():
@@ -365,29 +371,18 @@ class NetworkScene(QGraphicsScene):
             node.setRadius(radius)
             for edge in node.edges():
                 edge.adjust()
-
-    def nodeAt(self, *args, **kwargs):
-        item = self.itemAt(*args, **kwargs)
-        if isinstance(item, Node):
-            return item
-
-    def edgeAt(self, *args, **kwargs):
-        item = self.itemAt(*args, **kwargs)
-        if isinstance(item, Edge):
-            return item
             
     def lock(self, lock: bool = True):
+        if lock == self._is_locked:
+            return
+        
         for node in self.nodes():
             node.setFlag(QGraphicsItem.ItemIsMovable, not lock)
+        self._is_locked = lock
         self.locked.emit(lock)
             
     def unlock(self):
         self.lock(False)
-            
-    def itemsBoundingRect(self):
-        rect = QRectF()
-        for item in self.items():
-            if not (item.flags() & QGraphicsItem.ItemHasNoContents):
-                rect |= item.sceneBoundingRect()
         
-        return rect
+    def isLocked(self) -> bool:
+        return self._is_locked

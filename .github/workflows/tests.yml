@@ -13,8 +13,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.7] #[3.5, 3.6, 3.7, 3.8]
-        os: [windows-latest] #[ubuntu-latest, windows-latest, macos-latest]
+        python-version: [3.6, 3.7, 3.8]
+        os: [ubuntu-latest, windows-latest, macos-latest]
       fail-fast: false
 
     steps:
@@ -35,16 +35,14 @@ jobs:
     - name: Install build dependencies
       shell: bash -l {0}
       run: |
-        conda install -n base conda-build conda-verify pyqt sip
-        conda install boost-cpp c-compiler cxx-compiler pyqt sip rdkit-dev
+        conda install -n base pyqt
+        conda install boost-cpp c-compiler cxx-compiler pyqt rdkit-dev rdkit
     - name: Install mesalib
       shell: bash -l {0}
       run: conda install mesalib
       if: runner.os == 'Linux'
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.0.0
-      with:
-        vs-version: 9.0
       if: runner.os == 'Windows'
     - name: Build (Unix)
       shell: bash -l {0}
@@ -56,7 +54,7 @@ jobs:
       shell: bash -l {0}
       run: |
         export LIBRARY_INC="$CONDA_PREFIX/Library/include"
-        python setup.py build_ext --inplace --sip-bin=$CONDA_PREFIX/Library/bin/sip.exe -I .
+        python setup.py build_ext --inplace
         python setup.py develop
       if: runner.os == 'Windows'
     - name: Install test dependencies
@@ -72,7 +70,7 @@ jobs:
       if: runner.os == 'Windows'
     - name: Test with pytest
       shell: bash -l {0}
-      run: pytest --cov=PyQtNetworview --cov-report=xml
+      run: pytest --cov=PyQtNetworkView --cov-report=xml
     - name: Upload coverage
       if: success()
       uses: codecov/codecov-action@v1

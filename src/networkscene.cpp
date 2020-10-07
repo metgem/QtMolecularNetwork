@@ -50,11 +50,6 @@ void NetworkScene::setNetworkStyle(NetworkStyle *style)
     this->style_ = new_style;
 }
 
-void NetworkScene::clear()
-{
-    QGraphicsScene::clear();
-}
-
 void NetworkScene::render(QPainter *painter, const QRectF &target, const QRectF &source, Qt::AspectRatioMode aspectRatioMode)
 {
     foreach(Node* node, nodes())
@@ -78,9 +73,28 @@ void NetworkScene::addEdge(Edge *edge)
     addItem(edge);
 }
 
-QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels,
+void NetworkScene::addNodes(QList<Node *> nodes)
+{
+    foreach(Node* node, nodes)
+    {
+        addItem(qgraphicsitem_cast<QGraphicsItem *>(node));
+    }
+}
+
+void NetworkScene::addEdges(QList<Edge *> edges)
+{
+    foreach(Edge* edge, edges)
+    {
+        addItem(qgraphicsitem_cast<QGraphicsItem *>(edge));
+    }
+}
+
+QList<Node *> NetworkScene::createNodes(QList<int> indexes, QList<QString> labels,
                                      QList<QPointF> positions, QList<QVariant> colors, QList<QVariant> radii)
 {
+    if (indexes.isEmpty())
+        return QList<Node *>();
+
     QList<Node *> nodes;
     QColor color;
     int radius;
@@ -119,7 +133,7 @@ QList<Node *> NetworkScene::addNodes(QList<int> indexes, QList<QString> labels,
     return nodes;
 }
 
-QList<Edge *> NetworkScene::addEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> widths)
+QList<Edge *> NetworkScene::createEdges(QList<int> indexes, QList<Node *> sourceNodes, QList<Node *> destNodes, QList<qreal> widths)
 {
     QList<Edge *> edges;
 
@@ -286,6 +300,9 @@ void NetworkScene::setLayout(QList<QPointF> layout, qreal scale, QList<int> isol
     QList<Node *> nodes = this->nodes();
     int j;
 
+    if (layout.size() < nodes.size())
+        return;
+
     for (int i=0; i<nodes.size(); i++) {
         Node *node = nodes[i];
         j = node->index();
@@ -300,7 +317,7 @@ void NetworkScene::setLayout(QList<QPointF> layout, qreal scale, QList<int> isol
         {
             node->setFlag(QGraphicsItem::ItemHasNoContents, false);
             node->setFlag(QGraphicsItem::ItemIsSelectable, true);
-            node->setFlag(QGraphicsItem::ItemIsMovable, true);
+            node->setFlag(QGraphicsItem::ItemIsMovable, is_locked);
             node->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
             node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
             node->setPos(layout[j] * scale);
@@ -324,6 +341,9 @@ void NetworkScene::setLayout(QList<qreal> layout, qreal scale, QList<int> isolat
     QList<Node *> nodes(this->nodes());
     int j;
 
+    if (layout.size() < 2*nodes.size())
+        return;
+
     for (int i=0; i<nodes.size(); i++) {
         Node *node = nodes[i];
         j = node->index();
@@ -339,7 +359,7 @@ void NetworkScene::setLayout(QList<qreal> layout, qreal scale, QList<int> isolat
             node->setFlag(QGraphicsItem::ItemHasNoContents, false);
             node->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
             node->setFlag(QGraphicsItem::ItemIsSelectable, true);
-            node->setFlag(QGraphicsItem::ItemIsMovable, true);
+            node->setFlag(QGraphicsItem::ItemIsMovable, is_locked);
             node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
             node->setPos(layout[j*2] * scale, layout[j*2+1] * scale);
             node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);
@@ -599,6 +619,9 @@ void NetworkScene::setNodesRadii(QList<int> radii)
     int radius;
     QList<Node *> nodes = this->nodes();
 
+    if (radii.size() < nodes.size())
+        return;
+
     for (int i=0; i<nodes.size(); i++) {
         radius = radii[nodes[i]->index()];
         nodes[i]->setRadius(radius);
@@ -617,41 +640,16 @@ void NetworkScene::setSelectedNodesRadius(int radius)
     }
 }
 
-
-Node *NetworkScene::nodeAt(const QPointF &position, const QTransform &deviceTransform) const
-{
-    QGraphicsItem *item = itemAt(position, deviceTransform);
-    Node * node = qgraphicsitem_cast<Node *>(item);
-    return node;
-}
-
-Node *NetworkScene::nodeAt(qreal x, qreal y, const QTransform &deviceTransform) const
-{
-    QGraphicsItem *item = itemAt(x, y, deviceTransform);
-    Node * node = qgraphicsitem_cast<Node *>(item);
-    return node;
-}
-
-Edge *NetworkScene::edgeAt(const QPointF &position, const QTransform &deviceTransform) const
-{
-    QGraphicsItem *item = itemAt(position, deviceTransform);
-    Edge *edge = qgraphicsitem_cast<Edge *>(item);
-    return edge;
-}
-
-Edge *NetworkScene::edgeAt(qreal x, qreal y, const QTransform &deviceTransform) const
-{
-    QGraphicsItem *item = itemAt(x, y, deviceTransform);
-    Edge *edge = qgraphicsitem_cast<Edge *>(item);
-    return edge;
-}
-
 void NetworkScene::lock(bool lock)
 {
+    if (lock == is_locked)
+        return;
+
     foreach (Node *node, nodes())
     {
         node->setFlag(QGraphicsItem::ItemIsMovable, !lock);
     }
+    is_locked = lock;
     emit this->locked(lock);
 }
 
@@ -659,13 +657,7 @@ void NetworkScene::unlock(){
     this->lock(false);
 }
 
-QRectF NetworkScene::itemsBoundingRect() const
+bool NetworkScene::isLocked()
 {
-    QRectF boundingRect;
-    foreach (QGraphicsItem *item, items())
-    {
-        if (!(item->flags() & QGraphicsItem::ItemHasNoContents))
-            boundingRect |= item->sceneBoundingRect();
-    }
-    return boundingRect;
+    return is_locked;
 }

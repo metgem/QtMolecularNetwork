@@ -67,8 +67,12 @@ class MiniMapGraphicsView(QGraphicsView):
             self._drag_start_pos = None
 
     def adjustRubberband(self):
+        scene = self.scene()
+        if scene is None:
+            return
+        
         rect = self.parent().mapToScene(self.parent().rect()).boundingRect()
-        if not rect.contains(self.scene().sceneRect()):
+        if not rect.contains(scene.sceneRect()):
             rect = self.mapFromScene(rect).boundingRect()
             self.band.setGeometry(rect)
             self.band.show()
@@ -175,7 +179,11 @@ class NetworkView(QGraphicsView):
         self.minimap.adjustRubberband()
 
     def zoomToFit(self):
-        self.fitInView(self.scene().sceneRect(), Qt.KeepAspectRatio)
+        scene = self.scene()
+        if scene is None:
+            return
+        
+        self.fitInView(scene.sceneRect(), Qt.KeepAspectRatio)
         self.minimap.adjustRubberband()
 
     def wheelEvent(self, event):

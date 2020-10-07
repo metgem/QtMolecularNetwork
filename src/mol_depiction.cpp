@@ -12,20 +12,26 @@
 
 QPixmap SvgToPixmap(const QByteArray &svg_data, const QSize &size)
 {
- QSvgRenderer svgRenderer(svg_data);
- QPixmap pixmap(size);
- QPainter painter;
+    if (size.isNull())
+            return QPixmap();
 
- pixmap.fill(Qt::transparent);
- painter.begin(&pixmap);
- svgRenderer.render(&painter);
- painter.end();
+     QSvgRenderer svgRenderer(svg_data);
+     QPixmap pixmap(size);
+     QPainter painter;
 
- return pixmap;
+     pixmap.fill(Qt::transparent);
+     painter.begin(&pixmap);
+     svgRenderer.render(&painter);
+     painter.end();
+
+     return pixmap;
 }
 
 QPixmap MolToPixmap(RDKit::ROMol &mol, const QSize &size)
 {
+    if (size.isNull())
+        return QPixmap();
+
     if (!mol.getNumConformers())
         RDDepict::compute2DCoords( mol, nullptr, true );
     RDKit::MolDraw2DSVG svg_drawer(size.width(), size.height());
@@ -39,12 +45,18 @@ QPixmap MolToPixmap(RDKit::ROMol &mol, const QSize &size)
 
 QPixmap SmilesToPixmap(const QString &smiles, const QSize &size)
 {
+    if (size.isNull())
+        return QPixmap();
+
     std::shared_ptr<RDKit::ROMol> mol( RDKit::SmilesToMol( smiles.toStdString() ) );
     return MolToPixmap( *mol, size);
 }
 
 QPixmap InchiToPixmap(const QString &inchi, const QSize &size)
 {
+    if (size.isNull())
+        return QPixmap();
+
     RDKit::ExtraInchiReturnValues rv;
     std::shared_ptr<RDKit::ROMol> mol( RDKit::InchiToMol( inchi.toStdString(), rv ) );
     return MolToPixmap( *mol, size);
