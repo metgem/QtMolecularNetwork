@@ -34,6 +34,10 @@ jobs:
       run: |
         conda install -n base conda-build conda-verify pyqt
         conda install anaconda-client
+    - name: Install libiconv
+      shell: bash -l {0}
+      run: conda install libiconv
+      if: runner.os == 'Linux'
     - name: Build
       shell: bash -l {0}
       run: |
