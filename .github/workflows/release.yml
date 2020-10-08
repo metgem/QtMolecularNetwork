@@ -36,7 +36,7 @@ jobs:
         conda install anaconda-client
     - name: Install libiconv
       shell: bash -l {0}
-      run: conda install libiconv
+      run: conda install -n base libiconv
       if: runner.os == 'Linux'
     - name: Build
       shell: bash -l {0}
