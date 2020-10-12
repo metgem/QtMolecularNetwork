@@ -28,7 +28,7 @@ class Edge(QGraphicsPathItem):
 
         self.setAcceptedMouseButtons(Qt.LeftButton)
         self.setFlag(QGraphicsItem.ItemIsSelectable)
-        self.setZValue(-1)
+        self.setZValue(0)
 
     def index(self):
         return self.id
@@ -114,10 +114,10 @@ class Edge(QGraphicsPathItem):
 
     def itemChange(self, change, value):
         if change == QGraphicsItem.ItemSelectedChange:
-            self.setZValue(0 if self.isSelected() else -1)  # Bring item to front
+            self.setZValue(5 if value else 0)  # Bring item to front
             self.setCacheMode(self.cacheMode())  # Force redraw
         return super().itemChange(change, value)
-
+            
     def boundingRect(self):
         if self._source is None or self._dest is None:
             return QRectF()

@@ -23,7 +23,7 @@ Edge::Edge(int index, Node *sourceNode, Node *destNode, qreal width)
 
     setAcceptedMouseButtons(Qt::LeftButton);
     setFlag(ItemIsSelectable);
-    setZValue(-1);
+    setZValue(0);
 }
 
 int Edge::index()
@@ -141,7 +141,7 @@ QVariant Edge::itemChange(QGraphicsItem::GraphicsItemChange change, const QVaria
 {
     if (change == QGraphicsItem::ItemSelectedChange)
     {
-        setZValue(isSelected() ? 0 : -1); // Bring item to front
+        setZValue(value.toBool() ? 5 : 0); // Bring item to front
         setCacheMode(cacheMode()); // Force redraw
     }
     return QGraphicsPathItem::itemChange(change, value);

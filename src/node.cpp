@@ -25,7 +25,7 @@ Node::Node(int index, const QString &label)
 
     setBrush(Qt::lightGray);
     setPen(QPen(Qt::black, 1));
-    setZValue(1);
+    setZValue(10);
 }
 
 void Node::invalidateShape()
@@ -200,7 +200,7 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant &value)
         }
         break;
     case ItemSelectedChange:
-        setZValue(isSelected() ? 1 : 0);  // Bring item to front
+        setZValue(value.toBool() ? 20 : 10);  // Bring item to front
         setCacheMode(cacheMode()); // Force Redraw
         break;
     default:
