@@ -7,6 +7,7 @@
 #include <QAbstractTableModel>
 
 #include "style.h"
+#include "graphicsitem.h"
 
 class Node;
 class Edge;
@@ -28,6 +29,7 @@ public:
     NetworkStyle *networkStyle();
     void setNetworkStyle(NetworkStyle *style=nullptr);
 
+    void clear();
     void render(QPainter *painter, const QRectF &target = QRectF(), const QRectF &source = QRectF(), Qt::AspectRatioMode aspectRatioMode = Qt::KeepAspectRatio);
 
     void addNode(Node *node);
@@ -95,6 +97,8 @@ public:
 
 private:
     NetworkStyle *style_;
+    GraphicsItemLayer *nodesLayer;
+    GraphicsItemLayer *edgesLayer;
     qreal scale_;
     QList <QColor> colors_;
     bool pie_charts_visibility;
