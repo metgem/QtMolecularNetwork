@@ -146,7 +146,7 @@ def test_scene_create_nodes_empty(mod):
     
     scene = mod.NetworkScene()
     nodes = scene.createNodes([])
-    assert len(scene.items()) == 0
+    assert len(scene.items()) == 2  # Scene always contains nodes and edges container
     assert len(nodes) == 0
     
             
@@ -172,7 +172,7 @@ def test_scene_create_edges_empty(mod):
     
     scene = mod.NetworkScene()
     edges = scene.createEdges([], [], [], [])
-    assert len(scene.items()) == 0
+    assert len(scene.items()) == 2  # Scene always contains nodes and edges container
     assert len(edges) == 0
         
         
@@ -773,7 +773,6 @@ def test_scene_items_bounding_rect(mod):
         scene.addNode(node)
         node.setPos(i*2, i*i)
         new_bounding_rect = scene.itemsBoundingRect()
-        print(bounding_rect, new_bounding_rect, scene.items())
         if not bounding_rect.isNull():
             assert new_bounding_rect.contains(bounding_rect)
         bounding_rect = new_bounding_rect

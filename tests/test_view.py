@@ -185,7 +185,7 @@ def test_view_minimap_mouse_move(view, qtbot, mocker):
     
 def test_view_update_visible_items(view, mod, mocker):
     """Check that update method is called for every visible items."""
-    
+       
     node1 = mod.Node(85)
     view.scene().addNode(node1)
     node1.setVisible(False)
@@ -193,12 +193,12 @@ def test_view_update_visible_items(view, mod, mocker):
     node2 = mod.Node(85)
     view.scene().addNode(node2)
     
-    for item in view.scene().items():
+    for item in view.scene().nodes():
         mocker.spy(item, 'update')
     
     view.updateVisibleItems()
     
-    for item in view.scene().items():
+    for item in view.scene().nodes():
         if item.isVisible():
             assert item.update.call_count == 1
         else:

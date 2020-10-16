@@ -15,6 +15,7 @@ public:
     
     NetworkStyle *networkStyle();
     void setNetworkStyle(NetworkStyle *style /KeepReference/ = nullptr);
+    void clear();
     
     void render(QPainter *painter, const QRectF &target = QRectF(), const QRectF &source = QRectF(), Qt::AspectRatioMode aspectRatioMode = Qt::KeepAspectRatio);
     
