@@ -35,8 +35,8 @@ jobs:
     - name: Install build dependencies
       shell: bash -l {0}
       run: |
-        conda install -n base pyqt
-        conda install boost-cpp c-compiler cxx-compiler pyqt rdkit-dev rdkit
+        conda install -n base "pyqt>=5.12"
+        conda install boost-cpp c-compiler cxx-compiler "pyqt >=5.12" rdkit-dev rdkit
     - name: Install mesalib
       shell: bash -l {0}
       run: conda install mesalib
