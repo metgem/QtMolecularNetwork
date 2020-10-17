@@ -19,13 +19,13 @@ requirements:
         - rdkit-dev
         - rdkit
         - python
-        - pyqt
+        - pyqt >=5.12
         - rdkit-dev
         - boost-cpp
         - mesalib  # [unix]
     run:
         - python
-        - pyqt
+        - pyqt >=5.12
         - pywin32  # [win]
         - rdkit
         - tinycss2
