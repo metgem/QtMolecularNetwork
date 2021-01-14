@@ -321,7 +321,7 @@ class NetworkScene(QGraphicsScene):
             self._pie_charts_visibility = bool(visibility)
             self.pieChartsVisibilityChanged.emit(visibility)
             
-    def setPixmapsFromModel(model, column_id, role=Qt.DisplayRole, type="smiles"):
+    def setPixmapsFromModel(self, model, column_id, role=Qt.DisplayRole, type="smiles"):
         for node in self.nodes():
             data = model.index(node.index(), column_id).data(role)
             if not data:
