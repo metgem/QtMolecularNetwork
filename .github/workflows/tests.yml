@@ -42,7 +42,7 @@ jobs:
       run: conda install mesalib
       if: runner.os == 'Linux'
     - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.0
+      uses: microsoft/setup-msbuild@v1.0.2
       if: runner.os == 'Windows'
     - name: Build (Unix)
       shell: bash -l {0}

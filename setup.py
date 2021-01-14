@@ -225,9 +225,10 @@ class build_ext(sipdistutils.build_ext):
                                    ]
             
             rdkit_libraries = ['Depictor', 'MolDraw2D', 'RDGeneral', 'SmilesParse',
-                               'RDInchiLib', 'Inchi', 'freetype']
+                               'RDInchiLib', 'Inchi']
             if not sys.platform.startswith('win'):
                 rdkit_libraries = ['RDKit' + lib for lib in rdkit_libraries]
+                rdkit_libraries += 'freetype'
             else:
                 rdkit_libraries += ['GraphMol', 'RDGeometryLib', 'SubstructMatch', 'RingDecomposerLib', 'DataStructs', 'coordgen', 'ChemReactions', 'FileParsers', 'MolTransforms', 'EigenSolvers']
             extension.libraries += rdkit_libraries
