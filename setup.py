@@ -17,7 +17,7 @@ except ImportError:
 
 MAJOR = 0
 MINOR = 5
-MICRO = 4
+MICRO = 5
 ISRELEASED = True
 VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 MODULE_NAME = "PyQtNetworkView"
@@ -225,7 +225,7 @@ class build_ext(sipdistutils.build_ext):
                                    ]
             
             rdkit_libraries = ['Depictor', 'MolDraw2D', 'RDGeneral', 'SmilesParse',
-                               'RDInchiLib', 'Inchi']
+                               'RDInchiLib', 'Inchi', 'freetype']
             if not sys.platform.startswith('win'):
                 rdkit_libraries = ['RDKit' + lib for lib in rdkit_libraries]
             else:

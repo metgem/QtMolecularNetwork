@@ -73,6 +73,7 @@ public:
     void resetPieCharts();
     bool pieChartsVisibility();
     void setPieChartsVisibility(bool visibility=true);
+    void setPixmapsFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole, const QString type="smiles");
     bool pixmapVisibility();
     void setPixmapVisibility(bool visibility=true);
     void resetPixmaps();
