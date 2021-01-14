@@ -48,8 +48,15 @@ QPixmap SmilesToPixmap(const QString &smiles, const QSize &size)
     if (size.isNull())
         return QPixmap();
 
-    std::shared_ptr<RDKit::ROMol> mol( RDKit::SmilesToMol( smiles.toStdString() ) );
-    return MolToPixmap( *mol, size);
+    try
+    {
+        std::shared_ptr<RDKit::ROMol> mol(RDKit::SmilesToMol( smiles.toStdString() ) );
+        if (mol != nullptr)
+            return MolToPixmap( *mol, size);
+    } catch( ... ) {
+    }
+
+    return QPixmap();
 }
 
 QPixmap InchiToPixmap(const QString &inchi, const QSize &size)
@@ -57,7 +64,13 @@ QPixmap InchiToPixmap(const QString &inchi, const QSize &size)
     if (size.isNull())
         return QPixmap();
 
-    RDKit::ExtraInchiReturnValues rv;
-    std::shared_ptr<RDKit::ROMol> mol( RDKit::InchiToMol( inchi.toStdString(), rv ) );
-    return MolToPixmap( *mol, size);
+    try
+    {
+        RDKit::ExtraInchiReturnValues rv;
+        std::shared_ptr<RDKit::ROMol> mol(RDKit::InchiToMol( inchi.toStdString(), rv ) );
+        if (mol != nullptr)
+            return MolToPixmap( *mol, size);
+    } catch( ... ) {
+    }
+    return QPixmap();
 }

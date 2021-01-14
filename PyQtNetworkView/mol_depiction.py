@@ -27,7 +27,7 @@ def SvgToPixmap(svg_data: str, size: QSize):
 
 
 def MolToPixmap(mol: Mol, size: QSize):
-    if size.isNull():
+    if size.isNull() or mol is None:
         return QPixmap()
     
     if not mol.GetNumConformers():

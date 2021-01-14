@@ -116,7 +116,7 @@ void MainWindow::populateScene()
             ++nitems;
         }
     }
-    scene->addNodes(indexes, labels, positions);
+    scene->createNodes(indexes, labels, positions);
     clock_t end = clock();
     double elapsed_secs = static_cast<double>((end - begin) / CLOCKS_PER_SEC);
     cout << elapsed_secs << "s ";
