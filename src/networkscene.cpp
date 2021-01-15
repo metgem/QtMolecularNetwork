@@ -489,16 +489,16 @@ void NetworkScene::setPieChartsVisibility(bool visibility)
     }
 }
 
-void NetworkScene::setPixmapsFromModel(QAbstractItemModel *model, int column_id, int role, const QString type)
+void NetworkScene::setPixmapsFromModel(QAbstractItemModel *model, int column_id, int role, int type)
 {
     foreach (Node* node, this->nodes()) {
         QVariant data = model->index(node->index(), column_id).data(role);
         if (!data.isValid())
             continue;
 
-        if (type == "smiles")
+        if (type == NetworkScene::PixmapsSmiles)
             node->setPixmapFromSmiles(data.toString());
-        else if (type == "inchi")
+        else if (type == NetworkScene::PixmapsInchi)
             node->setPixmapFromInchi(data.toString());
     }
 }

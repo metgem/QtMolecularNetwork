@@ -11,6 +11,11 @@ class NetworkScene : public QGraphicsScene {
 %End
 
 public:
+	enum {
+		PixmapsSmiles = 0,
+		PixmapsInchi = 1
+	};
+	
     NetworkScene(QWidget *parent /TransferThis/ = nullptr);
     
     NetworkStyle *networkStyle();
@@ -208,7 +213,7 @@ setEdgesSelection(self, Iterable[Edge])
     void resetPieCharts();
     bool pieChartsVisibility();
     void setPieChartsVisibility(bool visibility=true);
-    void setPixmapsFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole, const QString type="smiles");
+    void setPixmapsFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole, int type=NetworkScene::PixmapsSmiles);
     bool pixmapVisibility();
     void setPixmapVisibility(bool visibility=true);
     void resetPixmaps();

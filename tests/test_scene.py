@@ -405,7 +405,7 @@ def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
         
         
     for column in range(0, 1):
-        scene.setPixmapsFromModel(model, column, role, type)
+        scene.setPixmapsFromModel(model, column, role, scene.PixmapsSmiles if type=="smiles" else scene.PixmapsInchi)
         
         for node in scene.nodes():
             pixmap = QPixmap(molecule['image'])
