@@ -45,7 +45,7 @@ QPixmap MolToPixmap(RDKit::ROMol &mol, const QSize &size)
 
 QPixmap SmilesToPixmap(const QString &smiles, const QSize &size)
 {
-    if (size.isNull())
+    if (size.isNull() || smiles.isNull() || smiles.isEmpty())
         return QPixmap();
 
     try
@@ -61,7 +61,7 @@ QPixmap SmilesToPixmap(const QString &smiles, const QSize &size)
 
 QPixmap InchiToPixmap(const QString &inchi, const QSize &size)
 {
-    if (size.isNull())
+    if (size.isNull() || inchi.isNull() || inchi.isEmpty())
         return QPixmap();
 
     try

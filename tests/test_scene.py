@@ -331,7 +331,7 @@ def test_scene_set_pie_colors(scene):
                                     [QColor(i) for i in range(2, 6)]])
 @pytest.mark.parametrize("role", [Qt.DisplayRole, Qt.UserRole+1])
 def test_scene_set_pie_charts_from_model(scene, colors, role):
-    """Check that setLabelsFromModel change pie charts on all nodes."""
+    """Check that setPieChartsFromModel change pie charts on all nodes."""
     
     model = QStandardItemModel()
     scene.setPieColors(colors)
@@ -384,6 +384,39 @@ def test_scene_set_pie_charts_visibility(qtbot, scene):
     with qtbot.waitSignal(scene.pieChartsVisibilityChanged):
         scene.setPieChartsVisibility(True)
         assert scene.pieChartsVisibility() == True
+        
+@pytest.mark.parametrize("molecule", MOLECULES)
+@pytest.mark.parametrize("role", [Qt.DisplayRole, Qt.UserRole+1])
+@pytest.mark.parametrize("type", ["smiles", "inchi"])
+def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
+    """Check that setPixmapsFromModel change pixmaps on all nodes."""
+    
+    model = QStandardItemModel()
+    
+    for i in range(len(scene.nodes())):
+        item = QStandardItem()
+        data = molecule[type]
+        item.setData(data, role)
+        model.setItem(i, 0, item)
+        model.setItem(i, 1, item)
+            
+    for node in scene.nodes():
+        assert node.pixmap().isNull()
+        
+        
+    for column in range(0, 1):
+        scene.setPixmapsFromModel(model, column, role, type)
+        
+        for node in scene.nodes():
+            pixmap = QPixmap(molecule['image'])
+            p = node.pixmap()
+            assert not p.isNull()
+            assert p.size() == pixmap.size()
+        
+        scene.resetPixmaps()
+    
+        for node in scene.nodes():
+            assert node.pixmap().isNull()
         
 @pytest.mark.parametrize("molecule", MOLECULES)
 def test_scene_reset_pixmaps(scene, molecule):

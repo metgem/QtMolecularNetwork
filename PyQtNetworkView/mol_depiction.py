@@ -42,14 +42,14 @@ def MolToPixmap(mol: Mol, size: QSize):
 
 
 def SmilesToPixmap(smiles: str, size: QSize):
-    if size.isNull():
+    if size.isNull() or not smiles:
         return QPixmap()
     
     return MolToPixmap(MolFromSmiles(smiles), size)
 
 
 def InchiToPixmap(inchi: str, size: QSize):
-    if size.isNull():
+    if size.isNull() or not inchi:
         return QPixmap()
     
     return MolToPixmap(MolFromInchi(inchi), size)

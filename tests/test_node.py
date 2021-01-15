@@ -123,6 +123,16 @@ def test_node_set_pixmap_from_smiles(mod, molecule, size):
     p = node.pixmap()
     assert p.isNull() == size.isNull()
     assert p.size() == size
+    
+@pytest.mark.parametrize("smiles", ["", "invalid"])
+@pytest.mark.parametrize("size", SIZES)
+def test_node_set_pixmap_from_smiles_invalid(mod, smiles, size):
+    """Check that setPixmapFromSmiles does nothing if smiles is invalid."""
+    
+    node = mod.Node(74)
+    assert node.pixmap().isNull()
+    node.setPixmapFromSmiles(smiles, size)
+    assert node.pixmap().isNull()
 
 @pytest.mark.parametrize("molecule", MOLECULES)
 @pytest.mark.parametrize("size", SIZES)
@@ -135,6 +145,16 @@ def test_node_set_pixmap_from_inchi(mod, molecule, size):
     p = node.pixmap()
     assert p.isNull() == size.isNull()
     assert p.size() == size
+
+@pytest.mark.parametrize("inchi", ["", "invalid"])
+@pytest.mark.parametrize("size", SIZES)
+def test_node_set_pixmap_from_inchi_invalid(mod, inchi, size):
+    """Check that setPixmapFromInchi does nothing if inchi is invalid."""
+    
+    node = mod.Node(65)
+    assert node.pixmap().isNull()
+    node.setPixmapFromInchi(inchi, size)
+    assert node.pixmap().isNull()
     
 def test_node_shape_set_label(mod):
     """Check that shape is modified when label is changed"""
