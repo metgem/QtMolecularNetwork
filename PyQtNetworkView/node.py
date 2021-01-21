@@ -1,7 +1,7 @@
 from .edge import Edge
 from .style import NetworkStyle
 from .config import RADIUS
-from .mol_depiction import SmilesToPixmap, InchiToPixmap
+from .mol_depiction import SmilesToPixmap, InchiToPixmap, SvgToPixmap
 
 from typing import Set
 import base64
@@ -127,6 +127,9 @@ class Node(QGraphicsEllipseItem):
         pixmap = QPixmap()
         pixmap.loadFromData(base64.b64decode(b64))
         self._pixmap = pixmap
+        
+    def setPixmapFromSvg(self, svg: bytes, size: QSize = QSize(300, 300)):
+        self._pixmap = SvgToPixmap(svg, size)
 
     def addEdge(self, edge: Edge):
         self._edges.add(edge)

@@ -388,18 +388,18 @@ def test_scene_set_pie_charts_visibility(qtbot, scene):
         
 @pytest.mark.parametrize("molecule", MOLECULES)
 @pytest.mark.parametrize("role", [Qt.DisplayRole, Qt.UserRole+1])
-@pytest.mark.parametrize("type", ["smiles", "inchi", "base64"])
+@pytest.mark.parametrize("type", ["smiles", "inchi", "base64", "svg"])
 def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
     """Check that setPixmapsFromModel change pixmaps on all nodes."""
     
     if type == "base64":
-        with open(molecule['image'], 'rb') as f:
-            b64 = base64.b64encode(f.read()).decode()
         pixmap_type = scene.PixmapsBase64
     elif type == "smiles":
         pixmap_type = scene.PixmapsSmiles
     elif type == "inchi":
         pixmap_type = scene.PixmapsInchi
+    elif type == "svg":
+        pixmap_type = scene.PixmapsSvg
             
     model = QStandardItemModel()
     
@@ -407,7 +407,11 @@ def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
         for j in range(2):
             item = QStandardItem()
             if type == "base64":
-                data = b64
+                with open(molecule['image'], 'rb') as f:
+                    data = base64.b64encode(f.read()).decode()
+            elif type == "svg":
+                with open(molecule['svg'], 'r') as f:
+                    data = f.read()
             else:
                 data = molecule[type]
             item.setData(data, role)
@@ -433,13 +437,9 @@ def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
             
 @pytest.mark.parametrize("molecule", MOLECULES)
 @pytest.mark.parametrize("role", [Qt.DisplayRole, Qt.UserRole+1])
-@pytest.mark.parametrize("type", ["smiles", "inchi", "base64"])
+@pytest.mark.parametrize("type", ["smiles", "inchi", "base64", "svg"])
 def test_scene_set_pixmaps_from_model_auto(scene, molecule, role, type):
     """Check that setPixmapsFromModel change pixmaps on all nodes."""
-           
-    if type == "base64":
-        with open(molecule['image'], 'rb') as f:
-            b64 = 'b64=' + base64.b64encode(f.read()).decode()
            
     model = QStandardItemModel()
     
@@ -447,7 +447,11 @@ def test_scene_set_pixmaps_from_model_auto(scene, molecule, role, type):
         for j in range(2):
             item = QStandardItem()
             if type == "base64":
-                data = b64
+                with open(molecule['image'], 'rb') as f:
+                    data = "b64=" + base64.b64encode(f.read()).decode()
+            elif type == "svg":
+                with open(molecule['svg'], 'r') as f:
+                    data = f.read()
             else:
                 data = molecule[type]
             item.setData(data, role)

@@ -15,6 +15,7 @@ public:
 		PixmapsSmiles = 0,
 		PixmapsInchi = 1,
         PixmapsBase64 = 2,
+        PixmapsSvg = 3,
         PixmapsAuto = -1
 	};
 	

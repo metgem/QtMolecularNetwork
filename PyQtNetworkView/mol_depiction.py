@@ -2,6 +2,8 @@ from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtGui import QPainter, QPixmap
 from PyQt5.QtSvg import QSvgRenderer
 
+from typing import Union
+
 from rdkit.Chem import Mol, MolFromSmiles, rdDepictor
 from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem.inchi import INCHI_AVAILABLE
@@ -9,12 +11,15 @@ if INCHI_AVAILABLE:
     from rdkit.Chem.inchi import MolFromInchi
 
 
-def SvgToPixmap(svg_data: str, size: QSize):
+def SvgToPixmap(svg_data: Union[str, bytes], size: QSize):
     if size.isNull():
         return QPixmap()
     
     svg_renderer = QSvgRenderer()
-    svg_renderer.load(svg_data.encode('utf-8'))
+    if isinstance(svg_data, bytes):
+        svg_renderer.load(svg_data)
+    else:
+        svg_renderer.load(svg_data.encode('utf-8'))
     pixmap = QPixmap(size)
     painter = QPainter()
 

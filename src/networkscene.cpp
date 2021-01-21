@@ -504,6 +504,8 @@ void NetworkScene::setPixmapsFromModel(QAbstractItemModel *model, int column_id,
             else
                 node->setPixmapFromBase64(text.toUtf8());
         }
+        else if (type == NetworkScene::PixmapsSvg || (type == NetworkScene::PixmapsAuto && (text.startsWith(QString("<?xml")) || text.startsWith("<svg"))))
+            node->setPixmapFromSvg(text.toUtf8());
         else if (type == NetworkScene::PixmapsInchi || (type == NetworkScene::PixmapsAuto && text.startsWith(QString("InChI="))))
             node->setPixmapFromInchi(text);
         else if (type == NetworkScene::PixmapsSmiles || type == NetworkScene::PixmapsAuto)

@@ -169,6 +169,12 @@ void Node::setPixmapFromBase64(const QByteArray &b64)
     this->pixmap_ = pixmap;
 }
 
+void Node::setPixmapFromSvg(const QByteArray &svg, const QSize &size)
+{
+    QPixmap pixmap(SvgToPixmap(svg, size));
+    this->pixmap_ = pixmap;
+}
+
 void Node::addEdge(Edge *edge)
 {
     this->edges_.insert(edge);

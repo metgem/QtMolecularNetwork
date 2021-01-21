@@ -24,6 +24,7 @@ class NetworkScene(QGraphicsScene):
     PixmapsSmiles = 0
     PixmapsInchi = 1
     PixmapsBase64 = 2
+    PixmapsSvg = 3
     PixmapsAuto = -1
 
     def __init__(self, *args, **kwargs):
@@ -337,6 +338,8 @@ class NetworkScene(QGraphicsScene):
                     node.setPixmapFromBase64(text[4:].encode())
                 else:
                     node.setPixmapFromBase64(text.encode())
+            elif type == NetworkScene.PixmapsSvg or (type == NetworkScene.PixmapsAuto and (text.startswith("<?xml") or text.startswith("<svg"))):
+                node.setPixmapFromSvg(text.encode())
             elif type == NetworkScene.PixmapsInchi or (type == NetworkScene.PixmapsAuto and text.startswith("InChI=")):
                 node.setPixmapFromInchi(text)
             elif type == NetworkScene.PixmapsSmiles or type == NetworkScene.PixmapsAuto:
