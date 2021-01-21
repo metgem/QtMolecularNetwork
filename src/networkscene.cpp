@@ -495,11 +495,12 @@ void NetworkScene::setPixmapsFromModel(QAbstractItemModel *model, int column_id,
         QVariant data = model->index(node->index(), column_id).data(role);
         if (!data.isValid())
             continue;
+        QString text = data.toString();
 
-        if (type == NetworkScene::PixmapsSmiles)
-            node->setPixmapFromSmiles(data.toString());
-        else if (type == NetworkScene::PixmapsInchi)
-            node->setPixmapFromInchi(data.toString());
+        if (type == NetworkScene::PixmapsInchi || (type == NetworkScene::PixmapsAuto && text.startsWith(QString("InChI="))))
+            node->setPixmapFromInchi(text);
+        else if (type == NetworkScene::PixmapsSmiles || type == NetworkScene::PixmapsAuto)
+            node->setPixmapFromSmiles(text);
     }
 }
 

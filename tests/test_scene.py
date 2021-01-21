@@ -394,11 +394,11 @@ def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
     model = QStandardItemModel()
     
     for i in range(len(scene.nodes())):
-        item = QStandardItem()
-        data = molecule[type]
-        item.setData(data, role)
-        model.setItem(i, 0, item)
-        model.setItem(i, 1, item)
+        for j in range(2):
+            item = QStandardItem()
+            data = molecule[type]
+            item.setData(data, role)
+            model.setItem(i, j, item)
             
     for node in scene.nodes():
         assert node.pixmap().isNull()
@@ -406,6 +406,38 @@ def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
         
     for column in range(0, 1):
         scene.setPixmapsFromModel(model, column, role, scene.PixmapsSmiles if type=="smiles" else scene.PixmapsInchi)
+        
+        for node in scene.nodes():
+            pixmap = QPixmap(molecule['image'])
+            p = node.pixmap()
+            assert not p.isNull()
+            assert p.size() == pixmap.size()
+        
+        scene.resetPixmaps()
+    
+        for node in scene.nodes():
+            assert node.pixmap().isNull()
+            
+@pytest.mark.parametrize("molecule", MOLECULES)
+@pytest.mark.parametrize("role", [Qt.DisplayRole, Qt.UserRole+1])
+@pytest.mark.parametrize("type", ["smiles", "inchi"])
+def test_scene_set_pixmaps_from_model_auto(scene, molecule, role, type):
+    """Check that setPixmapsFromModel change pixmaps on all nodes."""
+           
+    model = QStandardItemModel()
+    
+    for i in range(len(scene.nodes())):
+        for j in range(2):
+            item = QStandardItem()
+            data = molecule[type]
+            item.setData(data, role)
+            model.setItem(i, j, item)
+            
+    for node in scene.nodes():
+        assert node.pixmap().isNull()
+        
+    for column in range(0, 1):
+        scene.setPixmapsFromModel(model, column, role, scene.PixmapsAuto)
         
         for node in scene.nodes():
             pixmap = QPixmap(molecule['image'])

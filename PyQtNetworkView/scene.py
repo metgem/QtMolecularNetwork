@@ -23,6 +23,7 @@ class NetworkScene(QGraphicsScene):
     
     PixmapsSmiles = 0
     PixmapsInchi = 1
+    PixmapsAuto = -1
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -326,14 +327,14 @@ class NetworkScene(QGraphicsScene):
             
     def setPixmapsFromModel(self, model, column_id, role=Qt.DisplayRole, type=PixmapsSmiles):
         for node in self.nodes():
-            data = model.index(node.index(), column_id).data(role)
-            if not data:
+            text = model.index(node.index(), column_id).data(role)
+            if not text:
                 continue
             
-            if type == NetworkScene.PixmapsSmiles:
-                node.setPixmapFromSmiles(data)
-            elif type == NetworkScene.PixmapsInchi:
-                node.setPixmapFromInchi(data)
+            if type == NetworkScene.PixmapsInchi or (type == NetworkScene.PixmapsAuto and text.startswith("InChI=")):
+                node.setPixmapFromInchi(text)
+            elif type == NetworkScene.PixmapsSmiles or type == NetworkScene.PixmapsAuto:
+                node.setPixmapFromSmiles(text)
 
     def pixmapVisibility(self):
         return self._pixmap_visibility

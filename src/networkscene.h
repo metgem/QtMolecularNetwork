@@ -26,7 +26,8 @@ signals:
 public:
 	enum {
 		PixmapsSmiles = 0,
-		PixmapsInchi = 1
+        PixmapsInchi = 1,
+        PixmapsAuto = -1
 	};
 
     NetworkScene(QWidget *parent=nullptr);
