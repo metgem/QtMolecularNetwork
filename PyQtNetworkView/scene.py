@@ -23,6 +23,7 @@ class NetworkScene(QGraphicsScene):
     
     PixmapsSmiles = 0
     PixmapsInchi = 1
+    PixmapsBase64 = 2
     PixmapsAuto = -1
 
     def __init__(self, *args, **kwargs):
@@ -331,7 +332,12 @@ class NetworkScene(QGraphicsScene):
             if not text:
                 continue
             
-            if type == NetworkScene.PixmapsInchi or (type == NetworkScene.PixmapsAuto and text.startswith("InChI=")):
+            if type == NetworkScene.PixmapsBase64 or (type == NetworkScene.PixmapsAuto and text.startswith("b64=")):
+                if text.startswith("b64="):
+                    node.setPixmapFromBase64(text[4:].encode())
+                else:
+                    node.setPixmapFromBase64(text.encode())
+            elif type == NetworkScene.PixmapsInchi or (type == NetworkScene.PixmapsAuto and text.startswith("InChI=")):
                 node.setPixmapFromInchi(text)
             elif type == NetworkScene.PixmapsSmiles or type == NetworkScene.PixmapsAuto:
                 node.setPixmapFromSmiles(text)

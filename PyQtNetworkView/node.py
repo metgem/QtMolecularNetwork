@@ -4,6 +4,7 @@ from .config import RADIUS
 from .mol_depiction import SmilesToPixmap, InchiToPixmap
 
 from typing import Set
+import base64
 
 from PyQt5.QtGui import QPen, QColor, QFont, QBrush, QFontMetrics, QPixmap
 from PyQt5.QtWidgets import (QGraphicsItem, QGraphicsEllipseItem, QStyle,
@@ -121,6 +122,11 @@ class Node(QGraphicsEllipseItem):
 
     def setPixmapFromInchi(self, smiles: str, size: QSize = QSize(300, 300)):
         self._pixmap = InchiToPixmap(smiles, size)
+        
+    def setPixmapFromBase64(self, b64: bytes) -> None:
+        pixmap = QPixmap()
+        pixmap.loadFromData(base64.b64decode(b64))
+        self._pixmap = pixmap
 
     def addEdge(self, edge: Edge):
         self._edges.add(edge)

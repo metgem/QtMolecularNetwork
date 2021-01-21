@@ -29,6 +29,7 @@ public:
     void setPixmap(const QPixmap &pixmap);
     void setPixmapFromSmiles(const QString &smiles, const QSize &size = QSize(300, 300));
     void setPixmapFromInchi(const QString &inchi, const QSize &size = QSize(300, 300));
+    void setPixmapFromBase64(const QByteArray &b64);
     void addEdge(Edge *edge);
     void removeEdge(Edge *edge);
     QSet<Edge *> edges() const;

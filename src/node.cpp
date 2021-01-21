@@ -162,6 +162,13 @@ void Node::setPixmapFromInchi(const QString &inchi, const QSize &size)
     this->pixmap_ = pixmap;
 }
 
+void Node::setPixmapFromBase64(const QByteArray &b64)
+{
+    QPixmap pixmap;
+    pixmap.loadFromData(QByteArray::fromBase64(b64));
+    this->pixmap_ = pixmap;
+}
+
 void Node::addEdge(Edge *edge)
 {
     this->edges_.insert(edge);

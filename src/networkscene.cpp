@@ -497,7 +497,14 @@ void NetworkScene::setPixmapsFromModel(QAbstractItemModel *model, int column_id,
             continue;
         QString text = data.toString();
 
-        if (type == NetworkScene::PixmapsInchi || (type == NetworkScene::PixmapsAuto && text.startsWith(QString("InChI="))))
+        if (type == NetworkScene::PixmapsBase64 || (type == NetworkScene::PixmapsAuto && text.startsWith(QString("b64="))))
+        {
+            if (text.startsWith(QString("b64=")))
+                node->setPixmapFromBase64(text.mid(4).toUtf8());
+            else
+                node->setPixmapFromBase64(text.toUtf8());
+        }
+        else if (type == NetworkScene::PixmapsInchi || (type == NetworkScene::PixmapsAuto && text.startsWith(QString("InChI="))))
             node->setPixmapFromInchi(text);
         else if (type == NetworkScene::PixmapsSmiles || type == NetworkScene::PixmapsAuto)
             node->setPixmapFromSmiles(text);

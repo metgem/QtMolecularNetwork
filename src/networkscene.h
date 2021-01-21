@@ -27,6 +27,7 @@ public:
 	enum {
 		PixmapsSmiles = 0,
         PixmapsInchi = 1,
+        PixmapsBase64 = 2,
         PixmapsAuto = -1
 	};
 

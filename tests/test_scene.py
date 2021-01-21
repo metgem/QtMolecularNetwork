@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt, QPoint, QPointF, QSize
 import pytest
 import hashlib
 import random
+import base64
 import numpy as np
 
 from resources import MOLECULES
@@ -387,16 +388,28 @@ def test_scene_set_pie_charts_visibility(qtbot, scene):
         
 @pytest.mark.parametrize("molecule", MOLECULES)
 @pytest.mark.parametrize("role", [Qt.DisplayRole, Qt.UserRole+1])
-@pytest.mark.parametrize("type", ["smiles", "inchi"])
+@pytest.mark.parametrize("type", ["smiles", "inchi", "base64"])
 def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
     """Check that setPixmapsFromModel change pixmaps on all nodes."""
     
+    if type == "base64":
+        with open(molecule['image'], 'rb') as f:
+            b64 = base64.b64encode(f.read()).decode()
+        pixmap_type = scene.PixmapsBase64
+    elif type == "smiles":
+        pixmap_type = scene.PixmapsSmiles
+    elif type == "inchi":
+        pixmap_type = scene.PixmapsInchi
+            
     model = QStandardItemModel()
     
     for i in range(len(scene.nodes())):
         for j in range(2):
             item = QStandardItem()
-            data = molecule[type]
+            if type == "base64":
+                data = b64
+            else:
+                data = molecule[type]
             item.setData(data, role)
             model.setItem(i, j, item)
             
@@ -405,7 +418,7 @@ def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
         
         
     for column in range(0, 1):
-        scene.setPixmapsFromModel(model, column, role, scene.PixmapsSmiles if type=="smiles" else scene.PixmapsInchi)
+        scene.setPixmapsFromModel(model, column, role, pixmap_type)
         
         for node in scene.nodes():
             pixmap = QPixmap(molecule['image'])
@@ -420,16 +433,23 @@ def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
             
 @pytest.mark.parametrize("molecule", MOLECULES)
 @pytest.mark.parametrize("role", [Qt.DisplayRole, Qt.UserRole+1])
-@pytest.mark.parametrize("type", ["smiles", "inchi"])
+@pytest.mark.parametrize("type", ["smiles", "inchi", "base64"])
 def test_scene_set_pixmaps_from_model_auto(scene, molecule, role, type):
     """Check that setPixmapsFromModel change pixmaps on all nodes."""
+           
+    if type == "base64":
+        with open(molecule['image'], 'rb') as f:
+            b64 = 'b64=' + base64.b64encode(f.read()).decode()
            
     model = QStandardItemModel()
     
     for i in range(len(scene.nodes())):
         for j in range(2):
             item = QStandardItem()
-            data = molecule[type]
+            if type == "base64":
+                data = b64
+            else:
+                data = molecule[type]
             item.setData(data, role)
             model.setItem(i, j, item)
             
