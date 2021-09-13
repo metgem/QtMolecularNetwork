@@ -901,7 +901,7 @@ def test_scene_lock(scene, qtbot):
     for node in scene.nodes():
         assert node.flags() | QGraphicsItem.ItemIsMovable
         
-    with qtbot.assertNotEmitted(scene.locked):
+    with qtbot.waitSignal(scene.locked, check_params_cb=lambda lock: lock):
         scene.lock()
     assert scene.isLocked()
     for node in scene.nodes():
