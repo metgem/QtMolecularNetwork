@@ -664,9 +664,6 @@ void NetworkScene::setSelectedNodesRadius(int radius)
 
 void NetworkScene::lock(bool lock)
 {
-    if (lock == is_locked)
-        return;
-
     foreach (Node *node, nodes())
     {
         node->setFlag(QGraphicsItem::ItemIsMovable, !lock);
