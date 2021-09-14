@@ -418,7 +418,7 @@ class NetworkScene(QGraphicsScene):
             for edge in node.edges():
                 edge.adjust()
             
-    def lock(self, lock: bool = True):
+    def lock(self, lock: bool = True):        
         for node in self.nodes():
             node.setFlag(QGraphicsItem.ItemIsMovable, not lock)
         self._is_locked = lock
