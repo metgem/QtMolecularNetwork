@@ -243,7 +243,7 @@ class NetworkScene(QGraphicsScene):
             else:
                 node.setFlag(QGraphicsItem.ItemHasNoContents, False)
                 node.setFlag(QGraphicsItem.ItemIsSelectable, True)
-                node.setFlag(QGraphicsItem.ItemIsMovable, self._is_locked)
+                node.setFlag(QGraphicsItem.ItemIsMovable, not self._is_locked)
                 node.setFlag(QGraphicsItem.ItemIgnoresTransformations, False)
                 
                 node.setFlag(QGraphicsItem.ItemSendsScenePositionChanges, False)

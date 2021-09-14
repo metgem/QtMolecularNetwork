@@ -110,8 +110,8 @@ def test_view_set_layout(view, mocker):
 def test_view_minimap_adjust_rubber_band(view, mocker, qtbot, contains_scene):
     """Check that adjustRubberband hides band if entire scene is visible in main view."""
     
-    view.show()
-    qtbot.waitForWindowShown(view)
+    with qtbot.waitExposed(view):
+        view.show()
     
     mocker.patch("PyQt5.QtCore.QRectF.contains", return_value=contains_scene)
     view.minimap.adjustRubberband()

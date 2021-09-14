@@ -315,7 +315,7 @@ void NetworkScene::setLayout(QList<QPointF> layout, qreal scale, QList<int> isol
         {
             node->setFlag(QGraphicsItem::ItemHasNoContents, false);
             node->setFlag(QGraphicsItem::ItemIsSelectable, true);
-            node->setFlag(QGraphicsItem::ItemIsMovable, is_locked);
+            node->setFlag(QGraphicsItem::ItemIsMovable, !is_locked);
             node->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
             node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
             node->setPos(layout[j] * scale);
@@ -357,7 +357,7 @@ void NetworkScene::setLayout(QList<qreal> layout, qreal scale, QList<int> isolat
             node->setFlag(QGraphicsItem::ItemHasNoContents, false);
             node->setFlag(QGraphicsItem::ItemIgnoresTransformations, false);
             node->setFlag(QGraphicsItem::ItemIsSelectable, true);
-            node->setFlag(QGraphicsItem::ItemIsMovable, is_locked);
+            node->setFlag(QGraphicsItem::ItemIsMovable, !is_locked);
             node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges, false);
             node->setPos(layout[j*2] * scale, layout[j*2+1] * scale);
             node->setFlag(QGraphicsItem::ItemSendsScenePositionChanges);

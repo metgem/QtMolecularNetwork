@@ -887,7 +887,7 @@ def test_scene_lock(scene, qtbot):
         scene.lock(True)
     assert scene.isLocked()
     for node in scene.nodes():
-        assert node.flags() | QGraphicsItem.ItemIsMovable
+        assert not (node.flags() & QGraphicsItem.ItemIsMovable)
         
     with qtbot.waitSignal(scene.locked, check_params_cb=lambda lock: not lock):
         scene.lock(False)
@@ -899,13 +899,13 @@ def test_scene_lock(scene, qtbot):
         scene.lock()
     assert scene.isLocked()
     for node in scene.nodes():
-        assert node.flags() | QGraphicsItem.ItemIsMovable
+        assert not(node.flags() & QGraphicsItem.ItemIsMovable)
         
     with qtbot.assertNotEmitted(scene.locked):
         scene.lock()
     assert scene.isLocked()
     for node in scene.nodes():
-        assert node.flags() | QGraphicsItem.ItemIsMovable
+        assert not(node.flags() & QGraphicsItem.ItemIsMovable)
         
         
 @pytest.mark.parametrize("scale", [-1, 0, 1, 0.245, 1000])
@@ -965,33 +965,30 @@ def test_scene_set_layout_list(scene, qtbot, positions):
 @pytest.mark.parametrize("scale", [-1, 0, 1, 0.245, 1000])
 def test_scene_set_layout_no_flags_change(scene, qtbot, scale):
     """Check that setLayout don't change ItemIsMovable flag of nodes."""
-    
-    flags = {}
-    for node in scene.nodes():
-        flags[node.index()] = node.flags() | QGraphicsItem.ItemIsMovable
-    
+           
     positions = np.asarray([(random.randrange(0, 100), random.randrange(0, 100)) for _ in scene.nodes()])
     
-    with qtbot.waitSignal(scene.layoutChanged):
-        scene.setLayout(positions, scale)
-    for node in scene.nodes():
-        assert node.flags() | QGraphicsItem.ItemIsMovable == flags[node.index()]
+    assert not scene.isLocked()
     
-    scene.lock(not scene.lock())
     with qtbot.waitSignal(scene.layoutChanged):
         scene.setLayout(positions, scale)
     for node in scene.nodes():
-        assert node.flags() | QGraphicsItem.ItemIsMovable == flags[node.index()]
+        assert node.flags() & QGraphicsItem.ItemIsMovable
     
-    scene.lock(not scene.lock())
+    scene.lock(True)
     with qtbot.waitSignal(scene.layoutChanged):
         scene.setLayout(positions, scale)
     for node in scene.nodes():
-        assert node.flags() | QGraphicsItem.ItemIsMovable == flags[node.index()]
-        
+        assert not (node.flags() & QGraphicsItem.ItemIsMovable)
+    
+    scene.lock(False)
+    with qtbot.waitSignal(scene.layoutChanged):
+        scene.setLayout(positions, scale)
+    for node in scene.nodes():
+        assert node.flags() & QGraphicsItem.ItemIsMovable
         
 def test_scene_render(scene):
-    """Check that scene render set DeviceCoordinateCache nodes flag back."""
+    """Check that scene render set back cache mode to DeviceCoordinateCache."""
             
     image = QImage(QSize(20, 20), QImage.Format_ARGB32)
     painter = QPainter(image)
@@ -999,5 +996,5 @@ def test_scene_render(scene):
     painter.end()
     
     for node in scene.nodes():
-        assert node.flags() | QGraphicsItem.DeviceCoordinateCache
+        assert node.cacheMode() & QGraphicsItem.DeviceCoordinateCache
     
