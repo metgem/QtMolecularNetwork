@@ -2,9 +2,8 @@
     A set of widgets based on QNetworkView and QNetworkScene for network visualization.
 """
 
-from ._version import *
-
-if IS_COMPILED:
+try:
+    IS_COMPILED = True
     from .NetworkView import (Node, Edge, RADIUS,
                               NetworkScene as BaseNetworkScene,
                               NetworkStyle, DefaultStyle)
@@ -27,10 +26,14 @@ if IS_COMPILED:
             return DefaultStyle()
         
         return NetworkStyle(*result)
-else:
+except ImportError:
+    IS_COMPILED = False
     from .scene import Node, Edge, NetworkScene, RADIUS
     from .style import (NetworkStyle, DefaultStyle,
                         style_from_css, style_to_json, style_to_cytoscape)
     
 from .view import NetworkView, MiniMapGraphicsView, disable_opengl
 from .mol_depiction import SvgToPixmap, SmilesToPixmap, InchiToPixmap
+
+from . import _version
+__version__ = _version.get_versions()['version']

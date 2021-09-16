@@ -10,16 +10,13 @@ from distutils import sysconfig, dir_util, spawn, log
 from distutils.dep_util import newer
 import sipdistutils
 import sipconfig
+import versioneer
+
 try:
     from PyQt5.QtCore import PYQT_CONFIGURATION
 except ImportError:
     PYQT_CONFIGURATION = {}
 
-MAJOR = 0
-MINOR = 5
-MICRO = 6
-ISRELEASED = True
-VERSION = '%d.%d.%d' % (MAJOR, MINOR, MICRO)
 MODULE_NAME = "PyQtNetworkView"
 SRC_PATH = MODULE_NAME
 
@@ -217,6 +214,8 @@ class build_ext(sipdistutils.build_ext):
                             self.module_inc_dir,
                             os.path.join(self.module_inc_dir, 'rdkit'),
                             os.path.join(self.module_inc_dir, 'cairo'),
+                            r"C:/Users/elie/AppData/Local/Continuum/miniconda3/envs/metgem/Library/include/rdkit",
+                            r"C:\Users\elie\AppData\Local\Continuum\miniconda3\envs\metgem\Library\include",
                             ]
             extension.libraries += ['Qt5Core' + self.qt_libinfix,
                                     'Qt5Gui' + self.qt_libinfix,
@@ -270,75 +269,6 @@ class build_ext(sipdistutils.build_ext):
         
         sipdistutils.build_ext.build_extension(self, ext)
 
-        
-def git_version():
-    '''Return the git revision as a string'''
-    
-    def _minimal_ext_cmd(cmd):
-        # construct minimal environment
-        env = {}
-        for k in ['SYSTEMROOT', 'PATH', 'HOME']:
-            v = os.environ.get(k)
-            if v is not None:
-                env[k] = v
-        # LANGUAGE is used on win32
-        env['LANGUAGE'] = 'C'
-        env['LANG'] = 'C'
-        env['LC_ALL'] = 'C'
-        out = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env).communicate()[0]
-        return out
-
-    try:
-        out = _minimal_ext_cmd(['git', 'rev-parse', 'HEAD'])
-        GIT_REVISION = out.strip().decode('ascii')
-    except OSError:
-        GIT_REVISION = "Unknown"
-
-    return GIT_REVISION
-  
-
-def get_version_info():
-    # Adding the git rev number needs to be done inside write_version_py(),
-    # otherwise the import of numpy.version messes up the build under Python 3.
-    FULLVERSION = VERSION
-    if os.path.exists('.git'):
-        GIT_REVISION = git_version()
-    elif os.path.exists('PyQtNetworkView/version.py'):
-        # must be a source distribution, use existing version file
-        try:
-            from PyQtNetworkView.version import git_revision as GIT_REVISION
-        except ImportError:
-            raise ImportError("Unable to import git_revision. Try removing " \
-                              "PyQtNetworkView/version.py and the build directory " \
-                              "before building.")
-    else:
-        GIT_REVISION = "Unknown"
-
-    if not ISRELEASED:
-        FULLVERSION += '.dev0+' + GIT_REVISION[:7]
-
-    return FULLVERSION, GIT_REVISION
-    
-
-def write_version_py(filename=os.path.join(SRC_PATH, '_version.py')):
-    cnt = ("# THIS FILE IS GENERATED FROM PyQtNetworkView SETUP.PY\n\n"
-           "short_version = '%(version)s'\n"
-           "version = '%(version)s'\n"
-           "full_version = '%(full_version)s'\n"
-           "git_revision = '%(git_revision)s'\n"
-           "release = %(isrelease)s\n"
-           "if not release:\n"
-           "    version = full_version\n"
-           "IS_COMPILED = %(compiled)s\n")
-    FULLVERSION, GIT_REVISION = get_version_info()
-
-    with open(filename, 'w') as f:
-        f.write(cnt % {'version': VERSION,
-                       'full_version': FULLVERSION,
-                       'git_revision': GIT_REVISION,
-                       'isrelease': str(ISRELEASED),
-                       'compiled': bool(IS_COMPILED)})
-  
 if IS_COMPILED:
     setup_requires = ["PyQt5"] if REQUIRE_PYQT else []
     ext_modules = [Extension(MODULE_NAME + ".NetworkView",
@@ -351,9 +281,7 @@ else:
 install_requires = ["PyQt5"]
 if sys.platform.startswith('win'):
     install_requires.append("pywin32")
-    
 
-write_version_py(os.path.join(SRC_PATH, '_version.py'))
 with open('README.rst', 'r') as f:
     LONG_DESCRIPTION = f.read()
     
@@ -362,7 +290,8 @@ setup(
     author = "Nicolas Elie",
     author_email = "nicolas.elie@cnrs.fr",
     url = "https://github.com/metgem/PyQtNetworkView",
-    version = get_version_info()[0],
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass({'build_ext': build_ext, }),
     description = "Qt Widget and Python bindings for visualisation of a network graph",
     long_description = LONG_DESCRIPTION,
     keywords = ["qt"],
@@ -381,9 +310,6 @@ setup(
                    "Programming Language :: Python :: 3.7",
                    "Programming Language :: Python :: 3.8"],
     ext_modules = ext_modules,
-    cmdclass = {
-        'build_ext': build_ext,
-    },
     packages = find_packages(),
     setup_requires = setup_requires,
     install_requires = install_requires,
