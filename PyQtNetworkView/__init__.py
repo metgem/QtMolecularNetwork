@@ -4,7 +4,7 @@
 
 try:
     IS_COMPILED = True
-    from .NetworkView import (Node, Edge, RADIUS,
+    from .NetworkView import (Node, NodePolygon, Edge, RADIUS,
                               NetworkScene as BaseNetworkScene,
                               NetworkStyle, DefaultStyle)
     from .style import read_css, style_to_json, style_to_cytoscape
@@ -28,7 +28,10 @@ try:
         return NetworkStyle(*result)
 except ImportError:
     IS_COMPILED = False
-    from .scene import Node, Edge, NetworkScene, RADIUS
+    from .node import Node, NodePolygon
+    from .edge import Edge
+    from .scene import NetworkScene
+    from .config import RADIUS
     from .style import (NetworkStyle, DefaultStyle,
                         style_from_css, style_to_json, style_to_cytoscape)
     

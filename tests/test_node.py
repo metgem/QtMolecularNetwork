@@ -4,6 +4,8 @@ from PyQt5.QtCore import Qt, QSize
 import pytest
 import hashlib
 import PyQtNetworkView
+from PyQtNetworkView.node import NodePolygon, NODE_POLYGON_MAP
+from PyQt5.QtGui import QPolygonF
 
 from resources import MOLECULES
 
@@ -65,7 +67,32 @@ def test_node_set_text_color(mod):
     color = QColor(Qt.red)
     node.setTextColor(color)
     assert node.textColor() == color
+
+@pytest.mark.parametrize("id", range(0, 18))
+def test_node_set_polygon(mod, qapp, id):
+    """Check that setPolygon successfully change node polygon."""
     
+    node = mod.Node(18)
+    id = list(NodePolygon)[id]
+    
+    if mod.__name__ == 'PyQtNetworkView._pure':  # Python
+        assert type(mod.NodePolygon).__name__ == 'EnumMeta'
+        polygon = NODE_POLYGON_MAP[id] if id != NodePolygon.Circle else QPolygonF()
+    else:  # C++/SIP
+        assert type(mod.NodePolygon).__name__ == 'enumtype'
+        polygon = NODE_POLYGON_MAP[id] if id != NodePolygon.Circle else QPolygonF()
+        id = id.value
+        
+    assert node.polygon() == mod.NodePolygon.Circle
+    assert node.customPolygon().isEmpty()
+    node.setPolygon(id)
+    
+    assert node.polygon() == id
+    if not polygon.isEmpty():  # Circle
+        assert not node.customPolygon().isEmpty()
+        assert node.customPolygon().size() == polygon.size()
+    else:
+        assert node.customPolygon().isEmpty()
 
 @pytest.mark.parametrize("color", [Qt.black, Qt.white, Qt.darkGreen,
                                    Qt.blue, Qt.cyan, Qt.transparent])

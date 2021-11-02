@@ -15,6 +15,7 @@ Node::Node(int index, const QString &label)
     : QGraphicsEllipseItem(-RADIUS, -RADIUS, 2*RADIUS, 2*RADIUS)
 {
     this->id = index;
+
     if (label.isNull())
         setLabel(QString::number(index+1));
     else
@@ -175,6 +176,43 @@ void Node::setPixmapFromSvg(const QByteArray &svg, const QSize &size)
     this->pixmap_ = pixmap;
 }
 
+void Node::scalePolygon(qreal polygon_size)
+{
+    qreal rect_size = std::max(rect().width(), rect().height());
+    if (polygon_size <= 0.)
+        polygon_size = std::max(this->node_polygon_.boundingRect().width(), this->node_polygon_.boundingRect().height());
+    else
+        polygon_size = std::max({polygon_size,
+                                 this->node_polygon_.boundingRect().width(),
+                                 this->node_polygon_.boundingRect().height()});
+    double scale = rect_size / polygon_size;
+    QTransform trans = QTransform().scale(scale, scale);
+    this->node_polygon_ = trans.map(this->node_polygon_);
+}
+
+NodePolygon Node::polygon()
+{
+    return this->stock_polygon_;
+}
+
+void Node::setPolygon(NodePolygon id)
+{
+    this->stock_polygon_ = id;
+    this->node_polygon_ = NODE_POLYGON_MAP.value(id);
+    scalePolygon(100.);
+}
+
+QPolygonF Node::customPolygon()
+{
+    return this->node_polygon_;
+}
+
+void Node::setCustomPolygon(QPolygonF polygon, qreal polygon_size)
+{
+    this->node_polygon_ = polygon;
+    scalePolygon(polygon_size);
+}
+
 void Node::addEdge(Edge *edge)
 {
     this->edges_.insert(edge);
@@ -237,7 +275,14 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 QPainterPath Node::shape() const
 {
-    QPainterPath path = QGraphicsEllipseItem::shape();
+    QPainterPath path;
+    if (this->stock_polygon_ == NodePolygon::Circle)
+        path = QGraphicsEllipseItem::shape();
+    else
+    {
+        QPainterPath path = QPainterPath();
+        path.addPolygon(this->node_polygon_);
+    }
     path.addRect(this->label_rect_);
     return path;
 }
@@ -274,24 +319,38 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     }
 
     qreal lod(option->levelOfDetailFromTransform(painter->worldTransform()));
+    QRectF rect = this->rect();
 
     if (lod<0.1)
     {
-        painter->fillRect(rect(), painter->brush());
+        painter->fillRect(rect, painter->brush());
         return;
     }
 
-    // Draw ellipse
-    if (spanAngle() != 0 && qAbs(spanAngle() % (360 * 16)) == 0)
-        painter->drawEllipse(rect());
+    if (this->stock_polygon_ == NodePolygon::Circle)
+    {
+        // Draw ellipse
+        if (spanAngle() != 0 && qAbs(spanAngle() % (360 * 16)) == 0)
+            painter->drawEllipse(rect);
+        else
+            painter->drawPie(rect, startAngle(), spanAngle());
+    }
     else
-        painter->drawPie(rect(), startAngle(), spanAngle());
+    {
+        // Draw polygon
+        painter->drawPolygon(this->node_polygon_);
+
+        // Set clip path for pies
+        QPainterPath painter_path = QPainterPath();
+        painter_path.addPolygon(QTransform().scale(0.8, 0.8).map(this->node_polygon_));
+        painter->setClipPath(painter_path);
+    }
 
     // Draw pie if any
-    if (scene->pieChartsVisibility() && lod > 0.1 && this->pieList.size() > 0)
+    if (scene->pieChartsVisibility() && this->pieList.size() > 0)
     {
-        int radius = this->radius();
-        QRectF rect(-0.85*radius, -0.85*radius, 1.7*radius, 1.7*radius);
+        if (!painter->hasClipping()) //  If painter has no clipping (node shape is circle), scale pie circle
+            rect = QTransform().scale(0.85, 0.85).mapRect(rect);
         float start = 0;
         QList<QColor> colors = scene->pieColors();
         painter->setPen(QPen(Qt::NoPen));
@@ -306,6 +365,7 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     if (lod > 0.4)
     {
         QRectF bounding_rect = boundingRect();
+        painter->setClipping(false);
         painter->setFont(this->font_);
         painter->setPen(QPen(text_color, 0));
         painter->drawText(bounding_rect, Qt::AlignCenter, label_);

@@ -101,11 +101,11 @@ void Edge::adjust()
     qreal min_len = source->radius() + dest->radius() + source->pen().widthF() + dest->pen().widthF();
 
     if (length > min_len) {
-        QPointF offset((line.dx() * (source->radius() + source->pen().widthF() + 1)) / length,
-                           (line.dy() * (source->radius() + source->pen().width() + 1)) / length);
+        QPointF offset((line.dx() * (source->radius()/2 + source->pen().widthF() + 1)) / length,
+                           (line.dy() * (source->radius()/2 + source->pen().width() + 1)) / length);
         sourcePoint = line.p1() + offset;
-        offset = QPointF((line.dx() * (dest->radius() + dest->pen().widthF() + 1)) / length,
-                         (line.dy() * (dest->radius() + dest->pen().widthF() + 1)) / length);
+        offset = QPointF((line.dx() * (dest->radius()/2 + dest->pen().widthF() + 1)) / length,
+                         (line.dy() * (dest->radius()/2 + dest->pen().widthF() + 1)) / length);
         destPoint = line.p2() - offset;
     } else {
         sourcePoint = destPoint = line.p1();

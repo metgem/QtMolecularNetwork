@@ -3,13 +3,89 @@ from .style import NetworkStyle
 from .config import RADIUS
 from .mol_depiction import SmilesToPixmap, InchiToPixmap, SvgToPixmap
 
-from typing import Set
+from typing import Set, Union
+from enum import Enum
 import base64
 
-from PyQt5.QtGui import QPen, QColor, QFont, QBrush, QFontMetrics, QPixmap
+from PyQt5.QtGui import (QPen, QColor, QFont, QBrush, QFontMetrics, QPixmap,
+                         QPolygonF, QTransform, QPainterPath)
 from PyQt5.QtWidgets import (QGraphicsItem, QGraphicsEllipseItem, QStyle,
                              QApplication)
-from PyQt5.QtCore import Qt, QRectF, QSize
+from PyQt5.QtCore import Qt, QRectF, QSize, QPointF
+
+
+class NodePolygon(Enum):
+    Circle = 0
+    Square = 1
+    Diamond = 2
+    ThinDiamond = 3
+    TriangleDown = 4
+    TriangleUp = 5
+    TriangleLeft = 6
+    TriangleRight = 7
+    Pentagon = 8
+    Octagon = 9
+    Hexagon = 10
+    Star = 11
+    Hexagram = 12
+    Octagram = 13
+    Decagram = 14
+    Plus = 15
+    X = 16
+    Mask = 17
+
+
+NODE_POLYGON_MAP = {
+    NodePolygon.Square:        QPolygonF([QPointF(-35., 35.),    QPointF(35., 35.),
+                                          QPointF(35., -35.),    QPointF(-35., -35.)]),
+    NodePolygon.TriangleDown:  QPolygonF([QPointF(0., 50.),      QPointF(-50., -28.8),  QPointF(50., -28.8)]),
+    NodePolygon.TriangleUp:    QPolygonF([QPointF(0., -50.),     QPointF(-50., 28.8),   QPointF(50., 28.8)]),
+    NodePolygon.TriangleLeft:  QPolygonF([QPointF(-50, 0.),      QPointF(28.8, 50),     QPointF(28.8, -50)]),
+    NodePolygon.TriangleRight: QPolygonF([QPointF(50, 0.),       QPointF(-28.8, 50),    QPointF(-28.8, -50)]),
+    NodePolygon.Diamond:       QPolygonF([QPointF(0., 50.),      QPointF(50., 0.),
+                                          QPointF(0., -50.),     QPointF(-50., 0.)]),
+    NodePolygon.ThinDiamond:   QPolygonF([QPointF(0., 50.),      QPointF(25., 0.),
+                                          QPointF(0., -50.),     QPointF(-25., 0.)]),
+    NodePolygon.Pentagon:      QPolygonF([QPointF(-50., -16.),   QPointF(-31., 42.5),   QPointF(31., 42.5),
+                                          QPointF(50., -16.),    QPointF(0., -50.)]),
+    NodePolygon.Hexagon:       QPolygonF([QPointF(-43.3, 25.),   QPointF(0., 50.),      QPointF(43.30, 25.),
+                                          QPointF(43.3, -25.),   QPointF(0., -50.),     QPointF(-43.30, -25.)]),
+    NodePolygon.Octagon:       QPolygonF([QPointF(-50., 21.),    QPointF(-21., 50.),    QPointF(21., 50.),
+                                          QPointF(50., 21.),     QPointF(50., -21.),    QPointF(21., -50.),
+                                          QPointF(-21., -50.),   QPointF(-50., -21.)]),
+    NodePolygon.Star:          QPolygonF([QPointF(-50., -16.),   QPointF(-15., -21.),   QPointF(0., -50.),
+                                          QPointF(16., -21.),    QPointF(50., -16.),    QPointF(25., 8.),
+                                          QPointF(31., 42.3),    QPointF(0., 26.),      QPointF(-31., 42.3),
+                                          QPointF(-25., 8.)]),
+    NodePolygon.Hexagram:      QPolygonF([QPointF(-50., 0.),     QPointF(-21., 12.),    QPointF(-25., 43.),
+                                          QPointF(0., 25.),      QPointF(25., 43.),     QPointF(21., 12.),
+                                          QPointF(50., 0.),      QPointF(21., -12.),    QPointF(25., -43.),
+                                          QPointF(0., -25.),     QPointF(-25., -43.),   QPointF(-21., -12.)]),
+    NodePolygon.Octagram:      QPolygonF([QPointF(-46., 19.),    QPointF(-17.5, 17.5),  QPointF(-19., 46.),
+                                          QPointF(0., 25.),      QPointF(19., 46.),     QPointF(17.5, 17.5),
+                                          QPointF(46., 19.),     QPointF(25., 0.),      QPointF(46., -19.),
+                                          QPointF(17.5, -17.5),  QPointF(19., -46.),    QPointF(0., -25.),
+                                          QPointF(-19., -46.),   QPointF(-17.5, -17.5), QPointF(-46., -19.),
+                                          QPointF(-25., 0.)]),
+    NodePolygon.Decagram:      QPolygonF([QPointF(-48., 16.),    QPointF(-20., 15.),    QPointF(-29., 40.),
+                                          QPointF(-8., 24.),     QPointF(0., 50.),      QPointF(8., 24.),
+                                          QPointF(29., 40.),     QPointF(20., 15.),     QPointF(48., 16.),
+                                          QPointF(25., 0.),      QPointF(48., -16.),    QPointF(20., -15.),
+                                          QPointF(29., -40.),    QPointF(8., -24.),     QPointF(0., -50.),
+                                          QPointF(-8., -24.),    QPointF(-29., -40.),   QPointF(-20., -15.),
+                                          QPointF(-48., -16.),   QPointF(-25., 0.)]),
+    NodePolygon.Plus:          QPolygonF([QPointF(-50., 20.),    QPointF(-20., 20.),    QPointF(-20, 50.),
+                                          QPointF(20., 50.),     QPointF(20., 20.),     QPointF(50., 20.),
+                                          QPointF(50., -20.),    QPointF(20., -20.),    QPointF(20., -50.),
+                                          QPointF(-20., -50.),   QPointF(-20., -20.),   QPointF(-50., -20.)]),
+    NodePolygon.X:             QPolygonF([QPointF(-22., 50.),    QPointF(0., 30.),      QPointF(22., 50.),
+                                          QPointF(50., 22.),     QPointF(30., 0.),      QPointF(50., -22.),
+                                          QPointF(22., -50.),    QPointF(0., -30.),     QPointF(-22., -50.),
+                                          QPointF(-50., -22.),   QPointF(-30., -0.),    QPointF(-50., 20.)]),
+    NodePolygon.Mask:          QPolygonF([QPointF(-50.0, 6.),    QPointF(-6., 23.),    QPointF(6., 23.),
+                                          QPointF(50., 6.),      QPointF(44., -23.),   QPointF(0., -29.),
+                                          QPointF(-44., -23.)]),
+}
 
 
 class Node(QGraphicsEllipseItem):
@@ -24,6 +100,8 @@ class Node(QGraphicsEllipseItem):
         self._font = QApplication.font()
         self._text_color = QColor()
         self._pixmap = QPixmap()
+        self._stock_polygon = NodePolygon.Circle
+        self._node_polygon = QPolygonF()
 
         self.id = index
         if label is None:
@@ -63,6 +141,10 @@ class Node(QGraphicsEllipseItem):
     def setRadius(self, radius: int):
         self.prepareGeometryChange()
         self.setRect(QRectF(-radius, -radius, 2 * radius, 2 * radius))
+
+    def setRect(self, rect: QRectF):
+        super().setRect(rect)
+        self.scalePolygon()
 
     def font(self) -> QFont:
         return self._font
@@ -131,6 +213,35 @@ class Node(QGraphicsEllipseItem):
     def setPixmapFromSvg(self, svg: bytes, size: QSize = QSize(300, 300)):
         self._pixmap = SvgToPixmap(svg, size)
 
+    def scalePolygon(self, polygon_size: float = None):
+        rect_size = max(self.rect().width(), self.rect().height())
+        if polygon_size is None:
+            polygon_size = max(self._node_polygon.boundingRect().width(), self._node_polygon.boundingRect().height())
+        else:
+            polygon_size = max(polygon_size,
+                               self._node_polygon.boundingRect().width(),
+                               self._node_polygon.boundingRect().height())
+        scale = rect_size / polygon_size if polygon_size > 0. else 1.
+        trans = QTransform().scale(scale, scale)
+        self._node_polygon = trans.map(self._node_polygon)
+
+    def polygon(self) -> NodePolygon:
+        return self._stock_polygon
+
+    def setPolygon(self, id: Union[NodePolygon, int]):
+        if isinstance(id, int):
+            id = NodePolygon(id)
+        self._stock_polygon = id
+        self._node_polygon = NODE_POLYGON_MAP.get(id, QPolygonF())
+        self.scalePolygon(100.)
+
+    def customPolygon(self) -> QPolygonF:
+        return self._node_polygon
+
+    def setCustomPolygon(self, polygon: QPolygonF, polygon_size: float = None):
+        self._node_polygon = polygon
+        self.scalePolygon(polygon_size)
+
     def addEdge(self, edge: Edge):
         self._edges.add(edge)
         
@@ -166,7 +277,12 @@ class Node(QGraphicsEllipseItem):
         super().mouseReleaseEvent(event)
 
     def shape(self):
-        path = super().shape()
+        if self._stock_polygon == NodePolygon.Circle:
+            path = super().shape()
+        else:
+            path = QPainterPath()
+            path.addPolygon(self._node_polygon)
+
         path.addRect(self._label_rect)
         return path
 
@@ -192,21 +308,31 @@ class Node(QGraphicsEllipseItem):
             
         # Get level of detail
         lod = option.levelOfDetailFromTransform(painter.worldTransform())
+        rect = self.rect()
         
         if lod < 0.1:
-            painter.fillRect(self.rect(), painter.brush())
+            painter.fillRect(rect, painter.brush())
             return
 
-        # Draw ellipse
-        if self.spanAngle() != 0 and abs(self.spanAngle()) % (360 * 16) == 0:
-            painter.drawEllipse(self.rect())
+        if self._stock_polygon == NodePolygon.Circle:
+            # Draw ellipse
+            if self.spanAngle() != 0 and abs(self.spanAngle()) % (360 * 16) == 0:
+                painter.drawEllipse(rect)
+            else:
+                painter.drawPie(rect, self.startAngle(), self.spanAngle())
         else:
-            painter.drawPie(self.rect(), self.startAngle(), self.spanAngle())
+            # Draw polygon
+            painter.drawPolygon(self._node_polygon)
+
+            # Set clip path for pies
+            painter_path = QPainterPath()
+            painter_path.addPolygon(QTransform().scale(0.8, 0.8).map(self._node_polygon))
+            painter.setClipPath(painter_path)
 
         # Draw pies if any
-        if scene.pieChartsVisibility() and lod > 0.1 and len(self._pie) > 0:
-            radius = self.radius()
-            rect = QRectF(-.85 * radius, -0.85 * radius, 1.7 * radius, 1.7 * radius)
+        if scene.pieChartsVisibility() and len(self._pie) > 0:
+            if not painter.hasClipping():  # If painter has no clipping (node shape is circle), scale pie circle
+                rect = QTransform().scale(0.85, 0.85).mapRect(rect)
             start = 0.
             colors = self.scene().pieColors()
             painter.setPen(QPen(Qt.NoPen))
@@ -218,6 +344,7 @@ class Node(QGraphicsEllipseItem):
         # Draw text
         if lod > 0.4:
             bounding_rect = self.boundingRect()
+            painter.setClipping(False)
             painter.setFont(self.font())
             painter.setPen(QPen(text_color, 0))
             painter.drawText(bounding_rect, Qt.AlignCenter, self._label)

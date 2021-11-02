@@ -82,11 +82,11 @@ class Edge(QGraphicsPathItem):
 
         min_len = self._source.radius() + self._dest.radius() + self._source.pen().widthF() + self._dest.pen().widthF()
         if length > min_len:
-            offset = QPointF((line.dx() * (self._source.radius() + self._source.pen().widthF() + 1)) / length,
-                             (line.dy() * (self._source.radius() + self._source.pen().widthF() + 1)) / length)
+            offset = QPointF((line.dx() * (self._source.radius()/2 + self._source.pen().widthF() + 1)) / length,
+                             (line.dy() * (self._source.radius()/2 + self._source.pen().widthF() + 1)) / length)
             self.source_point = line.p1() + offset
-            offset = QPointF((line.dx() * (self._dest.radius() + self._dest.pen().widthF() + 1)) / length,
-                             (line.dy() * (self._dest.radius() + self._dest.pen().widthF() + 1)) / length)
+            offset = QPointF((line.dx() * (self._dest.radius()/2 + self._dest.pen().widthF() + 1)) / length,
+                             (line.dy() * (self._dest.radius()/2 + self._dest.pen().widthF() + 1)) / length)
             self.dest_point = line.p2() - offset
         else:
             self.source_point = self.dest_point = line.p1()

@@ -3,6 +3,28 @@
 
 %If (Qt_5_0_0 -)
 
+%ModuleHeaderCode
+#include "node.h"
+%End
+
+enum NodePolygon {
+    Circle,
+    Square,
+    Diamond,
+    ThinDiamond,
+    TriangleDown,
+    TriangleUp,
+    TriangleLeft,
+    TriangleRight,
+    Pentagon,
+    Octagon,
+    Hexagon,
+    Star,
+    Plus,
+    X,
+    Mask
+};
+
 class Node : QGraphicsEllipseItem
 {
 
@@ -31,6 +53,12 @@ public:
     void setPixmapFromInchi(const QString &inchi, const QSize &size = QSize(300, 300));
     void setPixmapFromBase64(const QByteArray &b64);
     void setPixmapFromSvg(const QByteArray &svg, const QSize &size = QSize(300, 300));
+    void scalePolygon(qreal polygon_size = 0.);
+    NodePolygon polygon();
+    void setPolygon(NodePolygon id);
+    QPolygonF customPolygon();
+    void setCustomPolygon(QPolygonF polygon, qreal polygon_size = 0.);
+    
     void addEdge(Edge *edge);
     void removeEdge(Edge *edge);
     QSet<Edge *> edges() const;
