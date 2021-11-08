@@ -1,6 +1,8 @@
-from PyQt5.QtGui import QPen, QColor, QStandardItemModel, QStandardItem, QPixmap, QPainter, QImage
+from PyQt5.QtGui import (QPen, QColor, QStandardItemModel, QStandardItem,
+                         QPixmap, QPainter, QImage, QBrush, QPolygonF)
 from PyQt5.QtWidgets import QGraphicsItem
 from PyQt5.QtCore import Qt, QPoint, QPointF, QSize
+from PyQtNetworkView.node import NodePolygon, NODE_POLYGON_MAP
 
 import pytest
 import hashlib
@@ -661,6 +663,40 @@ def test_scene_set_selected_nodes_color(scene, color):
         assert item.brush().color() != color
         
         
+@pytest.mark.parametrize("brush", [QBrush(), QBrush(Qt.blue, Qt.NoBrush),
+                                   QBrush(Qt.black, Qt.DiagCrossPattern)])
+def test_scene_set_selected_nodes_overlay_brush(scene, brush):
+    """Check that setSelectedNodesOverlayBrush modify only the overlay brush
+    of selected nodes"""
+    
+    if brush != QBrush():
+        for node in scene.nodes():
+            assert node.overlayBrush() != brush
+    else:
+        for node in scene.nodes():
+            assert node.overlayBrush() == brush
+        
+    selected_nodes = set()
+    not_selected_nodes = set()
+    for i, node in enumerate(scene.nodes()):
+        if i % 2 == 0:
+            node.setSelected(True)
+            selected_nodes.add(node)
+        else:
+            not_selected_nodes.add(node)
+            
+    scene.setSelectedNodesOverlayBrush(brush)
+    
+    for item in selected_nodes:
+        assert item.overlayBrush() == brush
+        
+    if brush != QBrush():
+        for item in not_selected_nodes:
+            assert item.overlayBrush() != brush
+    else:
+        for item in not_selected_nodes:
+            assert item.overlayBrush() == brush
+        
 @pytest.mark.parametrize("radius", [0, 25, 35, 100])
 def test_scene_set_selected_nodes_radius(scene, radius):
     """Check that setSelectedNodesRadius modify only the radius of selected nodes"""
@@ -684,6 +720,32 @@ def test_scene_set_selected_nodes_radius(scene, radius):
     for item in not_selected_nodes:
         assert item.radius() != radius
     
+@pytest.mark.parametrize("polygon_id", range(1, 15))
+def test_scene_set_selected_nodes_polygon(mod, scene, polygon_id):
+    """Check that setSelectedNodesPolygon modify only the polygon of selected nodes"""
+    
+    if mod.__name__ == 'PyQtNetworkView._pure':  # Python
+        polygon_id = NodePolygon(polygon_id)
+    
+    for node in scene.nodes():
+        assert node.polygon() != polygon_id
+        
+    selected_nodes = set()
+    not_selected_nodes = set()
+    for i, node in enumerate(scene.nodes()):
+        if i % 2 == 0:
+            node.setSelected(True)
+            selected_nodes.add(node)
+        else:
+            not_selected_nodes.add(node)
+            
+    scene.setSelectedNodesPolygon(polygon_id)
+    
+    for item in selected_nodes:
+        assert item.polygon() == polygon_id
+    
+    for item in not_selected_nodes:
+        assert item.polygon() != polygon_id
         
 @pytest.mark.parametrize("colors", [[QColor(i) for i in range(2, 12)],
                                     [QColor(i) for i in range(2, 10)],
@@ -705,6 +767,23 @@ def test_scene_set_nodes_colors(scene, colors):
         for node in scene.nodes():
             assert node.brush().color() == default
             
+@pytest.mark.parametrize("brushes", [[QBrush(QColor(i), Qt.BrushStyle(j)) for i,j in zip(range(2, 12), range(2, 12))],
+                                     [QBrush(QColor(i), Qt.BrushStyle(j)) for i,j in zip(range(2, 10), range(2, 10))],
+                                     [QBrush(QColor(i)) for i in range(5)],
+                                     [QBrush() for i in range(10)]])
+def test_scene_set_nodes_overlay_brushes(scene, brushes):
+    """Check that setNodesOverlayBrushes change overlay brushes for all nodes."""
+       
+    scene.setNodesOverlayBrushes(brushes)
+    if len(brushes) >= len(scene.nodes()):
+        for i, node in enumerate(scene.nodes()):
+            assert node.overlayBrush() == brushes[i]
+        assert scene.nodesOverlayBrushes() == brushes
+    else:
+        for node in scene.nodes():
+            assert node.overlayBrush() == QBrush()
+            
+            
 @pytest.mark.parametrize("radii", [[i for i in range(2, 12)],
                                    [i for i in range(2, 10)],
                                    [0 for i in range(10)]])
@@ -722,6 +801,39 @@ def test_scene_set_nodes_radii(scene, radii):
         for node in scene.nodes():
             assert node.radius() == default
             
+@pytest.mark.parametrize("polygon_ids", [[i for i in range(2, 12)],
+                                         [i for i in range(2, 10)],
+                                         [0 for i in range(10)]
+                                        ])
+def test_scene_set_nodes_polygons(mod, scene, polygon_ids):
+    """Check that setNodesPolygons change overlay brushes for all nodes."""
+       
+    polygon_ids = [NodePolygon(id) for id in polygon_ids]
+    circle = NodePolygon.Circle
+    
+    polygons = [NODE_POLYGON_MAP[id] if id != NodePolygon.Circle else QPolygonF()
+                for id in polygon_ids]
+    if mod.__name__ == 'PyQtNetworkView._pure':  # Python
+        assert type(mod.NodePolygon).__name__ == 'EnumMeta'
+    else:  # C++/SIP
+        assert type(mod.NodePolygon).__name__ == 'enumtype'                   
+        polygon_ids = [id.value for id in polygon_ids]
+        circle = circle.value
+        
+    for node in scene.nodes():
+        assert node.polygon() == mod.NodePolygon.Circle
+        assert node.customPolygon().isEmpty() 
+        
+    scene.setNodesPolygons(polygon_ids)   
+    
+    if len(polygons) >= len(scene.nodes()):
+        for i, node in enumerate(scene.nodes()):
+            assert node.polygon() == polygon_ids[i]
+            assert node.customPolygon().size() == polygons[i].size()
+        assert scene.nodesPolygons() == polygon_ids
+    else:
+        for node in scene.nodes():
+            assert node.polygon() == circle
             
 def test_scene_nodes(scene):
     """Check that nodes are sorted by index."""

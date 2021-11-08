@@ -6,6 +6,7 @@ import hashlib
 import PyQtNetworkView
 from PyQtNetworkView.node import NodePolygon, NODE_POLYGON_MAP
 from PyQt5.QtGui import QPolygonF
+from PyQt5.QtCore import QPointF
 
 from resources import MOLECULES
 
@@ -73,14 +74,13 @@ def test_node_set_polygon(mod, qapp, id):
     """Check that setPolygon successfully change node polygon."""
     
     node = mod.Node(18)
-    id = list(NodePolygon)[id]
+    id = NodePolygon(id)
+    polygon = NODE_POLYGON_MAP[id] if id != NodePolygon.Circle else QPolygonF()
     
     if mod.__name__ == 'PyQtNetworkView._pure':  # Python
         assert type(mod.NodePolygon).__name__ == 'EnumMeta'
-        polygon = NODE_POLYGON_MAP[id] if id != NodePolygon.Circle else QPolygonF()
     else:  # C++/SIP
         assert type(mod.NodePolygon).__name__ == 'enumtype'
-        polygon = NODE_POLYGON_MAP[id] if id != NodePolygon.Circle else QPolygonF()
         id = id.value
         
     assert node.polygon() == mod.NodePolygon.Circle
@@ -88,11 +88,35 @@ def test_node_set_polygon(mod, qapp, id):
     node.setPolygon(id)
     
     assert node.polygon() == id
-    if not polygon.isEmpty():  # Circle
+    if polygon.isEmpty():  # Circle
+        assert node.customPolygon().isEmpty()
+    else:
         assert not node.customPolygon().isEmpty()
         assert node.customPolygon().size() == polygon.size()
-    else:
+        
+@pytest.mark.parametrize("polygon", [QPolygonF([QPointF(-50., 50.), QPointF(35., 35.), QPointF(24., -24.), QPointF(-58., -58.)]),
+                                     QPolygonF([QPointF(0., 25.), QPointF(-74., -35.), QPointF(42., -98.)]),
+                                     QPolygonF([QPointF(1., 2.), QPointF(3., 4.)]),
+                                     QPolygonF([QPointF(-5., 45.)]),
+                                     QPolygonF(),
+                                    ])
+def test_node_set_custom_polygon(mod, qapp, polygon):
+    """Check that setCustomPolygon successfully change node polygon."""
+    
+    node = mod.Node(34)
+    assert node.customPolygon().isEmpty()
+    node.setCustomPolygon(polygon)
+    
+    if mod.__name__ == 'PyQtNetworkView._pure':  # Python
+        assert node.polygon() == NodePolygon.Custom
+    else:  # C++/SIP
+        assert node.polygon() == NodePolygon.Custom.value
+    
+    if polygon.isEmpty():  # Circle
         assert node.customPolygon().isEmpty()
+    else:
+        assert not node.customPolygon().isEmpty()
+        assert node.customPolygon().size() == polygon.size()
 
 @pytest.mark.parametrize("color", [Qt.black, Qt.white, Qt.darkGreen,
                                    Qt.blue, Qt.cyan, Qt.transparent])
@@ -109,6 +133,20 @@ def test_node_set_brush(mod, color, autoTextColor):
             assert node.textColor().name() == "#ffffff"
         else:
             assert node.textColor().name() == "#000000"
+            
+@pytest.mark.parametrize("color", [Qt.black, Qt.white, Qt.darkGreen,
+                                   Qt.blue, Qt.cyan, Qt.transparent])
+@pytest.mark.parametrize("style", [Qt.NoBrush, Qt.SolidPattern,
+                                   Qt.CrossPattern, Qt.DiagCrossPattern])
+def test_node_set_overlay_brush(mod, color, style):
+    """Check that setOverlayBrush successfully change brush."""
+    
+    node = mod.Node(41)
+    brush = QBrush(color, style)
+    assert not node.brush() == QBrush()
+    node.setOverlayBrush(brush)
+    assert node.overlayBrush != QBrush()
+    assert node.overlayBrush() == brush
    
    
 @pytest.mark.parametrize("pie", [(0.25, 0.5, 0.25), (1, 2, 3, 4),

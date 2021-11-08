@@ -231,9 +231,17 @@ setEdgesSelection(self, Iterable[Edge])
     void setNodesColors(QList<QVariant> colors);
     void setSelectedNodesColor(QColor color);
     
+    QList<QBrush> nodesOverlayBrushes();
+    void setNodesOverlayBrushes(QList<QVariant> brushes);
+    void setSelectedNodesOverlayBrush(QBrush brush);
+    
     QList<int> nodesRadii();
     void setNodesRadii(QList<int> radii);
     void setSelectedNodesRadius(int radius);
+    
+    QList<int> nodesPolygons();
+    void setNodesPolygons(QList<int> polygons);
+    void setSelectedNodesPolygon(int polygon);
     
     void lock(bool lock=true);
     void unlock();

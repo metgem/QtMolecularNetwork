@@ -62,6 +62,7 @@ void Node::setRadius(int radius)
 {
     prepareGeometryChange();
     this->setRect(QRectF(-radius, -radius, 2 * radius, 2 * radius));
+    scalePolygon();
 }
 
 QFont Node::font()
@@ -105,6 +106,17 @@ void Node::setBrush(const QBrush &brush, bool autoTextColor)
         }
     }
 }
+
+QBrush Node::overlayBrush()
+{
+    return this->overlay_brush_;
+}
+
+void Node::setOverlayBrush(QBrush brush)
+{
+    this->overlay_brush_ = brush;
+}
+
 
 QString Node::label()
 {
@@ -176,18 +188,12 @@ void Node::setPixmapFromSvg(const QByteArray &svg, const QSize &size)
     this->pixmap_ = pixmap;
 }
 
-void Node::scalePolygon(qreal polygon_size)
+void Node::scalePolygon()
 {
     qreal rect_size = std::max(rect().width(), rect().height());
-    if (polygon_size <= 0.)
-        polygon_size = std::max(this->node_polygon_.boundingRect().width(), this->node_polygon_.boundingRect().height());
-    else
-        polygon_size = std::max({polygon_size,
-                                 this->node_polygon_.boundingRect().width(),
-                                 this->node_polygon_.boundingRect().height()});
-    double scale = rect_size / polygon_size;
-    QTransform trans = QTransform().scale(scale, scale);
-    this->node_polygon_ = trans.map(this->node_polygon_);
+    qreal polygon_size = std::max(this->node_polygon_.boundingRect().width(), this->node_polygon_.boundingRect().height());
+    qreal scale = polygon_size > 0. ? rect_size / polygon_size : 1.;
+    this->node_polygon_ = QTransform().scale(scale, scale).map(this->node_polygon_);
 }
 
 NodePolygon Node::polygon()
@@ -195,11 +201,10 @@ NodePolygon Node::polygon()
     return this->stock_polygon_;
 }
 
-void Node::setPolygon(NodePolygon id)
+void Node::setPolygon(NodePolygon polygon_id)
 {
-    this->stock_polygon_ = id;
-    this->node_polygon_ = NODE_POLYGON_MAP.value(id);
-    scalePolygon(100.);
+    setCustomPolygon(NODE_POLYGON_MAP.value(polygon_id, QPolygonF()));
+    this->stock_polygon_ = polygon_id;
 }
 
 QPolygonF Node::customPolygon()
@@ -207,10 +212,13 @@ QPolygonF Node::customPolygon()
     return this->node_polygon_;
 }
 
-void Node::setCustomPolygon(QPolygonF polygon, qreal polygon_size)
+void Node::setCustomPolygon(QPolygonF polygon)
 {
+    prepareGeometryChange();
+    this->stock_polygon_ = NodePolygon::Custom;
     this->node_polygon_ = polygon;
-    scalePolygon(polygon_size);
+    scalePolygon();
+    invalidateShape();
 }
 
 void Node::addEdge(Edge *edge)
@@ -276,15 +284,17 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 QPainterPath Node::shape() const
 {
     QPainterPath path;
+    QPainterPath label_path;
+
     if (this->stock_polygon_ == NodePolygon::Circle)
         path = QGraphicsEllipseItem::shape();
     else
     {
-        QPainterPath path = QPainterPath();
         path.addPolygon(this->node_polygon_);
     }
-    path.addRect(this->label_rect_);
-    return path;
+
+    label_path.addRect(this->label_rect_);
+    return path.united(label_path);
 }
 
 void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -315,9 +325,10 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     {
         painter->setBrush(this->brush());
         painter->setPen(this->pen());
-        text_color = this->text_color;
+        text_color = this->textColor();
     }
 
+    // Get level of detail
     qreal lod(option->levelOfDetailFromTransform(painter->worldTransform()));
     QRectF rect = this->rect();
 
@@ -331,26 +342,53 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     {
         // Draw ellipse
         if (spanAngle() != 0 && qAbs(spanAngle() % (360 * 16)) == 0)
+        {
             painter->drawEllipse(rect);
+            if (this->overlay_brush_.style() != Qt::NoBrush)
+            {
+                painter->setBrush(this->overlay_brush_);
+                painter->drawEllipse(rect);
+            }
+        }
         else
+        {
             painter->drawPie(rect, startAngle(), spanAngle());
+            if (this->overlay_brush_.style() != Qt::NoBrush)
+            {
+                painter->setBrush(this->overlay_brush_);
+                painter->drawPie(rect, startAngle(), spanAngle());
+            }
+        }
     }
     else
     {
         // Draw polygon
         painter->drawPolygon(this->node_polygon_);
 
-        // Set clip path for pies
-        QPainterPath painter_path = QPainterPath();
-        painter_path.addPolygon(QTransform().scale(0.8, 0.8).map(this->node_polygon_));
-        painter->setClipPath(painter_path);
+        if (this->overlay_brush_.style() != Qt::NoBrush)
+        {
+            painter->setBrush(this->overlay_brush_);
+            painter->drawPolygon(this->node_polygon_);
+        }
+
     }
 
-    // Draw pie if any
+    // Draw pies if any
     if (scene->pieChartsVisibility() && this->pieList.size() > 0)
     {
-        if (!painter->hasClipping()) //  If painter has no clipping (node shape is circle), scale pie circle
-            rect = QTransform().scale(0.85, 0.85).mapRect(rect);
+        if (this->stock_polygon_ == NodePolygon::Circle)
+            rect = QTransform().scale(.85, .85).mapRect(rect);
+        else
+        {
+            if (this->stock_polygon_ == NodePolygon::Square)
+                rect = QTransform().scale(1.2, 1.2).mapRect(rect);
+
+            // Set clip path for pies
+            QPainterPath painter_path = QPainterPath();
+            painter_path.addPolygon(QTransform().scale(.8, .8).map(this->node_polygon_));
+            painter->setClipPath(painter_path);
+        }
+
         float start = 0;
         QList<QColor> colors = scene->pieColors();
         painter->setPen(QPen(Qt::NoPen));
@@ -370,8 +408,6 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
         painter->setPen(QPen(text_color, 0));
         painter->drawText(bounding_rect, Qt::AlignCenter, label_);
         if (scene->pixmapVisibility() && !this->pixmap_.isNull())
-        {
             painter->drawPixmap(bounding_rect.toRect(), this->pixmap_, this->pixmap_.rect());
-        }
     }
 }

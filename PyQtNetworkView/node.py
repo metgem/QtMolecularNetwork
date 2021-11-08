@@ -15,6 +15,7 @@ from PyQt5.QtCore import Qt, QRectF, QSize, QPointF
 
 
 class NodePolygon(Enum):
+    Custom = -1
     Circle = 0
     Square = 1
     Diamond = 2
@@ -36,8 +37,8 @@ class NodePolygon(Enum):
 
 
 NODE_POLYGON_MAP = {
-    NodePolygon.Square:        QPolygonF([QPointF(-35., 35.),    QPointF(35., 35.),
-                                          QPointF(35., -35.),    QPointF(-35., -35.)]),
+    NodePolygon.Square:        QPolygonF([QPointF(-50., 50.),    QPointF(50., 50.),
+                                          QPointF(50., -50.),    QPointF(-50., -50.)]),
     NodePolygon.TriangleDown:  QPolygonF([QPointF(0., 50.),      QPointF(-50., -28.8),  QPointF(50., -28.8)]),
     NodePolygon.TriangleUp:    QPolygonF([QPointF(0., -50.),     QPointF(-50., 28.8),   QPointF(50., 28.8)]),
     NodePolygon.TriangleLeft:  QPolygonF([QPointF(-50, 0.),      QPointF(28.8, 50),     QPointF(28.8, -50)]),
@@ -102,6 +103,7 @@ class Node(QGraphicsEllipseItem):
         self._pixmap = QPixmap()
         self._stock_polygon = NodePolygon.Circle
         self._node_polygon = QPolygonF()
+        self._overlay_brush: QBrush = QBrush()
 
         self.id = index
         if label is None:
@@ -141,9 +143,6 @@ class Node(QGraphicsEllipseItem):
     def setRadius(self, radius: int):
         self.prepareGeometryChange()
         self.setRect(QRectF(-radius, -radius, 2 * radius, 2 * radius))
-
-    def setRect(self, rect: QRectF):
-        super().setRect(rect)
         self.scalePolygon()
 
     def font(self) -> QFont:
@@ -172,6 +171,12 @@ class Node(QGraphicsEllipseItem):
             else:
                 luma = (0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue()) / 255
                 self._text_color = QColor(Qt.black) if luma > 0.5 else QColor(Qt.white)
+
+    def overlayBrush(self) -> QBrush:
+        return self._overlay_brush
+
+    def setOverlayBrush(self, brush: QBrush):
+        self._overlay_brush = brush
 
     def label(self) -> str:
         return self._label
@@ -213,17 +218,11 @@ class Node(QGraphicsEllipseItem):
     def setPixmapFromSvg(self, svg: bytes, size: QSize = QSize(300, 300)):
         self._pixmap = SvgToPixmap(svg, size)
 
-    def scalePolygon(self, polygon_size: float = None):
+    def scalePolygon(self):
         rect_size = max(self.rect().width(), self.rect().height())
-        if polygon_size is None:
-            polygon_size = max(self._node_polygon.boundingRect().width(), self._node_polygon.boundingRect().height())
-        else:
-            polygon_size = max(polygon_size,
-                               self._node_polygon.boundingRect().width(),
-                               self._node_polygon.boundingRect().height())
+        polygon_size = max(self._node_polygon.boundingRect().width(), self._node_polygon.boundingRect().height())
         scale = rect_size / polygon_size if polygon_size > 0. else 1.
-        trans = QTransform().scale(scale, scale)
-        self._node_polygon = trans.map(self._node_polygon)
+        self._node_polygon = QTransform().scale(scale, scale).map(self._node_polygon)
 
     def polygon(self) -> NodePolygon:
         return self._stock_polygon
@@ -231,16 +230,18 @@ class Node(QGraphicsEllipseItem):
     def setPolygon(self, id: Union[NodePolygon, int]):
         if isinstance(id, int):
             id = NodePolygon(id)
+        self.setCustomPolygon(NODE_POLYGON_MAP.get(id, QPolygonF()))
         self._stock_polygon = id
-        self._node_polygon = NODE_POLYGON_MAP.get(id, QPolygonF())
-        self.scalePolygon(100.)
 
     def customPolygon(self) -> QPolygonF:
         return self._node_polygon
 
-    def setCustomPolygon(self, polygon: QPolygonF, polygon_size: float = None):
+    def setCustomPolygon(self, polygon: QPolygonF):
+        self.prepareGeometryChange()
+        self._stock_polygon = NodePolygon.Custom
         self._node_polygon = polygon
-        self.scalePolygon(polygon_size)
+        self.scalePolygon()
+        self.invalidateShape()
 
     def addEdge(self, edge: Edge):
         self._edges.add(edge)
@@ -283,8 +284,9 @@ class Node(QGraphicsEllipseItem):
             path = QPainterPath()
             path.addPolygon(self._node_polygon)
 
-        path.addRect(self._label_rect)
-        return path
+        label_path = QPainterPath()
+        label_path.addRect(self._label_rect)
+        return path.united(label_path)
 
     # noinspection PyMethodOverriding
     def paint(self, painter, option, widget):
@@ -292,15 +294,17 @@ class Node(QGraphicsEllipseItem):
         if scene is None:
             return
 
+        style = scene.networkStyle()
+
         # If selected, change brush to yellow
         if option.state & QStyle.State_Selected:
-            brush = scene.networkStyle().nodeBrush(True)
-            text_color = scene.networkStyle().nodeTextColor(True)
+            brush = style.nodeBrush(True)
+            text_color = style.nodeTextColor(True)
             if brush is None or not brush.color().isValid():
                 brush = self.brush()
                 text_color = self.textColor()
             painter.setBrush(brush)
-            painter.setPen(scene.networkStyle().nodePen(True))
+            painter.setPen(style.nodePen(True))
         else:
             painter.setBrush(self.brush())
             painter.setPen(self.pen())
@@ -318,21 +322,36 @@ class Node(QGraphicsEllipseItem):
             # Draw ellipse
             if self.spanAngle() != 0 and abs(self.spanAngle()) % (360 * 16) == 0:
                 painter.drawEllipse(rect)
+                if self._overlay_brush.style() != Qt.NoBrush:
+                    painter.setBrush(self._overlay_brush)
+                    painter.drawEllipse(rect)
             else:
                 painter.drawPie(rect, self.startAngle(), self.spanAngle())
+                if self._overlay_brush.style() != Qt.NoBrush:
+                    painter.setBrush(self._overlay_brush)
+                    painter.drawPie(rect, self.startAngle(), self.spanAngle())
+
         else:
             # Draw polygon
             painter.drawPolygon(self._node_polygon)
 
-            # Set clip path for pies
-            painter_path = QPainterPath()
-            painter_path.addPolygon(QTransform().scale(0.8, 0.8).map(self._node_polygon))
-            painter.setClipPath(painter_path)
+            if self._overlay_brush.style() != Qt.NoBrush:
+                painter.setBrush(self._overlay_brush)
+                painter.drawPolygon(self._node_polygon)
 
         # Draw pies if any
         if scene.pieChartsVisibility() and len(self._pie) > 0:
-            if not painter.hasClipping():  # If painter has no clipping (node shape is circle), scale pie circle
-                rect = QTransform().scale(0.85, 0.85).mapRect(rect)
+            if self._stock_polygon == NodePolygon.Circle:
+                rect = QTransform().scale(.85, .85).mapRect(rect)
+            else:
+                if self._stock_polygon == NodePolygon.Square:
+                    rect = QTransform().scale(1.2, 1.2).mapRect(rect)
+
+                # Set clip path for pies
+                painter_path = QPainterPath()
+                painter_path.addPolygon(QTransform().scale(.8, .8).map(self._node_polygon))
+                painter.setClipPath(painter_path)
+
             start = 0.
             colors = self.scene().pieColors()
             painter.setPen(QPen(Qt.NoPen))

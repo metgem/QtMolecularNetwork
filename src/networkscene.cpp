@@ -1,7 +1,6 @@
 #include <algorithm>
 
 #include "networkscene.h"
-#include "node.h"
 #include "edge.h"
 #include "style.h"
 #include "config.h"
@@ -619,6 +618,40 @@ void NetworkScene::setSelectedNodesColor(QColor color)
     }
 }
 
+QList<QBrush> NetworkScene::nodesOverlayBrushes()
+{
+    QList<QBrush> brushes;
+
+    foreach(Node *node, this->nodes())
+    {
+        brushes.append(node->overlayBrush());
+    }
+
+    return brushes;
+}
+
+void NetworkScene::setNodesOverlayBrushes(QList<QVariant> brushes)
+{
+    QBrush brush;
+    QList<Node *> nodes = this->nodes();
+
+    if (brushes.size() < nodes.size())
+        return;
+
+    for (int i=0; i<nodes.size(); i++) {
+        brush = brushes[nodes[i]->index()].value<QBrush>();
+        nodes[i]->setOverlayBrush(brush);
+    }
+}
+
+void NetworkScene::setSelectedNodesOverlayBrush(QBrush brush)
+{
+    foreach(Node *node, selectedNodes())
+    {
+        node->setOverlayBrush(brush);
+    }
+}
+
 QList<int> NetworkScene::nodesRadii()
 {
     QList<int> radii;
@@ -657,6 +690,44 @@ void NetworkScene::setSelectedNodesRadius(int radius)
     foreach(Node *node, selectedNodes())
     {
         node->setRadius(radius);
+        foreach(Edge* edge, node->edges())
+            edge->adjust();
+    }
+}
+
+QList<int> NetworkScene::nodesPolygons()
+{
+    QList<int> polygons;
+
+    foreach(Node *node, this->nodes())
+    {
+        polygons.append(node->polygon());
+    }
+
+    return polygons;
+}
+
+void NetworkScene::setNodesPolygons(QList<int> polygons)
+{
+    NodePolygon polygon;
+    QList<Node *> nodes = this->nodes();
+
+    if (polygons.size() < nodes.size())
+        return;
+
+    for (int i=0; i<nodes.size(); i++) {
+        polygon = NodePolygon(polygons[nodes[i]->index()]);
+        nodes[i]->setPolygon(polygon);
+        foreach(Edge* edge, nodes[i]->edges())
+            edge->adjust();
+    }
+}
+
+void NetworkScene::setSelectedNodesPolygon(int polygon)
+{
+    foreach(Node *node, selectedNodes())
+    {
+        node->setPolygon(NodePolygon(polygon));
         foreach(Edge* edge, node->edges())
             edge->adjust();
     }

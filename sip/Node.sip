@@ -43,6 +43,8 @@ public:
     const QColor textColor();
     void setTextColor(const QColor &color);
     void setBrush(const QBrush &brush);
+    QBrush overlayBrush();
+    void setOverlayBrush(QBrush brush);
     QString label();
     void setLabel(const QString &label);
     QList<qreal> pie();
@@ -53,11 +55,11 @@ public:
     void setPixmapFromInchi(const QString &inchi, const QSize &size = QSize(300, 300));
     void setPixmapFromBase64(const QByteArray &b64);
     void setPixmapFromSvg(const QByteArray &svg, const QSize &size = QSize(300, 300));
-    void scalePolygon(qreal polygon_size = 0.);
+    void scalePolygon();
     NodePolygon polygon();
     void setPolygon(NodePolygon id);
     QPolygonF customPolygon();
-    void setCustomPolygon(QPolygonF polygon, qreal polygon_size = 0.);
+    void setCustomPolygon(QPolygonF polygon);
     
     void addEdge(Edge *edge);
     void removeEdge(Edge *edge);

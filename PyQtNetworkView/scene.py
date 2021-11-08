@@ -1,4 +1,4 @@
-from PyQt5.QtGui import QColor, QPixmap
+from PyQt5.QtGui import QColor, QPixmap, QBrush
 from typing import List
 
 import itertools
@@ -8,7 +8,7 @@ from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import QGraphicsScene, QGraphicsItem
 
 from .config import RADIUS
-from .node import Node
+from .node import Node, NodePolygon
 from .edge import Edge
 from .graphicsitem import GraphicsItemLayer
 from .style import NetworkStyle, DefaultStyle
@@ -383,7 +383,7 @@ class NetworkScene(QGraphicsScene):
         return [node.brush().color() if node.brush().color() != self.networkStyle().nodeBrush().color()
                 else QColor() for node in self.nodes()]
 
-    def setNodesColors(self, colors):
+    def setNodesColors(self, colors: List[QColor]):
         nodes = self.nodes()
         if len(colors) < len(nodes):
             return
@@ -397,6 +397,22 @@ class NetworkScene(QGraphicsScene):
         if color.isValid():
             for node in self.selectedNodes():
                 node.setBrush(color)
+
+    def nodesOverlayBrushes(self):
+        return [node.overlayBrush() for node in self.nodes()]
+
+    def setNodesOverlayBrushes(self, brushes: List[QBrush]):
+        nodes = self.nodes()
+        if len(brushes) < len(nodes):
+            return
+
+        for node in nodes:
+            brush = brushes[node.index()]
+            node.setOverlayBrush(brush)
+
+    def setSelectedNodesOverlayBrush(self, brush: QBrush):
+        for node in self.selectedNodes():
+            node.setOverlayBrush(brush)
 
     def nodesRadii(self):
         return [node.radius() if node.radius() != RADIUS else 0 for node in self.nodes()]
@@ -417,7 +433,25 @@ class NetworkScene(QGraphicsScene):
             node.setRadius(radius)
             for edge in node.edges():
                 edge.adjust()
-            
+
+    def nodesPolygons(self):
+        return [node.polygon() for node in self.nodes()]
+
+    def setNodesPolygons(self, polygons):
+        nodes = self.nodes()
+        if len(polygons) < len(nodes):
+            return
+
+        for node in nodes:
+            polygon = polygons[node.index()]
+            node.setPolygon(polygon)
+
+    def setSelectedNodesPolygon(self, polygon: NodePolygon):
+        for node in self.selectedNodes():
+            node.setPolygon(polygon)
+            for edge in node.edges():
+                edge.adjust()
+
     def lock(self, lock: bool = True):
         if lock == self._is_locked:
             return

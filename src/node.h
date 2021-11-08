@@ -15,6 +15,7 @@
 class Edge;
 
 enum NodePolygon: int {
+    Custom = -1,
     Circle = 0,
     Square = 1,
     Diamond = 2,
@@ -102,6 +103,8 @@ public:
     const QColor textColor();
     void setTextColor(const QColor &color);
     void setBrush(const QBrush &brush, bool autoTextColor=true);
+    QBrush overlayBrush();
+    void setOverlayBrush(QBrush brush);
     QString label();
     void setLabel(const QString &label);
     QList<qreal> pie();
@@ -112,11 +115,11 @@ public:
     void setPixmapFromInchi(const QString &inchi, const QSize &size = QSize(300, 300));
     void setPixmapFromBase64(const QByteArray &b64);
     void setPixmapFromSvg(const QByteArray &svg, const QSize &size = QSize(300, 300));
-    void scalePolygon(qreal polygon_size = 0.);
+    void scalePolygon();
     NodePolygon polygon();
-    void setPolygon(NodePolygon id);
+    void setPolygon(NodePolygon polygon_id);
     QPolygonF customPolygon();
-    void setCustomPolygon(QPolygonF polygon, qreal polygon_size = 0.);
+    void setCustomPolygon(QPolygonF polygon);
 
     void addEdge(Edge *edge);
     void removeEdge(Edge *edge);
@@ -145,7 +148,8 @@ private:
     QList<qreal> pieList;
     QPixmap pixmap_;
     QPolygonF node_polygon_;
-    NodePolygon stock_polygon_ = NodePolygon::Circle;;
+    NodePolygon stock_polygon_ = NodePolygon::Circle;
+    QBrush overlay_brush_;
 };
 
 Q_DECLARE_METATYPE(Node *);
