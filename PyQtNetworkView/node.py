@@ -341,24 +341,30 @@ class Node(QGraphicsEllipseItem):
 
         # Draw pies if any
         if scene.pieChartsVisibility() and len(self._pie) > 0:
+            start = 0.
+            colors = self.scene().pieColors()
+            painter.setPen(QPen(Qt.NoPen))
+
             if self._stock_polygon == NodePolygon.Circle:
                 rect = QTransform().scale(.85, .85).mapRect(rect)
+                for v, color in zip(self._pie, colors):
+                    painter.setBrush(color)
+                    painter.drawPie(rect, int(start * 5760), int(v * 5760))
+                    start += v
             else:
                 if self._stock_polygon == NodePolygon.Square:
                     rect = QTransform().scale(1.2, 1.2).mapRect(rect)
 
                 # Set clip path for pies
-                painter_path = QPainterPath()
-                painter_path.addPolygon(QTransform().scale(.8, .8).map(self._node_polygon))
-                painter.setClipPath(painter_path)
+                clip_path = QPainterPath()
+                clip_path.addPolygon(QTransform().scale(.8, .8).map(self._node_polygon))
 
-            start = 0.
-            colors = self.scene().pieColors()
-            painter.setPen(QPen(Qt.NoPen))
-            for v, color in zip(self._pie, colors):
-                painter.setBrush(color)
-                painter.drawPie(rect, int(start * 5760), int(v * 5760))
-                start += v
+                for v, color in zip(self._pie, colors):
+                    painter.setBrush(color)
+                    pie_path = QPainterPath()
+                    pie_path.arcTo(rect, start*360, v*360)
+                    painter.drawPath(clip_path.intersected(pie_path))
+                    start += v
 
         # Draw text
         if lod > 0.4:

@@ -376,26 +376,36 @@ void Node::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     // Draw pies if any
     if (scene->pieChartsVisibility() && this->pieList.size() > 0)
     {
+        float start = 0;
+        QList<QColor> colors = scene->pieColors();
+        painter->setPen(QPen(Qt::NoPen));
+
         if (this->stock_polygon_ == NodePolygon::Circle)
+        {
             rect = QTransform().scale(.85, .85).mapRect(rect);
+            for (int i=0; i<std::min(this->pieList.size(), colors.size()); i++) {
+                painter->setBrush(colors[i]);
+                painter->drawPie(rect, int(start*5760), int(pieList[i]*5760));
+                start += this->pieList[i];
+            }
+        }
         else
         {
             if (this->stock_polygon_ == NodePolygon::Square)
                 rect = QTransform().scale(1.2, 1.2).mapRect(rect);
 
             // Set clip path for pies
-            QPainterPath painter_path = QPainterPath();
-            painter_path.addPolygon(QTransform().scale(.8, .8).map(this->node_polygon_));
-            painter->setClipPath(painter_path);
-        }
-
-        float start = 0;
-        QList<QColor> colors = scene->pieColors();
-        painter->setPen(QPen(Qt::NoPen));
-        for (int i=0; i<std::min(this->pieList.size(), colors.size()); i++) {
-            painter->setBrush(colors[i]);
-            painter->drawPie(rect, int(start*5760), int(pieList[i]*5760));
-            start += this->pieList[i];
+            QPainterPath clip_path;
+            QPainterPath pie_path;
+            clip_path.addPolygon(QTransform().scale(.8, .8).map(this->node_polygon_));
+            for (int i=0; i<std::min(this->pieList.size(), colors.size()); i++) {
+                painter->setBrush(colors[i]);
+                pie_path = QPainterPath();
+                pie_path.arcTo(rect, static_cast<qreal>(start*360),
+                                     static_cast<qreal>(pieList[i]*360));
+                painter->drawPath(clip_path.intersected(pie_path));
+                start += this->pieList[i];
+            }
         }
     }
 
