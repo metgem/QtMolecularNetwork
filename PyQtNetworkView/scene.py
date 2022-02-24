@@ -82,7 +82,7 @@ class NetworkScene(QGraphicsScene):
             node.setParentItem(self.nodesLayer)
 
     def createNodes(self, indexes, labels=None, positions=None, colors=None, radii=None):
-        if not indexes:
+        if len(indexes) == 0:
             return []
         
         if radii is None:
@@ -120,7 +120,7 @@ class NetworkScene(QGraphicsScene):
             edge.setParentItem(self.edgesLayer)
 
     def createEdges(self, indexes, sourceNodes, destNodes, widths):
-        if not indexes:
+        if len(indexes) == 0:
             return []
             
         edges = []
