@@ -214,8 +214,6 @@ class build_ext(sipdistutils.build_ext):
                             self.module_inc_dir,
                             os.path.join(self.module_inc_dir, 'rdkit'),
                             os.path.join(self.module_inc_dir, 'cairo'),
-                            r"C:/Users/elie/AppData/Local/Continuum/miniconda3/envs/metgem/Library/include/rdkit",
-                            r"C:\Users\elie\AppData\Local\Continuum\miniconda3\envs\metgem\Library\include",
                             ]
             extension.libraries += ['Qt5Core' + self.qt_libinfix,
                                     'Qt5Gui' + self.qt_libinfix,
