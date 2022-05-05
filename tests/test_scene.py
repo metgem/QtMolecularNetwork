@@ -1,8 +1,8 @@
-from PyQt5.QtGui import (QPen, QColor, QStandardItemModel, QStandardItem,
+from PySide2.QtGui import (QPen, QColor, QStandardItemModel, QStandardItem,
                          QPixmap, QPainter, QImage, QBrush, QPolygonF)
-from PyQt5.QtWidgets import QGraphicsItem
-from PyQt5.QtCore import Qt, QPoint, QPointF, QSize
-from PyQtNetworkView.node import NodePolygon, NODE_POLYGON_MAP
+from PySide2.QtWidgets import QGraphicsItem
+from PySide2.QtCore import Qt, QPoint, QPointF, QSize
+from PySide2MolecularNetwork.node import NodePolygon, NODE_POLYGON_MAP
 
 import pytest
 import hashlib
@@ -307,11 +307,11 @@ def test_scene_set_nodes_radii_from_model(scene, role, func):
     
     for col in range(1):       
         if func is not None:
-            scene.setNodesRadiiFromModel(model, col, role, func)
+            scene.setNodesRadiiFromModel(model, col, func, role)
             for node in scene.nodes():
                 assert node.radius() == func(values[node.index()][col])
         else:
-            scene.setNodesRadiiFromModel(model, col, role)
+            scene.setNodesRadiiFromModel(model, col, role=role)
             for node in scene.nodes():
                 assert node.radius() == values[node.index()][col]
         
@@ -724,8 +724,7 @@ def test_scene_set_selected_nodes_radius(scene, radius):
 def test_scene_set_selected_nodes_polygon(mod, scene, polygon_id):
     """Check that setSelectedNodesPolygon modify only the polygon of selected nodes"""
     
-    if mod.__name__ == 'PyQtNetworkView._pure':  # Python
-        polygon_id = NodePolygon(polygon_id)
+    polygon_id = mod.NodePolygon(polygon_id)
     
     for node in scene.nodes():
         assert node.polygon() != polygon_id
@@ -808,17 +807,11 @@ def test_scene_set_nodes_radii(scene, radii):
 def test_scene_set_nodes_polygons(mod, scene, polygon_ids):
     """Check that setNodesPolygons change overlay brushes for all nodes."""
        
-    polygon_ids = [NodePolygon(id) for id in polygon_ids]
-    circle = NodePolygon.Circle
+    polygon_ids = [mod.NodePolygon(id) for id in polygon_ids]
+    circle = mod.NodePolygon.Circle
     
-    polygons = [NODE_POLYGON_MAP[id] if id != NodePolygon.Circle else QPolygonF()
+    polygons = [NODE_POLYGON_MAP[NodePolygon(id)] if id != mod.NodePolygon.Circle else QPolygonF()
                 for id in polygon_ids]
-    if mod.__name__ == 'PyQtNetworkView._pure':  # Python
-        assert type(mod.NodePolygon).__name__ == 'EnumMeta'
-    else:  # C++/SIP
-        assert type(mod.NodePolygon).__name__ == 'enumtype'                   
-        polygon_ids = [id.value for id in polygon_ids]
-        circle = circle.value
         
     for node in scene.nodes():
         assert node.polygon() == mod.NodePolygon.Circle
@@ -883,7 +876,7 @@ def test_scene_paint_no_scene(mod, qtbot):
     v = mod.NetworkView()
     qtbot.addWidget(v)
     v.show()
-    qtbot.waitForWindowShown(v)
+    qtbot.waitExposed(v)
     
  
 @pytest.mark.parametrize('select, span_angle',
@@ -907,7 +900,7 @@ def test_scene_paint(mod, scene, qtbot, select, span_angle):
     e.setSelected(True)
     
     v.show()
-    qtbot.waitForWindowShown(v)
+    qtbot.waitExposed(v)
     
     
 @pytest.mark.parametrize('pies, set_nodes_colors',
@@ -927,7 +920,7 @@ def test_scene_paint_pies(mod, scene, qtbot, pies, set_nodes_colors):
         n.setPie(pies)
 
     v.show()
-    qtbot.waitForWindowShown(v)
+    qtbot.waitExposed(v)
     
     
 @pytest.mark.parametrize("molecule", MOLECULES)
@@ -941,7 +934,7 @@ def test_scene_paint_pixmap(mod, scene, qtbot, molecule):
     n.setPixmap(QPixmap(molecule['image']))
             
     v.show()
-    qtbot.waitForWindowShown(v)
+    qtbot.waitExposed(v)
 
 
 def test_scene_selected_nodes_bounding_rect(scene):

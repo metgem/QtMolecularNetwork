@@ -4,7 +4,7 @@
 
 try:
     IS_COMPILED = True
-    from .NetworkView import (Node, NodePolygon, Edge, RADIUS,
+    from .qmn import (Node, NodePolygon, Edge, Config,
                               NetworkScene as BaseNetworkScene,
                               NetworkStyle, DefaultStyle)
     from .style import read_css, style_to_json, style_to_cytoscape
@@ -31,7 +31,7 @@ except ImportError:
     from .node import Node, NodePolygon
     from .edge import Edge
     from .scene import NetworkScene
-    from .config import RADIUS
+    from .config import Config
     from .style import (NetworkStyle, DefaultStyle,
                         style_from_css, style_to_json, style_to_cytoscape)
     

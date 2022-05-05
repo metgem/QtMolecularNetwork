@@ -1,8 +1,8 @@
 import pytest
 
-from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtWidgets import QGraphicsView, QWidget, QOpenGLWidget
-import PyQtNetworkView
+from PySide2.QtCore import Qt, QPoint
+from PySide2.QtWidgets import QGraphicsView, QWidget, QOpenGLWidget
+import PySide2MolecularNetwork
 
 def test_view_init(view, mod):
     """Check initialization of NetworkView"""
@@ -39,7 +39,7 @@ def test_view_mouse_move(view, qtbot, mocker, has_scene):
     """Check that rubber band is adjusted when mouse move"""
     
     if not has_scene:
-        mocker.patch("PyQt5.QtWidgets.QGraphicsView.scene", return_value=None)
+        mocker.patch("PySide2.QtWidgets.QGraphicsView.scene", return_value=None)
         assert view.scene() is None
     
     mocker.spy(view.minimap, 'adjustRubberband')
@@ -113,7 +113,7 @@ def test_view_minimap_adjust_rubber_band(view, mocker, qtbot, contains_scene):
     with qtbot.waitExposed(view):
         view.show()
     
-    mocker.patch("PyQt5.QtCore.QRectF.contains", return_value=contains_scene)
+    mocker.patch("PySide2.QtCore.QRectF.contains", return_value=contains_scene)
     view.minimap.adjustRubberband()
     
     assert not view.minimap.band.isVisible() == contains_scene
@@ -123,21 +123,21 @@ def test_view_minimap_left_mouse_press(view, qtbot, mocker):
     """Check that centerOn is called on left click only if band is visible and click is not inside band geometry."""
 
     mocker.spy(view.minimap, 'centerOn')
-    mocker.patch("PyQt5.QtWidgets.QRubberBand.isVisible", return_value=False)
+    mocker.patch("PySide2.QtWidgets.QRubberBand.isVisible", return_value=False)
 
     qtbot.mousePress(view.minimap.viewport(), Qt.LeftButton)
     assert view.minimap.centerOn.call_count == 0
     qtbot.mouseRelease(view.minimap.viewport(), Qt.LeftButton)
     assert view.minimap.centerOn.call_count == 0
     
-    mocker.patch("PyQt5.QtWidgets.QRubberBand.isVisible", return_value=True)
+    mocker.patch("PySide2.QtWidgets.QRubberBand.isVisible", return_value=True)
     
     qtbot.mousePress(view.minimap.viewport(), Qt.LeftButton)
     assert view.minimap.centerOn.call_count == 1
     qtbot.mouseRelease(view.minimap.viewport(), Qt.LeftButton)
     assert view.minimap.centerOn.call_count == 1
     
-    mocker.patch("PyQt5.QtWidgets.QRubberBand.geometry", return_value=view.minimap.rect())
+    mocker.patch("PySide2.QtWidgets.QRubberBand.geometry", return_value=view.minimap.rect())
     qtbot.mousePress(view.minimap.viewport(), Qt.LeftButton)
     assert view.minimap.centerOn.call_count == 1
     qtbot.mouseRelease(view.minimap.viewport(), Qt.LeftButton)
@@ -149,14 +149,14 @@ def test_view_minimap_right_mouse_press(view, qtbot, mocker):
     """Check that right mouse clik on minimap does nothing."""
 
     mocker.spy(view.minimap, 'centerOn')
-    mocker.patch("PyQt5.QtWidgets.QRubberBand.isVisible", return_value=False)
+    mocker.patch("PySide2.QtWidgets.QRubberBand.isVisible", return_value=False)
 
     qtbot.mousePress(view.minimap.viewport(), Qt.RightButton)
     assert view.minimap.centerOn.call_count == 0
     qtbot.mouseRelease(view.minimap.viewport(), Qt.RightButton)
     assert view.minimap.centerOn.call_count == 0
     
-    mocker.patch("PyQt5.QtWidgets.QRubberBand.isVisible", return_value=True)
+    mocker.patch("PySide2.QtWidgets.QRubberBand.isVisible", return_value=True)
     
     qtbot.mousePress(view.minimap.viewport(), Qt.RightButton)
     assert view.minimap.centerOn.call_count == 0
@@ -174,8 +174,8 @@ def test_view_minimap_mouse_move(view, qtbot, mocker):
     """Check that centerOn is called when band is dragged."""
     
     mocker.spy(view.minimap, 'centerOn')
-    mocker.patch("PyQt5.QtWidgets.QRubberBand.isVisible", return_value=True)
-    mocker.patch("PyQt5.QtWidgets.QRubberBand.geometry", return_value=view.minimap.rect())
+    mocker.patch("PySide2.QtWidgets.QRubberBand.isVisible", return_value=True)
+    mocker.patch("PySide2.QtWidgets.QRubberBand.geometry", return_value=view.minimap.rect())
     qtbot.mousePress(view.minimap.viewport(), Qt.LeftButton, pos=view.minimap.rect().center())
     assert view.minimap.centerOn.call_count == 0
     assert view.minimap._drag_start_pos is not None
@@ -219,7 +219,7 @@ def test_view_scale_view(view, mocker, scale):
 def test_view_zoom_to_fit(view, mocker):
     """Check that zoomToFit does nothing if there is node scene set."""
     
-    mocker.patch("PyQt5.QtWidgets.QGraphicsView.scene", return_value=None)
+    mocker.patch("PySide2.QtWidgets.QGraphicsView.scene", return_value=None)
     mocker.spy(view, "fitInView")
     mocker.spy(view.minimap, "adjustRubberband")
     
@@ -230,23 +230,23 @@ def test_view_zoom_to_fit(view, mocker):
 
 def test_remote_session():
     """Check that `isRemoteSession` returns False when not in remote session."""
-    assert PyQtNetworkView.view.isRemoteSession() == False
+    assert PySide2MolecularNetwork.view.isRemoteSession() == False
     
     
 def test_disable_opengl(monkeypatch):
     """Check that `disable_opengl` set the `USE_OPENGL` flag to False."""
     
-    monkeypatch.setattr(PyQtNetworkView.view, 'USE_OPENGL', True)
-    assert PyQtNetworkView.view.USE_OPENGL == True
-    PyQtNetworkView.view.disable_opengl()
-    assert PyQtNetworkView.view.USE_OPENGL == False
+    monkeypatch.setattr(PySide2MolecularNetwork.view, 'USE_OPENGL', True)
+    assert PySide2MolecularNetwork.view.USE_OPENGL == True
+    PySide2MolecularNetwork.view.disable_opengl()
+    assert PySide2MolecularNetwork.view.USE_OPENGL == False
     
     
 @pytest.mark.parametrize('use_opengl', [True, False])
 def test_opengl_disabled(mod, monkeypatch, use_opengl):
     """Check that if `USE_OPENGL` flag is False, usage of OpenGL is effectively disabled."""
     
-    monkeypatch.setattr(PyQtNetworkView.view, 'USE_OPENGL', use_opengl)
+    monkeypatch.setattr(PySide2MolecularNetwork.view, 'USE_OPENGL', use_opengl)
     view = mod.NetworkView()
     if use_opengl:
         assert isinstance(view.viewport(), QOpenGLWidget)

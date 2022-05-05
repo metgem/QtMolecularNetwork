@@ -1,8 +1,8 @@
 import sys
 
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QPainter, QSurfaceFormat, QFocusEvent
-from PyQt5.QtWidgets import QGraphicsView, QRubberBand, QOpenGLWidget, QFormLayout, QSizePolicy
+from PySide2.QtCore import Signal, Qt
+from PySide2.QtGui import QPainter, QSurfaceFormat, QFocusEvent
+from PySide2.QtWidgets import QGraphicsView, QRubberBand, QOpenGLWidget, QFormLayout, QSizePolicy
 
 USE_OPENGL = True
 
@@ -51,7 +51,7 @@ class MiniMapGraphicsView(QGraphicsView):
     def mousePressEvent(self, event):
         if self.band.isVisible() and event.button() == Qt.LeftButton:
             rect = self.band.geometry()
-            if event.pos() in rect:
+            if rect.contains(event.pos()):
                 self._drag_start_pos = event.pos()
             else:
                 self.centerOn(event.pos())
@@ -84,7 +84,7 @@ class MiniMapGraphicsView(QGraphicsView):
 
 
 class NetworkView(QGraphicsView):
-    focusedIn = pyqtSignal()
+    focusedIn = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)

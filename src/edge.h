@@ -4,12 +4,13 @@
 #include <QGraphicsPathItem>
 #include <QPen>
 
+#include "config.h"
 #include "style.h"
 
 
 class Node;
 
-class Q_DECL_EXPORT Edge : public QGraphicsPathItem
+class QMN_EXPORT Edge : public QGraphicsPathItem
 {
 public:
     Edge(int index, Node *sourceNode, Node *destNode, qreal width=1.);
@@ -28,7 +29,7 @@ public:
     void updateStyle(NetworkStyle *style, NetworkStyle *old=nullptr);
     QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value) override;
 
-    enum { Type = UserType + 2 };
+    enum: int { Type = UserType + 2 };
     int type() const override { return Type; }
 
     QRectF boundingRect() const override;

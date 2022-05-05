@@ -1,17 +1,17 @@
 from .edge import Edge
 from .style import NetworkStyle
-from .config import RADIUS
+from .config import Config
 from .mol_depiction import SmilesToPixmap, InchiToPixmap, SvgToPixmap
 
 from typing import Set, Union
 from enum import Enum
 import base64
 
-from PyQt5.QtGui import (QPen, QColor, QFont, QBrush, QFontMetrics, QPixmap,
+from PySide2.QtGui import (QPen, QColor, QFont, QBrush, QFontMetrics, QPixmap,
                          QPolygonF, QTransform, QPainterPath)
-from PyQt5.QtWidgets import (QGraphicsItem, QGraphicsEllipseItem, QStyle,
+from PySide2.QtWidgets import (QGraphicsItem, QGraphicsEllipseItem, QStyle,
                              QApplication)
-from PyQt5.QtCore import Qt, QRectF, QSize, QPointF
+from PySide2.QtCore import Qt, QRectF, QSize, QPointF
 
 
 class NodePolygon(Enum):
@@ -157,7 +157,7 @@ class Node(QGraphicsEllipseItem):
     Type = QGraphicsItem.UserType + 1
 
     def __init__(self, index, label=None):
-        super().__init__(-RADIUS, -RADIUS, 2 * RADIUS, 2 * RADIUS)
+        super().__init__(-Config.Radius, -Config.Radius, 2 * Config.Radius, 2 * Config.Radius)
 
         self._edges = set()
         self._pie = []

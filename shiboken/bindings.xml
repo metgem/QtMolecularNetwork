@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<typesystem package="qmn">
+    <primitive-type name="std::function"/>
+    
+    <load-typesystem name="typesystem_core.xml" generate="no"/>
+    <load-typesystem name="typesystem_widgets.xml" generate="no"/>
+    <load-typesystem name="typesystem_gui.xml" generate="no"/>
+    
+    <template name="cppset_to_pyset_conversion">
+    PyObject* %out = PySet_New(NULL);
+    %INTYPE::const_iterator it = %in.begin();
+    for (int idx = 0; it != %in.end(); ++it, ++idx) {
+        %INTYPE_0 cppItem(*it);
+        PySet_Add(%out, %CONVERTTOPYTHON[%INTYPE_0](cppItem));
+    }
+    return %out;
+    </template>
+    
+    <container-type name="QSet" type="set">
+    <include file-name="QSet" location="global"/>
+    <conversion-rule>
+        <native-to-target>
+            <insert-template name="cppset_to_pyset_conversion"/>
+        </native-to-target>
+        <target-to-native>
+            <add-conversion type="PySequence">
+                <insert-template name="pyseq_to_cpplist_conversion"/>
+            </add-conversion>
+        </target-to-native>
+    </conversion-rule>
+    </container-type>
+   
+    <enum-type name="Config" />
+    
+    <enum-type name="NodePolygon" />
+    
+    <object-type name="Node">
+    </object-type>
+    
+    <object-type name="Edge">
+    </object-type>
+    
+    <object-type name="GraphicsItemLayer">
+    </object-type>
+    
+    <object-type name="NetworkScene">
+        <enum-type identified-by-value="PixmapsAuto" />
+        <add-function signature="setNodesRadiiFromModel(QAbstractItemModel * @model@, int @column_id@, PyObject* @func@, int @role@)">
+            <inject-code class="target" position="beginning" file="glue/scene.cpp" snippet="scene-setnodesradii"/>
+        </add-function>
+        <modify-function signature="addNode(Node*)">
+            <modify-argument index="1">
+                <parent index="this" action="add"/>
+            </modify-argument>
+        </modify-function>
+        <modify-function signature="addNodes(QList&lt;Node*&gt;)">
+            <modify-argument index="1">
+                <parent index="this" action="add"/>
+            </modify-argument>
+        </modify-function>
+        <modify-function signature="addEdge(Edge*)">
+            <modify-argument index="1">
+                <parent index="this" action="add"/>
+            </modify-argument>
+        </modify-function>
+        <modify-function signature="addEdges(QList&lt;Edge*&gt;)">
+            <modify-argument index="1">
+                <parent index="this" action="add"/>
+            </modify-argument>
+        </modify-function>
+        
+        <modify-function signature="setNetworkStyle(NetworkStyle *)">
+            <modify-argument index="this">
+                <parent index="1" action="add"/>
+            </modify-argument>
+        </modify-function>
+    </object-type>
+    
+    <object-type name="NetworkStyle">
+    </object-type>
+    <object-type name="DefaultStyle">
+    </object-type>
+</typesystem>

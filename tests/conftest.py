@@ -1,8 +1,8 @@
-import PyQtNetworkView
-import PyQtNetworkView._pure
+import PySide2MolecularNetwork
+import PySide2MolecularNetwork._pure
 
-from PyQt5.QtCore import Qt, QPoint, QEvent
-from PyQt5.QtGui import QMouseEvent, QWheelEvent, QResizeEvent, QFocusEvent
+from PySide2.QtCore import Qt, QPoint, QEvent
+from PySide2.QtGui import QMouseEvent, QWheelEvent, QResizeEvent, QFocusEvent
 
 from contextlib import contextmanager
 import pytest
@@ -26,7 +26,7 @@ pytest.not_raises = not_raises
 def pytest_generate_tests(metafunc):        
     if 'mod' in metafunc.fixturenames:
         metafunc.parametrize("mod",
-                             [PyQtNetworkView, PyQtNetworkView._pure])       
+                             [PySide2MolecularNetwork, PySide2MolecularNetwork._pure])       
          
 @pytest.hookimpl(tryfirst=True)
 def pytest_collection_modifyitems(items):

@@ -1,0 +1,1 @@
+%LIBRARY_PREFIX%\..\python -m pip install . -vvv

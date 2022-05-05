@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QAbstractTableModel>
 
+#include "config.h"
 #include "style.h"
 #include "graphicsitem.h"
 #include "node.h"
@@ -13,11 +14,11 @@
 class Node;
 class Edge;
 
-class Q_DECL_EXPORT NetworkScene : public QGraphicsScene
+class QMN_EXPORT NetworkScene : public QGraphicsScene
 {
     Q_OBJECT
 
-signals:
+Q_SIGNALS:
    void scaleChanged(qreal);
    void layoutChanged();
    void pieChartsVisibilityChanged(bool);
@@ -25,7 +26,7 @@ signals:
    void locked(bool);
 
 public:
-	enum {
+	enum: int {
 		PixmapsSmiles = 0,
         PixmapsInchi = 1,
         PixmapsBase64 = 2,
@@ -67,7 +68,6 @@ public:
     void setEdgesSelection(QList<int> indexes);
     void setEdgesSelection(QList<Edge *> edges);
 
-    QList<QPointF> layout();
     void setLayout(QList<qreal> layout, qreal scale=0, QList<int> isolated_nodes=QList<int>());
     void setLayout(QList<QPointF> layout, qreal scale=0, QList<int> isolated_nodes=QList<int>());
     qreal scale();
@@ -75,7 +75,8 @@ public:
     void setLabelsFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole);
     void resetLabels();
     QList<QColor> pieColors();
-    void setNodesRadiiFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole, const std::function<int (qreal)> &func=nullptr);
+    void setNodesRadiiFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole);
+    void setNodesRadiiFromModel(QAbstractItemModel *model, int column_id, const std::function<int (qreal)> &func, int role=Qt::DisplayRole);
     void resetNodesRadii();
     void setPieColors(QList<QColor> colors);
     void setPieChartsFromModel(QAbstractItemModel *model, QList<int> column_ids, int role=Qt::DisplayRole);

@@ -12,8 +12,10 @@
 #include <QMap>
 #include <QVariant>
 
+#include "config.h"
 
-class Q_DECL_EXPORT NetworkStyle
+
+class QMN_EXPORT NetworkStyle
 {
 public:
     NetworkStyle(QString name, QVariantMap node, QVariantMap edge, QMap<QString, QBrush> scene);
@@ -50,7 +52,7 @@ protected:
     QBrush sb; // Scene Brush
 };
 
-class Q_DECL_EXPORT DefaultStyle: public NetworkStyle
+class QMN_EXPORT DefaultStyle: public NetworkStyle
 {
 public:
     DefaultStyle() {

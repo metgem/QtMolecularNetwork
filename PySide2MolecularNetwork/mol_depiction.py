@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QSize, Qt
-from PyQt5.QtGui import QPainter, QPixmap
-from PyQt5.QtSvg import QSvgRenderer
+from PySide2.QtCore import QSize, Qt
+from PySide2.QtGui import QPainter, QPixmap
+from PySide2.QtSvg import QSvgRenderer
 
 from typing import Union
 

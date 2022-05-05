@@ -1,13 +1,13 @@
-from PyQt5.QtGui import QColor, QPixmap, QBrush
+from PySide2.QtGui import QColor, QPixmap, QBrush
 from typing import List
 
 import itertools
 
-from PyQt5.QtCore import Qt, pyqtSignal, QRectF
-from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsItem
+from PySide2.QtCore import Qt, Signal, QRectF
+from PySide2.QtGui import QPainter
+from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem
 
-from .config import RADIUS
+from .config import Config
 from .node import Node, NodePolygon
 from .edge import Edge
 from .graphicsitem import GraphicsItemLayer
@@ -15,11 +15,11 @@ from .style import NetworkStyle, DefaultStyle
 
 
 class NetworkScene(QGraphicsScene):
-    scaleChanged = pyqtSignal(float)
-    layoutChanged = pyqtSignal()
-    pieChartsVisibilityChanged = pyqtSignal(bool)
-    pixmapVisibilityChanged = pyqtSignal(bool)
-    locked = pyqtSignal(bool)
+    scaleChanged = Signal(float)
+    layoutChanged = Signal()
+    pieChartsVisibilityChanged = Signal(bool)
+    pixmapVisibilityChanged = Signal(bool)
+    locked = Signal(bool)
     
     PixmapsSmiles = 0
     PixmapsInchi = 1
@@ -283,7 +283,7 @@ class NetworkScene(QGraphicsScene):
             label = str(node.index() + 1)
             node.setLabel(label)
             
-    def setNodesRadiiFromModel(self, model, column_id, role=Qt.DisplayRole, func=None):       
+    def setNodesRadiiFromModel(self, model, column_id, func=None, role=Qt.DisplayRole):
         if func is not None:
             for node in self.nodes():
                 node.setRadius(func(model.index(node.index(), column_id).data(role)))
@@ -296,7 +296,7 @@ class NetworkScene(QGraphicsScene):
             
     def resetNodesRadii(self):
         for node in self.nodes():
-            node.setRadius(RADIUS)
+            node.setRadius(Config.Radius)
             
         for edge in self.edges():
             edge.adjust()
@@ -415,7 +415,7 @@ class NetworkScene(QGraphicsScene):
             node.setOverlayBrush(brush)
 
     def nodesRadii(self):
-        return [node.radius() if node.radius() != RADIUS else 0 for node in self.nodes()]
+        return [node.radius() if node.radius() != Config.Radius else 0 for node in self.nodes()]
 
     def setNodesRadii(self, radii):
         nodes = self.nodes()

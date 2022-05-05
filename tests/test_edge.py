@@ -1,5 +1,5 @@
-from PyQt5.QtGui import QPen
-from PyQt5.QtCore import Qt, QPoint, QRectF
+from PySide2.QtGui import QPen
+from PySide2.QtCore import Qt, QPoint, QRectF
 
 import pytest
 

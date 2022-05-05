@@ -1,2 +1,2 @@
 include versioneer.py
-include PyQtNetworkView/_version.py
+include PySide2MolecularNetwork/_version.py

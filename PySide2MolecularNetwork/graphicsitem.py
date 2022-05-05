@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QRectF
-from PyQt5.QtWidgets import QGraphicsItem
+from PySide2.QtCore import QRectF
+from PySide2.QtWidgets import QGraphicsItem
 
 
 class GraphicsItemLayer(QGraphicsItem):

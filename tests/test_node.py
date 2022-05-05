@@ -1,12 +1,12 @@
-from PyQt5.QtGui import QColor, QFont, QBrush, QFontMetrics, QPixmap
-from PyQt5.QtCore import Qt, QSize
+from PySide2.QtGui import QColor, QFont, QBrush, QFontMetrics, QPixmap
+from PySide2.QtCore import Qt, QSize
 
 import pytest
 import hashlib
-import PyQtNetworkView
-from PyQtNetworkView.node import NodePolygon, NODE_POLYGON_MAP
-from PyQt5.QtGui import QPolygonF
-from PyQt5.QtCore import QPointF
+import PySide2MolecularNetwork
+from PySide2MolecularNetwork.node import NodePolygon, NODE_POLYGON_MAP
+from PySide2.QtGui import QPolygonF
+from PySide2.QtCore import QPointF
 
 from resources import MOLECULES
 
@@ -45,8 +45,8 @@ def test_node_set_radius(mod):
     """Check that setRadius successfully change radius."""
 
     node = mod.Node(57)
-    assert node.radius() == mod.RADIUS
-    radius = mod.RADIUS * 2
+    assert node.radius() == mod.Config.Radius
+    radius = mod.Config.Radius * 2
     node.setRadius(radius)
     assert node.radius() == radius
     
@@ -74,14 +74,8 @@ def test_node_set_polygon(mod, qapp, id):
     """Check that setPolygon successfully change node polygon."""
     
     node = mod.Node(18)
-    id = NodePolygon(id)
-    polygon = NODE_POLYGON_MAP[id] if id != NodePolygon.Circle else QPolygonF()
-    
-    if mod.__name__ == 'PyQtNetworkView._pure':  # Python
-        assert type(mod.NodePolygon).__name__ == 'EnumMeta'
-    else:  # C++/SIP
-        assert type(mod.NodePolygon).__name__ == 'enumtype'
-        id = id.value
+    id = mod.NodePolygon(id)
+    polygon = NODE_POLYGON_MAP[NodePolygon(id)] if id != mod.NodePolygon.Circle else QPolygonF()
         
     assert node.polygon() == mod.NodePolygon.Circle
     assert node.customPolygon().isEmpty()
@@ -107,10 +101,7 @@ def test_node_set_custom_polygon(mod, qapp, polygon):
     assert node.customPolygon().isEmpty()
     node.setCustomPolygon(polygon)
     
-    if mod.__name__ == 'PyQtNetworkView._pure':  # Python
-        assert node.polygon() == NodePolygon.Custom
-    else:  # C++/SIP
-        assert node.polygon() == NodePolygon.Custom.value
+    assert node.polygon() == mod.NodePolygon.Custom
     
     if polygon.isEmpty():  # Circle
         assert node.customPolygon().isEmpty()
@@ -225,7 +216,7 @@ def test_node_shape_set_label(mod):
     """Check that shape is modified when label is changed"""
     
     node = mod.Node(226, "")
-    assert node.shape().boundingRect().width() > mod.RADIUS * 2
+    assert node.shape().boundingRect().width() > mod.Config.Radius * 2
     fm = QFontMetrics(node.font())
     
     label = "very long label"

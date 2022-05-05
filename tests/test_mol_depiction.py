@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QPixmap
+from PySide2.QtCore import QSize
+from PySide2.QtGui import QPixmap
 
 import pytest
 import hashlib

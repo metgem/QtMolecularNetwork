@@ -412,19 +412,21 @@ void NetworkScene::resetLabels()
     }
 }
 
-void NetworkScene::setNodesRadiiFromModel(QAbstractItemModel *model, int column_id, int role, const std::function<int (qreal)> &func)
+void NetworkScene::setNodesRadiiFromModel(QAbstractItemModel *model, int column_id, int role)
 {
-    if (func)
-    {
-        foreach (Node* node, this->nodes()) {
-            node->setRadius(func(model->index(node->index(), column_id).data(role).toReal()));
-        }
+    foreach (Node* node, this->nodes()) {
+        node->setRadius(model->index(node->index(), column_id).data(role).toInt());
     }
-    else
-    {
-        foreach (Node* node, this->nodes()) {
-            node->setRadius(model->index(node->index(), column_id).data(role).toInt());
-        }
+
+    foreach (Edge* edge, this->edges()) {
+        edge->adjust();
+    }
+}
+
+void NetworkScene::setNodesRadiiFromModel(QAbstractItemModel *model, int column_id, const std::function<int (qreal)> &func, int role)
+{
+    foreach (Node* node, this->nodes()) {
+        node->setRadius(func(model->index(node->index(), column_id).data(role).toReal()));
     }
 
     foreach (Edge* edge, this->edges()) {
@@ -435,7 +437,7 @@ void NetworkScene::setNodesRadiiFromModel(QAbstractItemModel *model, int column_
 void NetworkScene::resetNodesRadii()
 {
     foreach (Node* node, this->nodes()) {
-        node->setRadius(RADIUS);
+        node->setRadius(Config::Radius);
     }
 
     foreach (Edge* edge, this->edges()) {
@@ -660,7 +662,7 @@ QList<int> NetworkScene::nodesRadii()
     foreach(Node *node, this->nodes())
     {
         radius = node->radius();
-        if (radius != RADIUS)
+        if (radius != Config::Radius)
             radii.append(radius);
         else
             radii.append(0);

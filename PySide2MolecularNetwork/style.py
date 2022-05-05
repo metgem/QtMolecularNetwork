@@ -5,10 +5,10 @@ except ImportError:
 else:
     HAS_TINYCSS2 = True
 
-from PyQt5.QtCore import Qt, QCoreApplication
-from PyQt5.QtGui import QColor, QFont, QPen, QBrush
+from PySide2.QtCore import Qt, QCoreApplication
+from PySide2.QtGui import QColor, QFont, QPen, QBrush
 
-from .config import RADIUS
+from .config import Config
 
 
 class NetworkStyle:
@@ -98,7 +98,7 @@ class NetworkStyle:
 
         if scene is not None:
             try:
-                self.sb = scene['color']
+                self.sb = QBrush(scene['color'])
             except (KeyError, TypeError):
                 pass
 
@@ -370,11 +370,11 @@ def style_to_json(style: NetworkStyle):
                           "text-halign": "center",
                           "border-width": style.nodePen().width(),
                           "font-size": style.nodeFont().pointSize(),
-                          "width": RADIUS * 2,
+                          "width": Config.Radius * 2,
                           "shape": "ellipse",
                           "color": style.nodeTextColor().name(),
                           "border-opacity": 1.0,
-                          "height": RADIUS * 2,
+                          "height": Config.Radius * 2,
                           "background-opacity": 1.0,
                           "border-color": style.nodePen().color().name(),
                           "font-family": style.nodeFont().family(),
@@ -387,9 +387,9 @@ def style_to_json(style: NetworkStyle):
                           "background-color": style.nodeBrush(selected=True).color().name(),
                           "border-width": style.nodePen(selected=True).width(),
                           "font-size": style.nodeFont(selected=True).pointSize(),
-                          "width": RADIUS * 2,
+                          "width": Config.Radius * 2,
                           "color": style.nodeTextColor(selected=True).name(),
-                          "height": RADIUS * 2,
+                          "height": Config.Radius * 2,
                           "border-color": style.nodePen(selected=True).color().name(),
                           "font-family": style.nodeFont(selected=True).family(),
                           "font-weight": QT_FONT_WEIGHTS_TO_JSON.get(style.nodeFont(selected=True).weight(), 'normal')
@@ -451,7 +451,7 @@ def style_to_cytoscape(style: NetworkStyle):
                  {'visualProperty': 'NODE_BORDER_WIDTH', 'value': style.nodePen().width()},
                  {'visualProperty': 'NODE_DEPTH', 'value': 0.0},
                  {'visualProperty': 'NODE_FILL_COLOR', 'value': style.nodeBrush().color().name()},
-                 {'visualProperty': 'NODE_HEIGHT', 'value': RADIUS * 2},
+                 {'visualProperty': 'NODE_HEIGHT', 'value': Config.Radius * 2},
                  {'visualProperty': 'NODE_LABEL', 'value': ''},
                  {'visualProperty': 'NODE_LABEL_COLOR', 'value': style.nodeTextColor().name()},
                  {'visualProperty': 'NODE_LABEL_FONT_FACE', 'value': style.nodeFont().family()},
@@ -462,11 +462,11 @@ def style_to_cytoscape(style: NetworkStyle):
                  {'visualProperty': 'NODE_SELECTED', 'value': False},
                  {'visualProperty': 'NODE_SELECTED_PAINT', 'value': style.nodeBrush(selected=True).color().name()},
                  {'visualProperty': 'NODE_SHAPE', 'value': 'ELLIPSE'},
-                 {'visualProperty': 'NODE_SIZE', 'value': RADIUS * 2},
+                 {'visualProperty': 'NODE_SIZE', 'value': Config.Radius * 2},
                  {'visualProperty': 'NODE_TOOLTIP', 'value': ''},
                  {'visualProperty': 'NODE_TRANSPARENCY', 'value': 255},
                  {'visualProperty': 'NODE_VISIBLE', 'value': True},
-                 {'visualProperty': 'NODE_WIDTH', 'value': RADIUS * 2},
+                 {'visualProperty': 'NODE_WIDTH', 'value': Config.Radius * 2},
                  {'visualProperty': 'NODE_X_LOCATION', 'value': 0.0},
                  {'visualProperty': 'NODE_Y_LOCATION', 'value': 0.0},
                  {'visualProperty': 'NODE_Z_LOCATION', 'value': 0.0}],

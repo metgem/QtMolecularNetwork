@@ -2,8 +2,9 @@
 #define GRAPHICSITEM_H
 
 #include <QGraphicsItem>
+#include "config.h"
 
-class Q_DECL_EXPORT GraphicsItemLayer : public QGraphicsItem
+class QMN_EXPORT GraphicsItemLayer : public QGraphicsItem
 {
 public:
     QRectF boundingRect() const override

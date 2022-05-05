@@ -12,7 +12,7 @@
 #include <QtSvg/QSvgRenderer>
 
 Node::Node(int index, const QString &label)
-    : QGraphicsEllipseItem(-RADIUS, -RADIUS, 2*RADIUS, 2*RADIUS)
+    : QGraphicsEllipseItem(-Config::Radius, -Config::Radius, 2*Config::Radius, 2*Config::Radius)
 {
     this->id = index;
 
@@ -205,6 +205,11 @@ void Node::setPolygon(NodePolygon polygon_id)
 {
     setCustomPolygon(NODE_POLYGON_MAP.value(polygon_id, QPolygonF()));
     this->stock_polygon_ = polygon_id;
+}
+
+void Node::setPolygon(int polygon_id)
+{
+    setPolygon(NodePolygon(id));
 }
 
 QPolygonF Node::customPolygon()

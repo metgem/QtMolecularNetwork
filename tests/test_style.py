@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QPen, QColor, QBrush, QFont
-from PyQt5.QtCore import Qt, QPoint
-import PyQtNetworkView
+from PySide2.QtGui import QPen, QColor, QBrush, QFont
+from PySide2.QtCore import Qt, QPoint
+import PySide2MolecularNetwork
 
 import pytest
 
@@ -240,8 +240,8 @@ def test_style_css_invalid_file(mod, value):
 def test_style_css_no_tinycss(mod, css, monkeypatch):
     """If tinycss2 module is not found, `style_from_css` should return `DefaultStyle`"""
             
-    assert PyQtNetworkView.style.HAS_TINYCSS2 == True
-    monkeypatch.setattr(PyQtNetworkView.style, 'HAS_TINYCSS2', False)
+    assert PySide2MolecularNetwork.style.HAS_TINYCSS2 == True
+    monkeypatch.setattr(PySide2MolecularNetwork.style, 'HAS_TINYCSS2', False)
     compare_styles(mod.style_from_css(str(css)), mod.DefaultStyle())
     
 def test_style_to_json(mod, style):
@@ -263,7 +263,7 @@ def test_style_to_json(mod, style):
             assert css['background-color'] == style.nodeBrush(selected=selected).color().name()
             assert css['border-width'] == style.nodePen(selected=selected).width()
             assert css['font-size'] == style.nodeFont(selected=selected).pointSize()
-            assert css['width'] == css['height'] == mod.RADIUS * 2
+            assert css['width'] == css['height'] == mod.Config.Radius * 2
             assert css['color'] == style.nodeTextColor(selected=selected).name()
             assert css['border-color'] == style.nodePen(selected=selected).color().name()
             assert css['font-family'] == style.nodeFont(selected=selected).family()
@@ -327,7 +327,7 @@ def test_style_to_cytoscape(mod, style):
         elif name == 'NODE_FILL_COLOR':
             assert value == style.nodeBrush().color().name()
         elif name in ('NODE_HEIGHT', 'NODE_WIDTH', 'NODE_SIZE'):
-            assert value == mod.RADIUS * 2
+            assert value == mod.Config.Radius * 2
         elif name == 'NODE_LABEL_COLOR':
             assert value == style.nodeTextColor().name()
         elif name == 'NODE_LABEL_FONT_FACE':

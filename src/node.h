@@ -11,6 +11,7 @@
 #include <QVector>
 
 #include "style.h"
+#include "config.h"
 
 class Edge;
 
@@ -152,7 +153,7 @@ static QMap<NodePolygon, QPolygonF> NODE_POLYGON_MAP{
                                                              QPointF(11.1, -5.3)}))},
     };
 
-class Q_DECL_EXPORT Node : public QGraphicsEllipseItem
+class QMN_EXPORT Node : public QGraphicsEllipseItem
 {
 public:
     Node(int index, const QString &label=QString());
@@ -182,6 +183,7 @@ public:
     void scalePolygon();
     NodePolygon polygon();
     void setPolygon(NodePolygon polygon_id);
+    void setPolygon(int id);
     QPolygonF customPolygon();
     void setCustomPolygon(QPolygonF polygon);
 
@@ -191,7 +193,7 @@ public:
 
     void updateStyle(NetworkStyle *style, NetworkStyle* old=nullptr);
 
-    enum { Type = UserType + 1 };
+    enum: int { Type = UserType + 1 };
     int type() const override { return Type; }
 
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
