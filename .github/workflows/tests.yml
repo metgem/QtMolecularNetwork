@@ -65,14 +65,14 @@ jobs:
     - name: Build (Unix)
       shell: bash -l {0}
       run: |
-        install_qtmolecularnetwork.sh
+        recipe/install_qtmolecularnetwork.sh
         python setup.py build_ext --inplace
         python setup.py develop
       if: runner.os != 'Windows'
     - name: Build (Windows)
       shell: bash -l {0}
       run: |
-        call install_qtmolecularnetwork.bat
+        call recipe\install_qtmolecularnetwork.bat
         export LIBRARY_INC="$CONDA_PREFIX/Library/include"
         python setup.py build_ext --inplace
         python setup.py develop
