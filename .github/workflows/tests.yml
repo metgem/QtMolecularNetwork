@@ -51,6 +51,10 @@ jobs:
       shell: bash -l {0}
       run: conda install -n base libiconv
       if: runner.os == 'Linux'
+    - name: Install mesalib
+      shell: bash -l {0}
+      run: conda install mesalib
+      if: runner.os == 'Linux'
     - name: Build
       shell: bash -l {0}
       run: |
