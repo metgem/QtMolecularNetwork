@@ -26,6 +26,7 @@ outputs:
         - gxx                                # [linux]
         - rdkit-dev
         - eigen
+        - mesalib  # [unix]
       host:
         - qt
       run:
