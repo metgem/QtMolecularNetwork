@@ -46,7 +46,7 @@ jobs:
       shell: bash -l {0}
       run: |
         conda install -n base "pyside2>=5.12"
-        conda install boost-cpp c-compiler cxx-compiler "pyside2 >=5.12" rdkit-dev rdkit
+        conda install boost-cpp c-compiler cxx-compiler "pyside2 >=5.12" rdkit-dev rdkit eigen
     - name: Install mesalib
       shell: bash -l {0}
       run: conda install mesalib
@@ -69,7 +69,7 @@ jobs:
       if: runner.os == 'Windows'
     - name: Install test dependencies
       shell: bash -l {0}
-      run: conda install -q tinycss2 pytest pylint pytest-pylint toml pytest-qt pytest-cov codecov pytest-mock tinycss2
+      run: conda install -q tinycss2 pytest pylint pytest-pylint toml pytest-qt pytest-cov codecov pytest-mock
     - name: Install xvfb
       shell: bash -l {0}
       run: conda install pytest-xvfb
