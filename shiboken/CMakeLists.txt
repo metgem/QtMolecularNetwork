@@ -124,7 +124,7 @@ target_include_directories(${bindings_library} PRIVATE
 )
 
 list(JOIN CMAKE_SYSTEM_PREFIX_PATH "/lib;" LIBRARIES_PATH)
-set(LIBRARIES_PATH "${LIBRARIES_PATH}/lib;$ENV{PREFIX}/Library/lib")
+set(LIBRARIES_PATH "${LIBRARIES_PATH}/lib;$ENV{PREFIX}/lib;$ENV{PREFIX}/Library/lib")
 message(STATUS "LIBRARIES_PATH: ${LIBRARIES_PATH}")
 target_link_directories(${bindings_library} PUBLIC ${LIBRARIES_PATH})
 
@@ -134,10 +134,14 @@ target_link_libraries(${bindings_library} PRIVATE ${SHIBOKEN_LIBRARY})
 target_link_libraries(${bindings_library} PRIVATE ${QMN_LINK_LIBRARIES})
 target_link_libraries(${bindings_library} PRIVATE ${QMN_LIBRARY})
 
+if (UNIX)
+    target_link_libraries(qmn PUBLIC qtmolecularnetwork PySide2::pyside2)
+endif()
+
 # Adjust the name of generated module.
 set_property(TARGET ${bindings_library} PROPERTY PREFIX "")
 set_property(TARGET ${bindings_library} PROPERTY OUTPUT_NAME
-             "${bindings_library}${PYTHON_EXTENSION_SUFFIX}")
+             "${bindings_library}${PYTHON_CONFIG_SUFFIX}")
 if(WIN32)
     set_property(TARGET ${bindings_library} PROPERTY SUFFIX "${PYTHON_CONFIG_SUFFIX}.pyd")
 endif()

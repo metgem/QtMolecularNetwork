@@ -18,9 +18,10 @@ outputs:
     script: install_qtmolecularnetwork.sh  # [unix]
     requirements:
       build:
-        - python {{ python}}
+        - python {{ python }}
         - cmake>=3.13
         - {{ compiler('cxx') }}
+        - clangdev
         - make                               # [not win]
         - ninja                              # [win]
         - gxx                                # [linux]
@@ -29,6 +30,7 @@ outputs:
         - mesalib  # [unix]
       host:
         - qt
+        - libclang
       run:
         - rdkit
     test:
@@ -44,14 +46,16 @@ outputs:
       build:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
+        - clangdev
         - cmake
       host:
         - qtmolecularnetwork
-        - python {{ python}}
+        - python {{ python }}
         - rdkit-dev
         - pyside2
         - eigen
         - mesalib  # [unix]
+        - libclang
       run:
         - qtmolecularnetwork
         - pywin32  # [win]
