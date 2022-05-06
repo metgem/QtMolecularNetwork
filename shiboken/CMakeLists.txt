@@ -140,10 +140,13 @@ endif()
 
 # Adjust the name of generated module.
 set_property(TARGET ${bindings_library} PROPERTY PREFIX "")
-set_property(TARGET ${bindings_library} PROPERTY OUTPUT_NAME
-             "${bindings_library}${PYTHON_CONFIG_SUFFIX}")
 if(WIN32)
+    set_property(TARGET ${bindings_library} PROPERTY OUTPUT_NAME
+             "${bindings_library}${PYTHON_EXTENSION_SUFFIX}")
     set_property(TARGET ${bindings_library} PROPERTY SUFFIX "${PYTHON_CONFIG_SUFFIX}.pyd")
+else()
+    set_property(TARGET ${bindings_library} PROPERTY OUTPUT_NAME
+             "${bindings_library}${PYTHON_CONFIG_SUFFIX}")
 endif()
 
 # Make sure the linker doesn't complain about not finding Python symbols on macOS.
