@@ -68,14 +68,14 @@ outputs:
         - PySide2MolecularNetwork.qmn
 
 about:
-    home: http://github.com/metgem/PyQtNetworkView
+    home: https://github.com/metgem/QtMolecularNetwork
     license: GPLv3
     license_family: GPL
     license_file: 'LICENSE'
     summary: 'Widgets used for visualisation of graph in MetGem'
     description: 'Widgets used for visualisation of graph in `MetGem`'
     doc_url: ''
-    dev_url: 'http://github.com/metgem/PyQtNetworkView'
+    dev_url: 'https://github.com/metgem/QtMolecularNetwork'
 
 extra:
     recipe-maintainers: 'nicolas.elie@cnrs.fr'
