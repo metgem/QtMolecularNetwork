@@ -135,7 +135,7 @@ target_link_libraries(${bindings_library} PRIVATE ${QMN_LINK_LIBRARIES})
 target_link_libraries(${bindings_library} PRIVATE ${QMN_LIBRARY})
 
 if (UNIX)
-    target_link_libraries(qmn PUBLIC qtmolecularnetwork PySide2::pyside2)
+    target_link_libraries(${bindings_library} PUBLIC qtmolecularnetwork PySide2::pyside2)
 endif()
 
 # Adjust the name of generated module.
