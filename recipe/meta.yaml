@@ -57,6 +57,7 @@ outputs:
         - mesalib  # [unix]
         - libclang
       run:
+        - {{ pin_compatible('python') }}
         - qtmolecularnetwork
         - pywin32  # [win]
         - pyside2
