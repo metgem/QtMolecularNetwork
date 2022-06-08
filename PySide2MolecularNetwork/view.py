@@ -89,6 +89,8 @@ class NetworkView(QGraphicsView):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self._is_moving = False
+
         if USE_OPENGL and not isRemoteSession():
             fmt = QSurfaceFormat()
             fmt.setSamples(4)
@@ -139,17 +141,20 @@ class NetworkView(QGraphicsView):
         super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
-        super().mouseReleaseEvent(event)
-
-        if event.button() == Qt.LeftButton:
+        if not self._is_moving:
+            super().mouseReleaseEvent(event)
+            
+        if event.button() == Qt.RightButton:
+            self.setDragMode(QGraphicsView.NoDrag)
+        elif event.button() == Qt.LeftButton:
             self.setDragMode(QGraphicsView.NoDrag)
             self.viewport().unsetCursor()
-        elif event.button() == Qt.RightButton:
-            self.setDragMode(QGraphicsView.NoDrag)
+            self._is_moving = False
 
     def mouseMoveEvent(self, event):
         if self.dragMode() == QGraphicsView.ScrollHandDrag:
             self.minimap.adjustRubberband()
+            self._is_moving = True
 
         super().mouseMoveEvent(event)
 
