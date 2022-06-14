@@ -53,7 +53,7 @@ target_link_libraries(qtmolecularnetwork PUBLIC Qt${QT_VERSION_MAJOR}::Core
 if (UNIX)
     target_link_libraries(qtmolecularnetwork PUBLIC RDKitDepictor RDKitMolDraw2D RDKitRDGeneral RDKitSmilesParse RDKitRDInchiLib RDKitInchi)
 else()
-    target_link_libraries(qtmolecularnetwork PUBLIC GenericGroups Depictor MolDraw2D RDGeneral SmilesParse RDInchiLib Inchi GraphMol RDGeometryLib SubstructMatch RingDecomposerLib DataStructs coordgen ChemReactions FileParsers MolTransforms EigenSolvers freetype)
+    target_link_libraries(qtmolecularnetwork PUBLIC RDKITGenericGroups RDKitDepictor RDKitMolDraw2D RDKitRDGeneral RDKitSmilesParse RDKitRDInchiLib RDKitInchi RDKitGraphMol RDKitRDGeometryLib RDKitSubstructMatch RDKitRingDecomposerLib RDKitDataStructs RDKitcoordgen RDKitChemReactions RDKitFileParsers RDKitMolTransforms RDKitEigenSolvers freetype)
 endif()
 set_target_properties(qtmolecularnetwork PROPERTIES
     AUTOMOC ON
