@@ -42,7 +42,6 @@ else()
     target_compile_definitions(qtmolecularnetwork PRIVATE QMN_SHARED_EXPORT)
 endif()
 list(JOIN CMAKE_SYSTEM_PREFIX_PATH "/lib;" LIBRARIES_PATH)
-set(rdkit_lib_path "${LIBRARIES_PATH}/lib")
 target_link_directories(qtmolecularnetwork PUBLIC ${LIBRARIES_PATH})
 target_link_libraries(qtmolecularnetwork PUBLIC Qt${QT_VERSION_MAJOR}::Core 
                                            Qt${QT_VERSION_MAJOR}::Gui 
@@ -50,11 +49,7 @@ target_link_libraries(qtmolecularnetwork PUBLIC Qt${QT_VERSION_MAJOR}::Core
                                            Qt${QT_VERSION_MAJOR}::Svg
                                            RDKit::rdkit_base
                                            ${RDKIT_LINK_LIBRARIES})
-if (UNIX)
-    target_link_libraries(qtmolecularnetwork PUBLIC RDKitDepictor RDKitMolDraw2D RDKitRDGeneral RDKitSmilesParse RDKitRDInchiLib RDKitInchi)
-else()
-    target_link_libraries(qtmolecularnetwork PUBLIC RDKITGenericGroups RDKitDepictor RDKitMolDraw2D RDKitRDGeneral RDKitSmilesParse RDKitRDInchiLib RDKitInchi RDKitGraphMol RDKitRDGeometryLib RDKitSubstructMatch RDKitRingDecomposerLib RDKitDataStructs RDKitcoordgen RDKitChemReactions RDKitFileParsers RDKitMolTransforms RDKitEigenSolvers freetype)
-endif()
+target_link_libraries(qtmolecularnetwork PRIVATE RDKitDepictor RDKitMolDraw2D RDKitRDGeneral RDKitSmilesParse RDKitRDInchiLib RDKitInchi)
 set_target_properties(qtmolecularnetwork PROPERTIES
     AUTOMOC ON
     AUTORCC ON

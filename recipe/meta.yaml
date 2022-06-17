@@ -29,9 +29,10 @@ outputs:
         - eigen
         - mesalib  # [unix]
       host:
-        - qt
+        - qt-main
         - libclang
       run:
+        - qt-main
         - rdkit
     test:
       commands:
