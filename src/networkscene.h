@@ -26,7 +26,7 @@ Q_SIGNALS:
    void locked(bool);
 
 public:
-	enum: int {
+    enum Type: int {
 		PixmapsSmiles = 0,
         PixmapsInchi = 1,
         PixmapsBase64 = 2,

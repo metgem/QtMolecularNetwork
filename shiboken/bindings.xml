@@ -7,27 +7,27 @@
     <load-typesystem name="typesystem_gui.xml" generate="no"/>
     
     <template name="cppset_to_pyset_conversion">
-    PyObject* %out = PySet_New(NULL);
-    %INTYPE::const_iterator it = %in.begin();
-    for (int idx = 0; it != %in.end(); ++it, ++idx) {
-        %INTYPE_0 cppItem(*it);
-        PySet_Add(%out, %CONVERTTOPYTHON[%INTYPE_0](cppItem));
+    %PYARG_0 = PySet_New(NULL);
+    ::QSet&lt;%INTYPE_0&gt;::const_iterator it = %0.begin();
+    
+    for (int idx = 0; it != %0.end(); ++it, ++idx) {
+        ::%INTYPE_0 cppItem(*it);
+        PySet_Add(%PYARG_0, %CONVERTTOPYTHON[%INTYPE_0](cppItem));
     }
-    return %out;
     </template>
     
-    <container-type name="QSet" type="set">
-    <include file-name="QSet" location="global"/>
-    <conversion-rule>
-        <native-to-target>
-            <insert-template name="cppset_to_pyset_conversion"/>
-        </native-to-target>
-        <target-to-native>
-            <add-conversion type="PySequence">
-                <insert-template name="pyseq_to_cpplist_conversion"/>
-            </add-conversion>
-        </target-to-native>
-    </conversion-rule>
+    <container-type name="QSetb" type="set">
+        <include file-name="QSet" location="global"/>
+        <conversion-rule>
+            <native-to-target>
+                <insert-template name="cppset_to_pyset_conversion"/>
+            </native-to-target>
+            <target-to-native>
+                <add-conversion type="PySequence">
+                    <insert-template name="pyseq_to_cpplist_conversion"/>
+                </add-conversion>
+            </target-to-native>
+        </conversion-rule>
     </container-type>
    
     <enum-type name="Config" />
@@ -35,6 +35,15 @@
     <enum-type name="NodePolygon" />
     
     <object-type name="Node">
+        <modify-function signature="edges() const">
+            <modify-argument index="return">
+                <conversion-rule class="target">
+                    <insert-template name="cppset_to_pyset_conversion">
+                        <replace from="%INTYPE_0" to="Edge*" />
+                    </insert-template>
+                </conversion-rule>
+            </modify-argument>
+        </modify-function>
     </object-type>
     
     <object-type name="Edge">
@@ -44,7 +53,7 @@
     </object-type>
     
     <object-type name="NetworkScene">
-        <enum-type identified-by-value="PixmapsAuto" />
+        <enum-type name="Type" />
         <add-function signature="setNodesRadiiFromModel(QAbstractItemModel * @model@, int @column_id@, PyObject* @func@, int @role@)">
             <inject-code class="target" position="beginning" file="glue/scene.cpp" snippet="scene-setnodesradii"/>
         </add-function>
