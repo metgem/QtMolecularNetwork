@@ -1,13 +1,25 @@
 cmake_minimum_required(VERSION 3.5)
 project(qtmolecularnetwork LANGUAGES CXX VERSION ${VERSION_SHORT})
+
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} 5.5 COMPONENTS Core Gui Widgets Svg REQUIRED)
 find_package(RDKit REQUIRED)
+find_package(Cairo REQUIRED)
+
+include(FindFreetype)
+include_directories(${FREETYPE_INCLUDE_DIRS})
 
 get_property(RDKIT_INCLUDE_DIRS TARGET RDKit::rdkit_base PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-get_property(RDKIT_LINK_LIBRARIES TARGET RDKit::rdkit_base PROPERTY INTERFACE_LINK_LIBRARIES)
 message(STATUS "RDKit include dirs: ${RDKIT_INCLUDE_DIRS}")
 include_directories(${RDKIT_INCLUDE_DIRS})
+
+set(RDKIT_LIBRARIES RDKit::rdkit_base RDKit::RDInchiLib RDKit::Depictor RDKit::SmilesParse RDKit::MolDraw2D)
+set(RDKIT_LINK_LIBRARIES)
+foreach(lib ${RDKIT_LIBRARIES})
+    get_property(link_libraries TARGET ${lib} PROPERTY INTERFACE_LINK_LIBRARIES)
+    list(APPEND RDKIT_LINK_LIBRARIES ${link_libraries})
+endforeach()
+message(STATUS "RDKit link libraries: ${RDKIT_LINK_LIBRARIES}")
 
 if (UNIX AND NOT APPLE)
     include_directories(${Qt${QT_VERSION_MAJOR}Gui_PRIVATE_INCLUDE_DIRS})
@@ -47,9 +59,10 @@ target_link_libraries(qtmolecularnetwork PUBLIC Qt${QT_VERSION_MAJOR}::Core
                                            Qt${QT_VERSION_MAJOR}::Gui 
                                            Qt${QT_VERSION_MAJOR}::Widgets
                                            Qt${QT_VERSION_MAJOR}::Svg
-                                           RDKit::rdkit_base
+                                           ${CAIRO_LIBRARIES}
+                                           ${FREETYPE_LIBRARIES}
+                                           ${RDKIT_LIBRARIES}
                                            ${RDKIT_LINK_LIBRARIES})
-target_link_libraries(qtmolecularnetwork PRIVATE RDKitDepictor RDKitMolDraw2D RDKitRDGeneral RDKitSmilesParse RDKitRDInchiLib RDKitInchi)
 set_target_properties(qtmolecularnetwork PROPERTIES
     AUTOMOC ON
     AUTORCC ON

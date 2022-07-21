@@ -4,6 +4,12 @@ cmake_policy(VERSION 3.1)
 # Consider changing the project name to something relevant for you.
 project(PySide2MolecularNetwork)
 
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/modules ${CMAKE_MODULE_PATH})
+find_package(Cairo REQUIRED)
+
+include(FindFreetype)
+include_directories(${FREETYPE_INCLUDE_DIRS})
+
 # ================================ General configuration ======================================
 
 # Set CPP standard to C++11 minimum.
@@ -131,6 +137,8 @@ target_link_directories(${bindings_library} PUBLIC ${LIBRARIES_PATH})
 target_link_libraries(${bindings_library} PRIVATE ${PYSIDE_LIBRARY})
 target_link_libraries(${bindings_library} PRIVATE ${SHIBOKEN_PYTHON_LIBRARIES})
 target_link_libraries(${bindings_library} PRIVATE ${SHIBOKEN_LIBRARY})
+target_link_libraries(${bindings_library} PRIVATE ${CAIRO_LIBRARIES})
+target_link_libraries(${bindings_library} PRIVATE ${FREETYPE_LIBRARIES})
 target_link_libraries(${bindings_library} PRIVATE ${QMN_LINK_LIBRARIES})
 target_link_libraries(${bindings_library} PRIVATE ${QMN_LIBRARY})
 
