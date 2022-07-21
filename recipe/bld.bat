@@ -1,6 +1,3 @@
-set CMAKE_CONFIG="Release"
-
-cd %SRC_DIR%
 mkdir build
 cd build
 
@@ -13,5 +10,5 @@ cmake -LAH -G"NMake Makefiles"                               ^
     ..
 if errorlevel 1 exit 1
 
-cmake --build . --config %CMAKE_CONFIG% --target install
+cmake --build . --target install
 if errorlevel 1 exit 1
