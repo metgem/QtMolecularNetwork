@@ -13,11 +13,9 @@ build:
 
 requirements:
     build:
-        - python {{ python }}
         - cmake
         - {{ compiler('cxx') }}
         - make                                # [not win]
-        - rdkit-dev ={{ rdkit_version }}
         - eigen
         - {{ cdt('mesa-libgl-devel') }}       # [linux]
         - {{ cdt('mesa-dri-drivers') }}       # [linux]
@@ -26,10 +24,11 @@ requirements:
         - {{ cdt('libxxf86vm') }}             # [linux]
         - {{ cdt('libxext') }}                # [linux]
     host:
+        - python {{ python }}
         - cairo
         - freetype
         - qt-main >=5.15
-        - rdkit ={{ rdkit_version }}
+        - rdkit-dev ={{ rdkit_version }}
     run:
         - rdkit ={{ rdkit_version }}
     
@@ -47,10 +46,6 @@ outputs:
   - name: pyside2mn
     build:
       script: python -m pip install . -vv
-      script_env:
-        - CMAKE_GENERATOR_PLATFORM=           # [win]
-        - CMAKE_GENERATOR_TOOLSET=            # [win]
-        - CMAKE_GENERATOR=                    # [win]
     version: {{ version }}
     requirements:
       build:
