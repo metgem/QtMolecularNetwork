@@ -1,12 +1,12 @@
-from PySide2.QtGui import QColor, QFont, QBrush, QFontMetrics, QPixmap
-from PySide2.QtCore import Qt, QSize
+from PySide6.QtGui import QColor, QFont, QBrush, QFontMetrics, QPixmap
+from PySide6.QtCore import Qt, QSize
 
 import pytest
 import hashlib
-import PySide2MolecularNetwork
-from PySide2MolecularNetwork.node import NodePolygon, NODE_POLYGON_MAP
-from PySide2.QtGui import QPolygonF
-from PySide2.QtCore import QPointF
+import PySide6MolecularNetwork
+from PySide6MolecularNetwork.node import NodePolygon, NODE_POLYGON_MAP
+from PySide6.QtGui import QPolygonF
+from PySide6.QtCore import QPointF
 
 from resources import MOLECULES
 
@@ -222,13 +222,13 @@ def test_node_shape_set_label(mod):
     label = "very long label"
     node.setLabel(label)
     assert(node.label() == label)
-    width = fm.width(label)
+    width = fm.horizontalAdvance(label)
     assert node.boundingRect().width() >= width
     
     label = "really really loooooooooooooong label"
     node.setLabel(label)
     assert(node.label() == label)
-    assert node.boundingRect().width() >= fm.width(label)
+    assert node.boundingRect().width() >= fm.horizontalAdvance(label)
     assert node.boundingRect().width() > width
     
     label = "1"
@@ -246,7 +246,7 @@ def test_node_shape_set_font(mod):
     fm = QFontMetrics(font)
     node.setFont(font)
     assert node.font() == font
-    assert node.boundingRect().width() >= fm.width(label) > width
+    assert node.boundingRect().width() >= fm.horizontalAdvance(label) > width
     
     font = QFont("Times", 4)
     fm = QFontMetrics(font)

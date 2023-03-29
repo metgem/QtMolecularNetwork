@@ -5,8 +5,8 @@ except ImportError:
 else:
     HAS_TINYCSS2 = True
 
-from PySide2.QtCore import Qt, QCoreApplication
-from PySide2.QtGui import QColor, QFont, QPen, QBrush
+from PySide6.QtCore import Qt, QCoreApplication
+from PySide6.QtGui import QColor, QFont, QPen, QBrush
 
 from .config import Config
 

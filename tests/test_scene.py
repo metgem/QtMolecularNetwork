@@ -1,8 +1,8 @@
-from PySide2.QtGui import (QPen, QColor, QStandardItemModel, QStandardItem,
+from PySide6.QtGui import (QPen, QColor, QStandardItemModel, QStandardItem,
                          QPixmap, QPainter, QImage, QBrush, QPolygonF)
-from PySide2.QtWidgets import QGraphicsItem
-from PySide2.QtCore import Qt, QPoint, QPointF, QSize
-from PySide2MolecularNetwork.node import NodePolygon, NODE_POLYGON_MAP
+from PySide6.QtWidgets import QGraphicsItem
+from PySide6.QtCore import Qt, QPoint, QPointF, QSize
+from PySide6MolecularNetwork.node import NodePolygon, NODE_POLYGON_MAP
 
 import pytest
 import hashlib
@@ -391,17 +391,17 @@ def test_scene_set_pie_charts_visibility(qtbot, scene):
 @pytest.mark.parametrize("molecule", MOLECULES)
 @pytest.mark.parametrize("role", [Qt.DisplayRole, Qt.UserRole+1])
 @pytest.mark.parametrize("type", ["smiles", "inchi", "base64", "svg"])
-def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
+def test_scene_set_pixmaps_from_model(mod, scene, molecule, role, type):
     """Check that setPixmapsFromModel change pixmaps on all nodes."""
     
     if type == "base64":
-        pixmap_type = scene.PixmapsBase64
+        pixmap_type = mod.NetworkScene.PixmapsBase64
     elif type == "smiles":
-        pixmap_type = scene.PixmapsSmiles
+        pixmap_type = mod.NetworkScene.PixmapsSmiles
     elif type == "inchi":
-        pixmap_type = scene.PixmapsInchi
+        pixmap_type = mod.NetworkScene.PixmapsInchi
     elif type == "svg":
-        pixmap_type = scene.PixmapsSvg
+        pixmap_type = mod.NetworkScene.PixmapsSvg
             
     model = QStandardItemModel()
     
@@ -440,7 +440,7 @@ def test_scene_set_pixmaps_from_model(scene, molecule, role, type):
 @pytest.mark.parametrize("molecule", MOLECULES)
 @pytest.mark.parametrize("role", [Qt.DisplayRole, Qt.UserRole+1])
 @pytest.mark.parametrize("type", ["smiles", "inchi", "base64", "svg"])
-def test_scene_set_pixmaps_from_model_auto(scene, molecule, role, type):
+def test_scene_set_pixmaps_from_model_auto(mod, scene, molecule, role, type):
     """Check that setPixmapsFromModel change pixmaps on all nodes."""
            
     model = QStandardItemModel()
@@ -463,7 +463,7 @@ def test_scene_set_pixmaps_from_model_auto(scene, molecule, role, type):
         assert node.pixmap().isNull()
         
     for column in range(0, 1):
-        scene.setPixmapsFromModel(model, column, role, scene.PixmapsAuto)
+        scene.setPixmapsFromModel(model, column, role, mod.NetworkScene.PixmapsAuto)
         
         for node in scene.nodes():
             pixmap = QPixmap(molecule['image'])
@@ -1101,5 +1101,5 @@ def test_scene_render(scene):
     painter.end()
     
     for node in scene.nodes():
-        assert node.cacheMode() & QGraphicsItem.DeviceCoordinateCache
+        assert node.cacheMode() == QGraphicsItem.DeviceCoordinateCache
     

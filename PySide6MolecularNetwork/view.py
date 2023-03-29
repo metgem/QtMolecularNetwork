@@ -1,8 +1,9 @@
 import sys
 
-from PySide2.QtCore import Signal, Qt
-from PySide2.QtGui import QPainter, QSurfaceFormat, QFocusEvent
-from PySide2.QtWidgets import QGraphicsView, QRubberBand, QOpenGLWidget, QFormLayout, QSizePolicy
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QPainter, QSurfaceFormat, QFocusEvent
+from PySide6.QtWidgets import QGraphicsView, QRubberBand, QFormLayout, QSizePolicy
+from PySide6.QtOpenGLWidgets import QOpenGLWidget
 
 USE_OPENGL = True
 
@@ -51,15 +52,15 @@ class MiniMapGraphicsView(QGraphicsView):
     def mousePressEvent(self, event):
         if self.band.isVisible() and event.button() == Qt.LeftButton:
             rect = self.band.geometry()
-            if rect.contains(event.pos()):
-                self._drag_start_pos = event.pos()
+            if rect.contains(event.position()):
+                self._drag_start_pos = event.position()
             else:
-                self.centerOn(event.pos())
+                self.centerOn(event.position())
 
     def mouseMoveEvent(self, event):
         if self.band.isVisible() and event.buttons() == Qt.MouseButtons(
                 Qt.LeftButton) and self._drag_start_pos is not None:
-            self.centerOn(event.pos())
+            self.centerOn(event.position())
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton and self.band.isVisible():
@@ -130,10 +131,10 @@ class NetworkView(QGraphicsView):
         scene.layoutChanged.connect(self.on_layout_changed)
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton and not self.itemAt(event.pos()):
+        if event.button() == Qt.LeftButton and not self.itemAt(event.position()):
             self.setDragMode(QGraphicsView.ScrollHandDrag)
         elif event.button() == Qt.RightButton:
-            if self.itemAt(event.pos()):
+            if self.itemAt(event.position()):
                 return  # ignore event if right click occurs on an item to prevent selection to be lost
             else:
                 self.setDragMode(QGraphicsView.RubberBandDrag)

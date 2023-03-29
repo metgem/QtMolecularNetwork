@@ -1,12 +1,12 @@
-from PySide2.QtGui import QColor, QPixmap, QBrush
 from typing import List
 
 import itertools
 
-from PySide2.QtCore import Qt, Signal, QRectF
-from PySide2.QtGui import QPainter
-from PySide2.QtWidgets import QGraphicsScene, QGraphicsItem
-
+from PySide6.QtGui import QColor, QPixmap, QBrush
+from PySide6.QtCore import Qt, Signal, QRectF
+from PySide6.QtGui import QPainter
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsItem
+    
 from .config import Config
 from .node import Node, NodePolygon
 from .edge import Edge

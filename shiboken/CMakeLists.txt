@@ -1,8 +1,10 @@
-cmake_minimum_required(VERSION 3.1)
-cmake_policy(VERSION 3.1)
+cmake_minimum_required(VERSION 3.16)
+cmake_policy(VERSION 3.16)
 
-# Consider changing the project name to something relevant for you.
-project(PySide2MolecularNetwork)
+# Enable policy to run automoc on generated files.
+if(POLICY CMP0071)
+  cmake_policy(SET CMP0071 NEW)
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/modules ${CMAKE_MODULE_PATH})
 find_package(Cairo REQUIRED)
@@ -12,15 +14,32 @@ include_directories(${FREETYPE_INCLUDE_DIRS})
 
 # ================================ General configuration ======================================
 
-# Set CPP standard to C++11 minimum.
-set(CMAKE_CXX_STANDARD 11)
+project(PySide6QtMolecularNetwork)
 
-# The sample library for which we will create bindings. You can change the name to something
-# relevant for your project.
-set(sample_library "qtmolecularnetwork")
+# Find Python
+find_package (Python3 COMPONENTS Interpreter Development)
+if(NOT Python3_Interpreter_FOUND)
+    message(FATAL_ERROR "Python3 not found")
+endif()
+message(STATUS "Using python: ${Python3_EXECUTABLE}")
 
-# The name of the generated bindings module (as imported in Python). You can change the name
-# to something relevant for your project.
+# https://bugreports.qt.io/browse/QTBUG-89754
+set(OpenGL_GL_PREFERENCE "LEGACY")
+
+# Find the required Qt packages
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Svg)
+find_package(Shiboken6 6.0.0 REQUIRED)
+find_package(PySide6 6.0.0 REQUIRED)
+find_package(RDKit REQUIRED)
+find_package(qt6molecularnetwork)
+
+# Set CPP standard to C++17 minimum.
+set(CMAKE_CXX_STANDARD 17)
+
+# The C++ project library for which we will create bindings.
+set(sample_library "qt6molecularnetwork")
+
+# The name of the generated bindings module (as imported in Python).
 set(bindings_library "qmn")
 
 # The header file with all the types and functions for which bindings will be generated.
@@ -42,48 +61,113 @@ set(generated_sources
     ${CMAKE_CURRENT_BINARY_DIR}/${bindings_library}/defaultstyle_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/${bindings_library}/node_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/${bindings_library}/${bindings_library}_module_wrapper.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/${bindings_library}/${bindings_library}_python.h
+    #${CMAKE_CURRENT_BINARY_DIR}/${bindings_library}/${bindings_library}_python.h
     )
 
+
 # ================================== Shiboken detection ======================================
-if(NOT PYTHON_EXECUTABLE)
-    find_program(PYTHON_EXECUTABLE "python")
+
+# Query for the shiboken generator path, Python path, include paths and linker flags.
+get_property(shiboken_include_dir TARGET Shiboken6::libshiboken PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+get_property(shiboken_shared_libraries TARGET Shiboken6::libshiboken PROPERTY IMPORTED_IMPLIB_RELEASE)
+get_property(pyside_include_dir TARGET PySide6::pyside6 PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+get_property(pyside_shared_libraries TARGET PySide6::pyside6 PROPERTY IMPORTED_IMPLIB_RELEASE)
+get_property(qmn_include_dir TARGET qmn::qt6molecularnetwork PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+get_property(qmn_link_libraries TARGET qmn::qt6molecularnetwork PROPERTY INTERFACE_LINK_LIBRARIES)
+get_property(qmn_shared_libraries TARGET qmn::qt6molecularnetwork PROPERTY IMPORTED_IMPLIB_RELEASE)
+
+find_program(shiboken_path "shiboken6${CMAKE_EXECUTABLE_SUFFIX}")
+if(NOT EXISTS ${shiboken_path})
+    message(FATAL_ERROR "Shiboken executable not found at path: ${shiboken_path}")
 endif()
-message(STATUS "Using python interpreter: ${PYTHON_EXECUTABLE}")
 
-find_package(Shiboken2 2.0.0 REQUIRED)
-find_package(Shiboken2 COMPONENTS libshiboken REQUIRED)
-find_package(PySide2 2.0.0 REQUIRED)
-find_package(Qt5 COMPONENTS Widgets Core Gui Svg REQUIRED)
-find_package(RDKit REQUIRED)
-find_package(qtmolecularnetwork)
 
-message(STATUS "Qt include dirs: ${Qt5Widgets_INCLUDE_DIRS}")
+# ==================================== RPATH configuration ====================================
 
-get_property(SHIBOKEN_INCLUDE_DIRS TARGET Shiboken2::libshiboken PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-message(STATUS "Shiboken include dirs: ${SHIBOKEN_INCLUDE_DIRS}")
-get_property(PYSIDE_INCLUDE_DIR TARGET PySide2::pyside2 PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-message(STATUS "PySide2 include dir: ${PYSIDE_INCLUDE_DIR}")
-get_property(QMN_INCLUDE_DIRS TARGET qmn::qtmolecularnetwork PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-message(STATUS "QtMolecularNetwork include dirs: ${QMN_INCLUDE_DIRS}")
+if(UNIX AND NOT APPLE)
+    set(CMAKE_INSTALL_RPATH "$ORIGIN/lib:$ORIGIN/../PySide6/:$ORIGIN/../PySide6/Qt/lib:$ORIGIN/../shiboken6")
+endif()
 
-add_definitions(${Qt5Widgets_DEFINITIONS})
-add_definitions(-DQT_NO_KEYWORDS)
+if(APPLE)
+    set(CMAKE_INSTALL_RPATH "@loader_path/lib;@loader_path/../PySide6/;@loader_path/../PySide6/Qt/lib;@loader_path/../shiboken6")
+    set(MACOSX_RPATH TRUE)
+endif()
+
+
+# ============================== Qt Includes for project_library ==============================
+
+# Get the relevant Qt include dirs, to pass them on to shiboken.
+set(QT_INCLUDE_DIR "")
+get_target_property(QT_INCLUDE_DIR_LIST Qt6::Core INTERFACE_INCLUDE_DIRECTORIES)
+foreach(_Q ${QT_INCLUDE_DIR_LIST})
+    if(NOT "${_Q}" MATCHES "QtCore$")
+        set(QT_INCLUDE_DIR "${_Q}")
+    endif()
+endforeach()
+if(QT_INCLUDE_DIR STREQUAL "")
+    message(FATAL_ERROR "Unable to obtain the Qt include directory")
+endif()
+
+set(QT_INCLUDES "")
+list(APPEND QT_INCLUDES "-I${QT_INCLUDE_DIR}")
+
+get_property(QT_CORE_INCLUDE_DIRS TARGET Qt6::Core PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+foreach(INCLUDE_DIR ${QT_CORE_INCLUDE_DIRS})
+    list(APPEND QT_INCLUDES "-I${INCLUDE_DIR}")
+endforeach()
+
+get_property(QT_GUI_INCLUDE_DIRS TARGET Qt6::Gui PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+foreach(INCLUDE_DIR ${QT_GUI_INCLUDE_DIRS})
+    list(APPEND QT_INCLUDES "-I${INCLUDE_DIR}")
+endforeach()
+
+get_property(QT_WIDGETS_INCLUDE_DIRS TARGET Qt6::Widgets PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+foreach(INCLUDE_DIR ${QT_WIDGETS_INCLUDE_DIRS})
+    list(APPEND QT_INCLUDES "-I${INCLUDE_DIR}")
+endforeach()
+
+get_property(QT_SVG_INCLUDE_DIRS TARGET Qt6::Svg PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
+foreach(INCLUDE_DIR ${QT_SVG_INCLUDE_DIRS})
+    list(APPEND QT_INCLUDES "-I${INCLUDE_DIR}")
+endforeach()
+
+# Check if Qt is a framework build on macOS. This affects how include paths should be handled.
+get_target_property(QtCore_is_framework Qt6::Core FRAMEWORK)
+if (QtCore_is_framework)
+    # Get the path to the Qt framework dir.
+    set(QT_FRAMEWORK_INCLUDE_DIR "${QT6_INSTALL_PREFIX}/${QT6_INSTALL_LIBS}")
+    message(STATUS "*** QT_FRAMEWORK_INCLUDE_DIR is ${QT_FRAMEWORK_INCLUDE_DIR}")
+    list(APPEND QT_INCLUDES "--framework-include-paths=${QT_FRAMEWORK_INCLUDE_DIR}")
+endif()
+
+# We need to include the headers for the module bindings that we use
+set(pyside_additional_includes "")
+foreach(INCLUDE_DIR ${pyside_include_dir})
+    list(APPEND pyside_additional_includes "${INCLUDE_DIR}/QtCore")
+    list(APPEND pyside_additional_includes "${INCLUDE_DIR}/QtGui")
+    list(APPEND pyside_additional_includes "${INCLUDE_DIR}/QtWidgets")
+endforeach()
+
 
 # ====================== Shiboken target for generating binding C++ files  ====================
 
-list(JOIN Qt5Widgets_INCLUDE_DIRS ";-I" qt_includes)
-set(qt_includes "-I${qt_includes}")
-list(JOIN QMN_INCLUDE_DIRS ";-I" qmn_includes)
-set(qmn_includes "-I${qmn_includes}")
-set(includes ${qt_includes} ${qmn_includes})
+set(implicit_includes)
+foreach(_current ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
+    set(implicit_includes ${implicit_includes} "-I${_current}")
+endforeach()
+
+set(qmn_includes)
+foreach(_current ${qmn_include_dir})
+    set(qmn_includes ${qmn_includes} "-I${_current}")
+endforeach()
 
 # Set up the options to pass to shiboken.
 set(shiboken_options --generator-set=shiboken --enable-parent-ctor-heuristic
     --enable-return-value-heuristic --use-isnull-as-nb_nonzero
     --avoid-protected-hack --enable-pyside-extensions
-    ${qt_includes} ${qmn_includes}
-    -I${CMAKE_SOURCE_DIR}/src
+    ${QT_INCLUDES}
+    ${implicit_includes} ${qmn_includes}
+    -I${CMAKE_CURRENT_SOURCE_DIR}/shiboken
     -T${PYSIDE_TYPESYSTEMS}
     --output-directory=${CMAKE_CURRENT_BINARY_DIR}
     )
@@ -92,7 +176,7 @@ set(generated_sources_dependencies ${wrapped_header} ${typesystem_file})
 
 # Add custom target to run shiboken to generate the binding cpp files.add_custom_command(OUTPUT ${generated_sources}
 add_custom_command(OUTPUT ${generated_sources}
-                    COMMAND "shiboken2"
+                    COMMAND ${shiboken_path}
                     ${shiboken_options} ${wrapped_header} ${typesystem_file}
                     DEPENDS ${generated_sources_dependencies}
                     IMPLICIT_DEPENDS CXX ${wrapped_header}
@@ -102,12 +186,6 @@ add_custom_command(OUTPUT ${generated_sources}
 
 # =============================== CMake target - bindings_library =============================
 
-get_property(SHIBOKEN_LIBRARY TARGET Shiboken2::libshiboken PROPERTY IMPORTED_IMPLIB_RELEASE)
-get_property(PYSIDE_LIBRARY TARGET PySide2::pyside2 PROPERTY IMPORTED_IMPLIB_RELEASE)
-get_property(QMN_LINK_LIBRARIES TARGET qmn::qtmolecularnetwork PROPERTY INTERFACE_LINK_LIBRARIES)
-get_property(QMN_LIBRARY TARGET qmn::qtmolecularnetwork PROPERTY IMPORTED_IMPLIB_RELEASE)
-message(STATUS "QtMolecularNetwork lib: ${QMN_LIBRARY}")
-
 # Set the cpp files which will be used for the bindings library.
 set(${bindings_library}_sources ${generated_sources})
 
@@ -115,49 +193,63 @@ set(${bindings_library}_sources ${generated_sources})
 add_library(${bindings_library} MODULE ${${bindings_library}_sources})
 
 # Apply relevant include and link flags.
-target_include_directories(${bindings_library} PRIVATE ${PYTHON_INCLUDE_DIRS})
-target_include_directories(${bindings_library} PRIVATE ${Qt5Widgets_INCLUDE_DIRS})
-target_include_directories(${bindings_library} PRIVATE ${SHIBOKEN_PYTHON_INCLUDE_DIRS})
-target_include_directories(${bindings_library} PRIVATE ${SHIBOKEN_INCLUDE_DIRS})
-target_include_directories(${bindings_library} PRIVATE ${PYSIDE_INCLUDE_DIR})
-target_include_directories(${bindings_library} PRIVATE ${PYSIDE_INCLUDE_DIR}/QtCore/)
-target_include_directories(${bindings_library} PRIVATE ${PYSIDE_INCLUDE_DIR}/QtWidgets/)
-target_include_directories(${bindings_library} PRIVATE ${PYSIDE_INCLUDE_DIR}/QtGui/)
-target_include_directories(${bindings_library} PRIVATE ${QMN_INCLUDE_DIRS})
+target_include_directories(${bindings_library} PRIVATE ${pyside_additional_includes})
+target_include_directories(${bindings_library} PRIVATE ${pyside_include_dir})
+target_include_directories(${bindings_library} PRIVATE ${Python3_INCLUDE_DIRS})
+target_include_directories(${bindings_library} PRIVATE ${shiboken_include_dir})
+target_include_directories(${bindings_library} PRIVATE "${CMAKE_SOURCE_DIR}/shiboken")
 
-target_include_directories(${bindings_library} PRIVATE
-    $<INSTALL_INTERFACE:include>
-)
-
-list(JOIN CMAKE_SYSTEM_PREFIX_PATH "/lib;" LIBRARIES_PATH)
-set(LIBRARIES_PATH "${LIBRARIES_PATH}/lib;$ENV{PREFIX}/lib;$ENV{PREFIX}/Library/lib")
-message(STATUS "LIBRARIES_PATH: ${LIBRARIES_PATH}")
-target_link_directories(${bindings_library} PUBLIC ${LIBRARIES_PATH})
-
-target_link_libraries(${bindings_library} PRIVATE ${PYSIDE_LIBRARY})
-target_link_libraries(${bindings_library} PRIVATE ${SHIBOKEN_PYTHON_LIBRARIES})
-target_link_libraries(${bindings_library} PRIVATE ${SHIBOKEN_LIBRARY})
-target_link_libraries(${bindings_library} PRIVATE ${CAIRO_LIBRARIES})
-target_link_libraries(${bindings_library} PRIVATE ${FREETYPE_LIBRARIES})
-target_link_libraries(${bindings_library} PRIVATE ${QMN_LINK_LIBRARIES})
-target_link_libraries(${bindings_library} PRIVATE ${QMN_LIBRARY})
+target_link_libraries(${bindings_library} PRIVATE Qt6::Widgets)
+target_link_libraries(${bindings_library} PRIVATE ${pyside_shared_libraries})
+target_link_libraries(${bindings_library} PRIVATE ${shiboken_shared_libraries})
+target_link_libraries(${bindings_library} PRIVATE ${ads_link_libraries})
+target_link_libraries(${bindings_library} PRIVATE ${ads_shared_libraries})
+target_link_libraries(${bindings_library} PUBLIC qmn::qt6molecularnetwork)
 
 if (UNIX)
-    target_link_libraries(${bindings_library} PUBLIC qtmolecularnetwork PySide2::pyside2)
+    target_link_libraries(${bindings_library} PUBLIC PySide6::pyside6)
 endif()
+
+target_compile_definitions(${bindings_library} PRIVATE "-DPy_LIMITED_API=0x03070000")
 
 # Adjust the name of generated module.
 set_property(TARGET ${bindings_library} PROPERTY PREFIX "")
-if(WIN32)
-    set_property(TARGET ${bindings_library} PROPERTY OUTPUT_NAME
+set_property(TARGET ${bindings_library} PROPERTY OUTPUT_NAME
              "${bindings_library}${PYTHON_EXTENSION_SUFFIX}")
-    set_property(TARGET ${bindings_library} PROPERTY SUFFIX "${PYTHON_CONFIG_SUFFIX}.pyd")
-else()
-    set_property(TARGET ${bindings_library} PROPERTY OUTPUT_NAME
-             "${bindings_library}${PYTHON_CONFIG_SUFFIX}")
+if(WIN32)
+    set_property(TARGET ${bindings_library} PROPERTY SUFFIX ".pyd")
 endif()
 
 # Make sure the linker doesn't complain about not finding Python symbols on macOS.
 if(APPLE)
   set_target_properties(${bindings_library} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
 endif(APPLE)
+
+if (WIN32)
+    target_link_directories(${bindings_library} PRIVATE ${Python3_LIBRARY_DIRS})
+endif()
+
+# ===================================== CMake target - pyi ====================================
+
+set(generate_pyi_options ${bindings_library} --sys-path
+        "${CMAKE_CURRENT_BINARY_DIR}")
+
+# Add target to generate pyi file, which depends on the module target.
+add_custom_target("${bindings_library}_pyi" ALL
+                  COMMAND ${CMAKE_COMMAND} -E env ${ld_prefix}
+                  "${Python3_EXECUTABLE}"
+                  "${CMAKE_CURRENT_SOURCE_DIR}/support/generate_pyi.py" ${generate_pyi_options}
+                  BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/${bindings_library}.pyi")
+add_dependencies("${bindings_library}_pyi" ${bindings_library})
+
+
+# ================================= Dubious deployment section ================================
+
+install(TARGETS ${bindings_library}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}
+        )
+
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${bindings_library}.pyi"
+        DESTINATION "${CMAKE_INSTALL_PREFIX}")

@@ -1,8 +1,8 @@
-{% set version = "0.6.1" %}
+{% set version = "0.6.2" %}
 {% set rdkit_version = "2022.03" %}
 
 package:
-    name: qtmolecularnetwork
+    name: qt6molecularnetwork
     version: {{ version }}
 
 source:
@@ -27,22 +27,22 @@ requirements:
         - python {{ python }}
         - cairo
         - freetype
-        - qt-main >=5.15
+        - qt6-main
         - rdkit-dev ={{ rdkit_version }}
     run:
         - rdkit ={{ rdkit_version }}
     
 test:
     commands:
-        - if not exist %LIBRARY_BIN%\\qtmolecularnetwork.dll exit 1                    # [win]
-        - if not exist %LIBRARY_INC%\\qtmolecularnetwork\\node.h exit 1                # [win]
-        - if not exist %LIBRARY_LIB%\\cmake\\qtmolecularnetwork\\qtmolecularnetworkConfig.cmake exit 1  # [win]
-        - test -f $PREFIX/lib/libqtmolecularnetwork${SHLIB_EXT}                        # [unix]
-        - test -f $PREFIX/include/qtmolecularnetwork/node.h                            # [unix]
-        - test -f $PREFIX/lib/cmake/qtmolecularnetwork/qtmolecularnetworkConfig.cmake  # [unix]
+        - if not exist %LIBRARY_BIN%\\qt6molecularnetwork.dll exit 1                                      # [win]
+        - if not exist %LIBRARY_INC%\\qt6molecularnetwork\\node.h exit 1                                  # [win]
+        - if not exist %LIBRARY_LIB%\\cmake\\qt6molecularnetwork\\qt6molecularnetworkConfig.cmake exit 1  # [win]
+        - test -f $PREFIX/lib/libqt6molecularnetwork${SHLIB_EXT}                                          # [unix]
+        - test -f $PREFIX/include/qt6molecularnetwork/node.h                                              # [unix]
+        - test -f $PREFIX/lib/cmake/qt6molecularnetwork/qt6molecularnetworkConfig.cmake                   # [unix]
 
 outputs:
-  - name: qtmolecularnetwork
+  - name: qt6molecularnetwork
   - name: pyside2mn
     build:
       script: python -m pip install . -vv
@@ -62,11 +62,12 @@ outputs:
         - {{ cdt('libxxf86vm') }}             # [linux]
         - {{ cdt('libxext') }}                # [linux]
       host:
-        - {{ pin_subpackage('qtmolecularnetwork', exact=True) }}
+        - {{ pin_subpackage('qt6molecularnetwork', exact=True) }}
         - python {{ python }}
         - rdkit-dev ={{ rdkit_version }}
-        - pyside2 >=5.15
-        - qt-main >=5.15
+        - pyside6
+        - qt6-main
+        - cmake-build-extension
         - eigen
         - pip
         - setuptools
@@ -75,9 +76,9 @@ outputs:
         - freetype
       run:
         - python {{ python }}
-        - {{ pin_subpackage('qtmolecularnetwork', exact=True) }}
+        - {{ pin_subpackage('qt6molecularnetwork', exact=True) }}
         - pywin32                             # [win]
-        - pyside2 >=5.15
+        - pyside6
         - rdkit ={{ rdkit_version }}
         - tinycss2
     test:

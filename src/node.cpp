@@ -41,7 +41,7 @@ void Node::invalidateShape()
 void Node::updateLabelRect()
 {
     QFontMetrics fm = QFontMetrics(this->font());
-    int width = fm.width(this->label());
+    int width = fm.horizontalAdvance(this->label());
     int height = fm.height();
     this->label_rect_ = QRectF(-width/2, -height/2, width, height);
 

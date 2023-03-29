@@ -7,11 +7,12 @@ from typing import Set, Union
 from enum import Enum
 import base64
 
-from PySide2.QtGui import (QPen, QColor, QFont, QBrush, QFontMetrics, QPixmap,
+from PySide6.QtGui import (QPen, QColor, QFont, QBrush, QFontMetrics, QPixmap,
                          QPolygonF, QTransform, QPainterPath)
-from PySide2.QtWidgets import (QGraphicsItem, QGraphicsEllipseItem, QStyle,
+from PySide6.QtWidgets import (QGraphicsItem, QGraphicsEllipseItem, QStyle,
                              QApplication)
-from PySide2.QtCore import Qt, QRectF, QSize, QPointF
+from PySide6.QtCore import Qt, QRectF, QSize, QPointF
+
 
 
 class NodePolygon(Enum):
@@ -191,7 +192,7 @@ class Node(QGraphicsEllipseItem):
         
     def updateLabelRect(self):
         fm = QFontMetrics(self.font())
-        width = fm.width(self.label())
+        width = fm.horizontalAdvance(self.label())
         height = fm.height()
         # noinspection PyAttributeOutsideInit
         self._label_rect = QRectF(-width/2, -height/2, width, height)

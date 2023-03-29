@@ -1,11 +1,12 @@
-import PySide2MolecularNetwork
-import PySide2MolecularNetwork._pure
+import PySide6MolecularNetwork
+import PySide6MolecularNetwork._pure
 
-from PySide2.QtCore import Qt, QPoint, QEvent
-from PySide2.QtGui import QMouseEvent, QWheelEvent, QResizeEvent, QFocusEvent
+from PySide6.QtCore import Qt, QPoint, QEvent
+from PySide6.QtGui import QMouseEvent, QWheelEvent, QResizeEvent, QFocusEvent
 
 from contextlib import contextmanager
 import pytest
+from pytestqt.qt_compat import qt_api
 
 @contextmanager
 def not_raises(ExpectedException):
@@ -26,7 +27,7 @@ pytest.not_raises = not_raises
 def pytest_generate_tests(metafunc):        
     if 'mod' in metafunc.fixturenames:
         metafunc.parametrize("mod",
-                             [PySide2MolecularNetwork, PySide2MolecularNetwork._pure])       
+                             [PySide6MolecularNetwork, PySide6MolecularNetwork._pure])       
          
 @pytest.hookimpl(tryfirst=True)
 def pytest_collection_modifyitems(items):
@@ -34,19 +35,18 @@ def pytest_collection_modifyitems(items):
         # All tests need this thing, this hook allows you not to declare it if 
         # it is not used explicitly
         if 'qapp' not in item.fixturenames:
-            item.fixturenames.append('qapp')
-                             
+            item.fixturenames.append('qapp')                           
     
 @pytest.fixture
 def qtbot(qapp, qtbot):
     # Monkey patch qtbot.mouseMove to allow sending mouseMove events without
     # window manager
     def mouseMove(widget, pos=QPoint(), delay=-1):
-        event = QMouseEvent(QEvent.MouseMove, pos, Qt.NoButton, Qt.LeftButton, Qt.NoModifier)
+        event = QMouseEvent(QEvent.MouseMove, pos, pos, Qt.NoButton, Qt.LeftButton, Qt.NoModifier)
         qapp.sendEvent(widget, event)
-        
+    
     def mouseWheel(widget, pos=QPoint(), delta=QPoint(10, 10), inverted=False, source=Qt.MouseEventNotSynthesized):
-        event = QWheelEvent(pos, widget.mapToGlobal(pos), delta, delta, Qt.NoButton, Qt.NoModifier, Qt.NoScrollPhase, source)
+        event = QWheelEvent(pos, widget.mapToGlobal(pos), delta, delta, Qt.NoButton, Qt.NoModifier, Qt.NoScrollPhase, inverted, source)
         qapp.sendEvent(widget, event)
         
     def resizeWidget(widget, size):
@@ -63,7 +63,6 @@ def qtbot(qapp, qtbot):
     qtbot.setFocus = setFocus
     
     return qtbot
-
 
 @pytest.fixture
 def view(qtbot, mod):

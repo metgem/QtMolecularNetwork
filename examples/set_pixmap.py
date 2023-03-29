@@ -1,11 +1,11 @@
 import sys
 import time
 
-from PyQt5.QtWidgets import QApplication, QGraphicsView, QGraphicsScene
-from PyQt5.QtGui import QPainter, QPixmap
-from PyQt5.QtCore import QPointF, QSize
-from PyQtNetworkView import NetworkScene, Node
-from PyQtNetworkView.mol_depiction import SmilesToPixmap, InchiToPixmap
+from PySide6.QtWidgets import QApplication, QGraphicsView, QGraphicsScene
+from PySide6.QtGui import QPainter, QPixmap
+from PySide6.QtCore import QPointF, QSize
+from PySide6MolecularNetwork import NetworkScene, Node
+from PySide6MolecularNetwork.mol_depiction import SmilesToPixmap, InchiToPixmap
 
 app = QApplication(sys.argv)
 
@@ -47,4 +47,4 @@ print(f"{nitems} items")
 
 view.show()
 
-sys.exit(app.exec_())
+sys.exit(app.exec())

@@ -1,6 +1,6 @@
-from PySide2.QtGui import QPen, QColor, QBrush, QFont
-from PySide2.QtCore import Qt, QPoint
-import PySide2MolecularNetwork
+from PySide6.QtGui import QPen, QColor, QBrush, QFont
+from PySide6.QtCore import Qt, QPoint
+import PySide6MolecularNetwork
 
 import pytest
 
@@ -240,8 +240,8 @@ def test_style_css_invalid_file(mod, value):
 def test_style_css_no_tinycss(mod, css, monkeypatch):
     """If tinycss2 module is not found, `style_from_css` should return `DefaultStyle`"""
             
-    assert PySide2MolecularNetwork.style.HAS_TINYCSS2 == True
-    monkeypatch.setattr(PySide2MolecularNetwork.style, 'HAS_TINYCSS2', False)
+    assert PySide6MolecularNetwork.style.HAS_TINYCSS2 == True
+    monkeypatch.setattr(PySide6MolecularNetwork.style, 'HAS_TINYCSS2', False)
     compare_styles(mod.style_from_css(str(css)), mod.DefaultStyle())
     
 def test_style_to_json(mod, style):

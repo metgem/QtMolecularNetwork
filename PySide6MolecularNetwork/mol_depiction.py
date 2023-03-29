@@ -1,7 +1,3 @@
-from PySide2.QtCore import QSize, Qt
-from PySide2.QtGui import QPainter, QPixmap
-from PySide2.QtSvg import QSvgRenderer
-
 from typing import Union
 
 from rdkit.Chem import Mol, MolFromSmiles, rdDepictor
@@ -9,6 +5,10 @@ from rdkit.Chem.Draw import rdMolDraw2D
 from rdkit.Chem.inchi import INCHI_AVAILABLE
 if INCHI_AVAILABLE:
     from rdkit.Chem.inchi import MolFromInchi
+    
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QPainter, QPixmap
+from PySide6.QtSvg import QSvgRenderer
 
 
 def SvgToPixmap(svg_data: Union[str, bytes], size: QSize):

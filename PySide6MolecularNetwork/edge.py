@@ -1,9 +1,8 @@
 from .style import NetworkStyle
 
-from PySide2.QtGui import QPainterPath, QPen
-from PySide2.QtWidgets import QGraphicsItem, QGraphicsPathItem, QStyle
-from PySide2.QtCore import Qt, QPointF, QLineF, QRectF, qFuzzyCompare
-
+from PySide6.QtGui import QPainterPath, QPen
+from PySide6.QtWidgets import QGraphicsItem, QGraphicsPathItem, QStyle
+from PySide6.QtCore import Qt, QPointF, QLineF, QRectF, qFuzzyCompare
 
 class Edge(QGraphicsPathItem):
     Type = QGraphicsItem.UserType + 2

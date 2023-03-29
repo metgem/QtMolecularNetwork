@@ -6,7 +6,7 @@
     <load-typesystem name="typesystem_widgets.xml" generate="no"/>
     <load-typesystem name="typesystem_gui.xml" generate="no"/>
     
-    <template name="cppset_to_pyset_conversion">
+    <!--<template name="cppset_to_pyset_conversion">
     %PYARG_0 = PySet_New(NULL);
     ::QSet&lt;%INTYPE_0&gt;::const_iterator it = %0.begin();
     
@@ -28,14 +28,14 @@
                 </add-conversion>
             </target-to-native>
         </conversion-rule>
-    </container-type>
+    </container-type>-->
    
     <enum-type name="Config" />
     
     <enum-type name="NodePolygon" />
     
     <object-type name="Node">
-        <modify-function signature="edges() const">
+        <!--<modify-function signature="edges() const">
             <modify-argument index="return">
                 <conversion-rule class="target">
                     <insert-template name="cppset_to_pyset_conversion">
@@ -43,7 +43,7 @@
                     </insert-template>
                 </conversion-rule>
             </modify-argument>
-        </modify-function>
+        </modify-function>-->
     </object-type>
     
     <object-type name="Edge">

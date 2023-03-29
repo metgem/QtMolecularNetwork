@@ -1,10 +1,10 @@
 import sys
 import time
 
-from PyQt5.QtWidgets import QApplication, QGraphicsView, QGraphicsScene
-from PyQt5.QtGui import QPainter
-from PyQt5.QtCore import QPointF
-from PyQtNetworkView import NetworkScene
+from PySide6.QtWidgets import QApplication, QGraphicsView, QGraphicsScene
+from PySide6.QtGui import QPainter, QStandardItemModel, QStandardItem
+from PySide6.QtCore import QPointF, Qt
+from PySide6MolecularNetwork import NetworkScene
 
 app = QApplication(sys.argv)
 
@@ -23,8 +23,8 @@ indexes = []
 labels = []
 positions = []
 t0 = time.time()
-for i in range(-11000, 11000, 110):
-    for j in range(-7000, 7000, 70):
+for i in range(-110, 110, 110):
+    for j in range(-70, 70, 70):
         indexes.append(nitems)
         labels.append(str(nitems))
         positions.append(QPointF(i, j))
@@ -32,10 +32,20 @@ for i in range(-11000, 11000, 110):
         nitems += 1
         
 scene.addNodes(indexes, labels, positions)
+
+model = QStandardItemModel(4, 1)
+for row in range(4):
+    item = QStandardItem("")
+    item.setData(float(row), Qt.UserRole+1)
+    model.setItem(row, 0, item)
+
+def easing_function(value: float) -> int:
+    return int(value*10)
+scene.setNodesRadiiFromModel(model, 0, Qt.UserRole+1)
     
 print(f"{time.time()-t0}s")
 print(f"{nitems} items")
 
 view.show()
 
-sys.exit(app.exec_())
+sys.exit(app.exec())
