@@ -43,7 +43,7 @@ test:
 
 outputs:
   - name: qt6molecularnetwork
-  - name: pyside2mn
+  - name: pyside6mn
     build:
       script: python -m pip install . -vv
     version: {{ version }}

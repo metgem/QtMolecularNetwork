@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.9, 3.10]
+        python-version: ["3.10"]
         os: [ubuntu-latest, windows-2019, macos-latest]
       fail-fast: false
 
@@ -30,7 +30,6 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }} (Miniconda)
       uses: conda-incubator/setup-miniconda@v2
       with:
-        activate-environment: tests
         use-only-tar-bz2: true
         auto-update-conda: true
         python-version: ${{ matrix.python-version }}
