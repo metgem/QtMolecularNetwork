@@ -28,7 +28,6 @@ requirements:
         - cairo
         - freetype
         - qt6-main
-        - versioneer
         - rdkit-dev ={{ rdkit_version }}
     run:
         - rdkit ={{ rdkit_version }}
@@ -62,6 +61,7 @@ outputs:
         - {{ cdt('libxdamage') }}             # [linux]
         - {{ cdt('libxxf86vm') }}             # [linux]
         - {{ cdt('libxext') }}                # [linux]
+        - versioneer
       host:
         - {{ pin_subpackage('qt6molecularnetwork', exact=True) }}
         - python {{ python }}
