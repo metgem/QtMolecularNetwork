@@ -34,7 +34,6 @@ jobs:
         channels: conda-forge
         auto-update-conda: true
         python-version: ${{ matrix.python-version }}
-        channels: conda-forge
     - name: Conda info
       shell: bash -l {0}
       run: |
