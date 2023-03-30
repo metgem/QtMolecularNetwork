@@ -17,6 +17,7 @@ requirements:
         - {{ compiler('cxx') }}
         - make                                # [not win]
         - eigen
+        - versioneer
         - {{ cdt('mesa-libgl-devel') }}       # [linux]
         - {{ cdt('mesa-dri-drivers') }}       # [linux]
         - {{ cdt('libselinux') }}             # [linux]
