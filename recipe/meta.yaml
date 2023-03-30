@@ -17,7 +17,6 @@ requirements:
         - {{ compiler('cxx') }}
         - make                                # [not win]
         - eigen
-        - versioneer
         - {{ cdt('mesa-libgl-devel') }}       # [linux]
         - {{ cdt('mesa-dri-drivers') }}       # [linux]
         - {{ cdt('libselinux') }}             # [linux]
@@ -29,6 +28,7 @@ requirements:
         - cairo
         - freetype
         - qt6-main
+        - versioneer
         - rdkit-dev ={{ rdkit_version }}
     run:
         - rdkit ={{ rdkit_version }}
