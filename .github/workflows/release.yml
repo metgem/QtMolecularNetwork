@@ -27,29 +27,33 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }} (Miniconda)
       uses: conda-incubator/setup-miniconda@v2
       with:
-        use-only-tar-bz2: true
+        miniforge-variant: Mambaforge
+        miniforge-version: latest
+        mamba-version: "*"
+        channel-priority: strict
+        channels: conda-forge
         auto-update-conda: true
         python-version: ${{ matrix.python-version }}
         channels: conda-forge
     - name: Conda info
       shell: bash -l {0}
       run: |
-        conda info
-        conda list
-        conda config --show-sources
-        conda config --show
+        mamba info
+        mamba list
+        mamba config --show-sources
+        mamba config --show
     - name: Install build dependencies
       shell: bash -l {0}
       run: |
-        conda install -n base conda-build conda-verify pyside6
-        conda install anaconda-client
+        mamba install -n base conda-build conda-verify pyside6
+        mamba install anaconda-client
     - name: Install libiconv
       shell: bash -l {0}
-      run: conda install -n base libiconv
+      run: mamba install -n base libiconv
       if: runner.os == 'Linux'
     - name: Build
       shell: bash -l {0}
       run: |
-        conda config --set anaconda_upload yes
-        conda build recipe --python ${{ matrix.python-version }} --token ${{ secrets.ANACONDA_UPLOAD_TOKEN }} --user metgem
+        mamba config --set anaconda_upload yes
+        mamba build recipe --python ${{ matrix.python-version }} --token ${{ secrets.ANACONDA_UPLOAD_TOKEN }} --user metgem
         
