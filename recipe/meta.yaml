@@ -84,8 +84,8 @@ outputs:
         - tinycss2
     test:
       imports:
-        - PySide2MolecularNetwork
-        - PySide2MolecularNetwork.qmn
+        - PySide6MolecularNetwork
+        - PySide6MolecularNetwork.qmn
 
 about:
     home: https://github.com/metgem/QtMolecularNetwork

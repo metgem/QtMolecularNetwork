@@ -44,7 +44,7 @@ jobs:
     - name: Install build dependencies
       shell: bash -l {0}
       run: |
-        mamba install -n base conda-build conda-verify pyside6
+        mamba install -n base conda==4.14.0 conda-build conda-verify pyside6
         mamba install anaconda-client
     - name: Install libiconv
       shell: bash -l {0}
