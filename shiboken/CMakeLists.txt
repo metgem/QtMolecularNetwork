@@ -61,7 +61,6 @@ set(generated_sources
     ${CMAKE_CURRENT_BINARY_DIR}/${bindings_library}/defaultstyle_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/${bindings_library}/node_wrapper.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/${bindings_library}/${bindings_library}_module_wrapper.cpp
-    #${CMAKE_CURRENT_BINARY_DIR}/${bindings_library}/${bindings_library}_python.h
     )
 
 

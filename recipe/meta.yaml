@@ -61,14 +61,14 @@ outputs:
         - {{ cdt('libxdamage') }}             # [linux]
         - {{ cdt('libxxf86vm') }}             # [linux]
         - {{ cdt('libxext') }}                # [linux]
-        - versioneer
-        - cmake-build-extension
       host:
         - {{ pin_subpackage('qt6molecularnetwork', exact=True) }}
         - python {{ python }}
         - rdkit-dev ={{ rdkit_version }}
         - pyside6
         - qt6-main
+        - versioneer
+        - cmake-build-extension
         - eigen
         - pip
         - setuptools

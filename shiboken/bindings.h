@@ -4,12 +4,12 @@
 
 #define QT_ANNOTATE_ACCESS_SPECIFIER(a) __attribute__((annotate(#a)))
 
-#include <qt6molecularnetwork/config.h>
-#include <qt6molecularnetwork/edge.h>
-#include <qt6molecularnetwork/graphicsitem.h>
-#include <qt6molecularnetwork/mol_depiction.h>
-#include <qt6molecularnetwork/networkscene.h>
-#include <qt6molecularnetwork/node.h>
-#include <qt6molecularnetwork/style.h>
+#include <config.h>
+#include <edge.h>
+#include <graphicsitem.h>
+#include <mol_depiction.h>
+#include <networkscene.h>
+#include <node.h>
+#include <style.h>
 
 #endif // BINDINGS_H
