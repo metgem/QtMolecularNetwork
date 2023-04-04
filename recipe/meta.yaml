@@ -1,5 +1,4 @@
 {% set version = "0.6.2" %}
-{% set rdkit_version = "2022.09.5" %}
 
 package:
     name: qt6molecularnetwork
@@ -16,7 +15,6 @@ requirements:
         - cmake
         - {{ compiler('cxx') }}
         - make                                # [not win]
-        - eigen
         - {{ cdt('mesa-libgl-devel') }}       # [linux]
         - {{ cdt('mesa-dri-drivers') }}       # [linux]
         - {{ cdt('libselinux') }}             # [linux]
@@ -24,13 +22,15 @@ requirements:
         - {{ cdt('libxxf86vm') }}             # [linux]
         - {{ cdt('libxext') }}                # [linux]
     host:
-        - python {{ python }}
         - cairo
         - freetype
+        - boost-cpp
+        - eigen
         - qt6-main
-        - rdkit-dev ={{ rdkit_version }}
+        - {{ pin_compatible('rdkit', max_pin='x.x') }}
+        - {{ pin_compatible('rdkit-dev', max_pin='x.x') }}  # [win]
     run:
-        - rdkit ={{ rdkit_version }}
+        - {{ pin_compatible('rdkit', max_pin='x.x') }}
     
 test:
     commands:
@@ -46,7 +46,6 @@ outputs:
   - name: pyside6mn
     build:
       script: python -m pip install . -vv
-    version: {{ version }}
     requirements:
       build:
         - {{ compiler('c') }}
@@ -63,8 +62,9 @@ outputs:
         - {{ cdt('libxext') }}                # [linux]
       host:
         - {{ pin_subpackage('qt6molecularnetwork', exact=True) }}
-        - python {{ python }}
-        - rdkit-dev ={{ rdkit_version }}
+        - {{ pin_compatible('rdkit-dev', max_pin='x.x') }}  # [win]
+        - {{ pin_compatible('rdkit', max_pin='x.x') }}
+        - python
         - pyside6
         - qt6-main
         - versioneer
@@ -76,11 +76,11 @@ outputs:
         - cairo
         - freetype
       run:
-        - python {{ python }}
+        - python
         - {{ pin_subpackage('qt6molecularnetwork', exact=True) }}
+        - {{ pin_compatible('rdkit', max_pin='x.x') }}
         - pywin32                             # [win]
         - pyside6
-        - rdkit ={{ rdkit_version }}
         - tinycss2
     test:
       imports:
