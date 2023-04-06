@@ -47,8 +47,9 @@ jobs:
     - name: Install build dependencies
       shell: bash -l {0}
       run: |
-        mamba install -n base conda-build conda-verify pyside6
-        mamba install anaconda-client libarchive
+        mamba install -n -q base conda-build conda-verify
+        mamba install -q anaconda-client libarchive
+        mamba install -q pip pyside6 rdkit-dev eigen cxx-compiler versioneer cmake-build-extension cmake python==${{ matrix.python-version }}
     - name: Install libiconv
       shell: bash -l {0}
       run: mamba install -n base libiconv
@@ -56,8 +57,7 @@ jobs:
     - name: Build
       shell: bash -l {0}
       run: |
-        mamba build recipe --python ${{ matrix.python-version }}
-        mamba install qt6molecularnetwork pyside6mn --use-local
+        pip install . -vv
     - name: Install test dependencies
       shell: bash -l {0}
       run: mamba install -q tinycss2 pytest pylint pytest-pylint toml pytest-qt pytest-cov codecov pytest-mock

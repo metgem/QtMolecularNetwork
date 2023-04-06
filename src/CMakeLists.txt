@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(qtmolecularnetwork LANGUAGES CXX VERSION ${VERSION_SHORT})
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} 5.5 COMPONENTS Core Gui Widgets Svg REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Gui Widgets Svg REQUIRED)
 find_package(RDKit REQUIRED)
 find_package(Cairo REQUIRED)
 
