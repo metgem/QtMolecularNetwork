@@ -131,10 +131,10 @@ class NetworkView(QGraphicsView):
         scene.layoutChanged.connect(self.on_layout_changed)
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton and not self.itemAt(event.position()):
+        if event.button() == Qt.LeftButton and not self.itemAt(event.position().toPoint()):
             self.setDragMode(QGraphicsView.ScrollHandDrag)
         elif event.button() == Qt.RightButton:
-            if self.itemAt(event.position()):
+            if self.itemAt(event.position().toPoint()):
                 return  # ignore event if right click occurs on an item to prevent selection to be lost
             else:
                 self.setDragMode(QGraphicsView.RubberBandDrag)
