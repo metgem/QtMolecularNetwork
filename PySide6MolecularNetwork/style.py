@@ -419,7 +419,7 @@ def style_to_cytoscape(style: NetworkStyle):
             'defaults':
                 [{'visualProperty': 'COMPOUND_NODE_SHAPE', 'value': 'ROUND_RECTANGLE'},
                  {'visualProperty': 'EDGE_LABEL', 'value': ''},
-                 {'visualProperty': 'EDGE_LINE_TYPE', 'value': style.edgePen().style()},
+                 {'visualProperty': 'EDGE_LINE_TYPE', 'value': QT_BORDER_STYLES_TO_JSON.get(style.edgePen().style(), 'solid').upper()},
                  {'visualProperty': 'EDGE_PAINT', 'value': style.edgePen().color().name()},
                  {'visualProperty': 'EDGE_SELECTED', 'value': False},
                  {'visualProperty': 'EDGE_SELECTED_PAINT', 'value': style.edgePen(selected=True).color().name()},
@@ -446,7 +446,7 @@ def style_to_cytoscape(style: NetworkStyle):
                  {'visualProperty': 'NETWORK_TITLE', 'value': ''},
                  {'visualProperty': 'NETWORK_WIDTH', 'value': 550.0},
                  {'visualProperty': 'NODE_BORDER_PAINT', 'value': style.nodePen().color().name()},
-                 {'visualProperty': 'NODE_BORDER_STROKE', 'value': style.nodePen().style()},
+                 {'visualProperty': 'NODE_BORDER_STROKE', 'value': QT_BORDER_STYLES_TO_JSON.get(style.edgePen().style(), 'solid').upper()},
                  {'visualProperty': 'NODE_BORDER_TRANSPARENCY', 'value': 255},
                  {'visualProperty': 'NODE_BORDER_WIDTH', 'value': style.nodePen().width()},
                  {'visualProperty': 'NODE_DEPTH', 'value': 0.0},
