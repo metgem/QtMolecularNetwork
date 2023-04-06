@@ -47,7 +47,7 @@ jobs:
     - name: Install build dependencies
       shell: bash -l {0}
       run: |
-        mamba install -n -q base conda-build conda-verify
+        mamba install -q -n base conda-build conda-verify
         mamba install -q anaconda-client libarchive
         mamba install -q pip pyside6 rdkit-dev eigen cxx-compiler versioneer cmake-build-extension cmake python==${{ matrix.python-version }}
     - name: Install libiconv
