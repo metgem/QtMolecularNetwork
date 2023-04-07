@@ -49,7 +49,7 @@ jobs:
       run: |
         mamba install -q -n base conda-build conda-verify
         mamba install -q anaconda-client libarchive
-        mamba install -q pip pyside6 rdkit-dev eigen cxx-compiler versioneer cmake-build-extension cmake python==${{ matrix.python-version }}
+        mamba install -q pip pyside6 rdkit-dev eigen cxx-compiler versioneer cmake-build-extension cmake python==${{ matrix.python-version }} setuptools
     - name: Install build dependencies (Linux)
       shell: bash -l {0}
       run: |
