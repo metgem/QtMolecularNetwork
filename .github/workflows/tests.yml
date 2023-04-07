@@ -57,10 +57,10 @@ jobs:
     - name: Build
       shell: bash -l {0}
       run: |
-        mkdir build
-        pushd build
         export PREFIX=$(python -c "import sys; print(sys.prefix)")
         export QMN_VERSION=$(python -c "import versioneer; print(versioneer.get_version())")
+        mkdir build
+        pushd build
         cmake ${CMAKE_ARGS} -DCMAKE_PREFIX_PATH=${PREFIX} -DCMAKE_INSTALL_PREFIX=${PREFIX} -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_RPATH=${PREFIX}/lib -DBUILD_STATIC=OFF -DQMN_VERSION=${PKG_VERSION} ..
         make install
         popd
