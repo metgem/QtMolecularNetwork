@@ -54,6 +54,9 @@ jobs:
       shell: bash -l {0}
       run: mamba install -n base libiconv
       if: runner.os == 'Linux'
+    - name: Fetch tags
+      if: ${{ !env.ACT }}
+      run: git fetch --prune --unshallow # This is important to get version from versioneer
     - name: Build
       shell: bash -l {0}
       run: |
