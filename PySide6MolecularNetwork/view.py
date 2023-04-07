@@ -52,15 +52,15 @@ class MiniMapGraphicsView(QGraphicsView):
     def mousePressEvent(self, event):
         if self.band.isVisible() and event.button() == Qt.LeftButton:
             rect = self.band.geometry()
-            if rect.contains(event.position()):
-                self._drag_start_pos = event.position()
+            if rect.contains(event.position().toPoint()):
+                self._drag_start_pos = event.position().toPoint()
             else:
-                self.centerOn(event.position())
+                self.centerOn(event.position().toPoint())
 
     def mouseMoveEvent(self, event):
         if self.band.isVisible() and event.buttons() == Qt.MouseButtons(
                 Qt.LeftButton) and self._drag_start_pos is not None:
-            self.centerOn(event.position())
+            self.centerOn(event.position().toPoint())
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton and self.band.isVisible():
