@@ -14,6 +14,7 @@ cmake \
   -DCMAKE_INSTALL_RPATH=${PREFIX}/lib \
   -DBUILD_STATIC=OFF \
   -DQMN_VERSION=${PKG_VERSION} \
+  -DPython3_FIND_STRATEGY=LOCATION \
   ..
 make install -j${CPU_COUNT}
 
