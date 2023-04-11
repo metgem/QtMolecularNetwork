@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [[ "$target_platform" == osx* ]]; then
+    CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+fi
+
 mkdir build
 cd build
 
