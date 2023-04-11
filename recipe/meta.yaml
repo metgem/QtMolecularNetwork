@@ -1,32 +1,35 @@
-{% set version = "0.6.2" %}
-
 package:
     name: qt6molecularnetwork
-    version: {{ version }}
+    version: {{ GIT_DESCRIBE_TAG }}
 
 source:
     path: ../
 
 build:
     number: 0
+    ignore_run_exports:
+        # Only for rdkit
+        - python_abi
 
 requirements:
     build:
         - cmake
         - {{ compiler('cxx') }}
-        - make                                # [not win]
-        - {{ cdt('mesa-libgl-devel') }}       # [linux]
-        - {{ cdt('mesa-dri-drivers') }}       # [linux]
-        - {{ cdt('libselinux') }}             # [linux]
-        - {{ cdt('libxdamage') }}             # [linux]
-        - {{ cdt('libxxf86vm') }}             # [linux]
-        - {{ cdt('libxext') }}                # [linux]
+        - make                           # [not win]
+        - ninja                          # [win]
+        - {{ cdt('mesa-libgl-devel') }}  # [linux]
+        - {{ cdt('mesa-dri-drivers') }}  # [linux]
+        - {{ cdt('libselinux') }}        # [linux]
+        - {{ cdt('libxdamage') }}        # [linux]
+        - {{ cdt('libxxf86vm') }}        # [linux]
+        - {{ cdt('libxext') }}           # [linux]
     host:
         - cairo
         - freetype
         - boost-cpp
         - eigen
         - qt6-main
+        - python
         - {{ pin_compatible('rdkit', max_pin='x.x') }}
         - {{ pin_compatible('rdkit-dev', max_pin='x.x') }}  # [win]
     run:
