@@ -8,7 +8,8 @@ cmake -LAH -G"NMake Makefiles"                  ^
     -DCMAKE_BUILD_TYPE=Release                  ^
     -DBUILD_STATIC=OFF                          ^
     -DQMN_VERSION=%PKG_VERSION%                 ^
-    -DPython3_FIND_STRATEGY=LOCATION           ^
+    -DPython3_EXECUTABLE:FILEPATH=%PYTHON%      ^
+    -DPython3_ROOT_DIR:PATH=%PREFIX%            ^
     ..
 if errorlevel 1 exit 1
 
