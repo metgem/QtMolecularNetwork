@@ -14,8 +14,6 @@ cmake ${CMAKE_ARGS} \
   -DCMAKE_INSTALL_RPATH=${PREFIX}/lib \
   -DBUILD_STATIC=OFF \
   -DQMN_VERSION=${PKG_VERSION} \
-  -D Python3_EXECUTABLE:FILEPATH=${PYTHON} \
-  -D Python3_ROOT_DIR:PATH=${PREFIX} \
   ..
 make install -j${CPU_COUNT}
 
