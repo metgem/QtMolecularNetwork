@@ -48,7 +48,8 @@ outputs:
   - name: qt6molecularnetwork
   - name: pyside6mn
     build:
-      script: python -m pip install --global-option="build_ext" --global-option="-DPython3_EXECUTABLE:FILEPATH={python}" . -vv
+      script: python -m pip install --global-option="build_ext" --global-option="-DPython3_EXECUTABLE:FILEPATH=%PYTHON" . -vv  # [win]
+      script: python -m pip install . -vv  # [unix]
     requirements:
       build:
         - {{ compiler('c') }}
