@@ -1,0 +1,1 @@
+python -m pip install --global-option="build_ext" --global-option="-DPython3_EXECUTABLE:FILEPATH=%PYTHON%" . -vv
