@@ -47,9 +47,8 @@ test:
 outputs:
   - name: qt6molecularnetwork
   - name: pyside6mn
-    build:
-      script: bld-python.bat   # [win]
-      script: build-python.sh  # [unix]
+    script: bld-python.bat   # [win]
+    script: build-python.sh  # [unix]
     requirements:
       build:
         - {{ compiler('c') }}
