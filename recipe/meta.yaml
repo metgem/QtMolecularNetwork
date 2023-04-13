@@ -69,7 +69,7 @@ outputs:
         - {{ pin_compatible('rdkit', max_pin='x.x') }}
         - python
         - pyside6
-        - qt6-main
+        - {{ pin_compatible('qt6-main', max_pin='x.x') }}
         - versioneer
         - cmake-build-extension
         - eigen
