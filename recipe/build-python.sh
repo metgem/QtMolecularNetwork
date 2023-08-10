@@ -1,1 +1,1 @@
-python -m pip install --global-option="build_ext" --global-option="-DPython3_EXECUTABLE:FILEPATH=${PYTHON}" . -vv
+python -m pip install --global-option="build_ext" --global-option="-DPython3_EXECUTABLE:FILEPATH=${PYTHON}" . --no-build-isolation --no-deps --ignore-installed --no-index --no-cache-dir -vv

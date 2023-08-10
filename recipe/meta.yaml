@@ -32,6 +32,8 @@ requirements:
         - python
         - {{ pin_compatible('rdkit', max_pin='x.x') }}
         - {{ pin_compatible('rdkit-dev', max_pin='x.x') }}  # [win]
+        - versioneer
+        - tomli          # [py<311]
     run:
         - {{ pin_compatible('rdkit', max_pin='x.x') }}
     

@@ -4,7 +4,7 @@ MACOSX_SDK_VERSION:        # [osx and x86_64]
   - '10.14'                # [osx and x86_64]
   
 
-c_compiler:
-  - vs2019  # [win]
-cxx_compiler:
-  - vs2019  # [win]
+c_compiler:    #[win]
+  - vs2019     # [win]
+cxx_compiler:  # [win]
+  - vs2019     # [win]
