@@ -18,9 +18,9 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Cache conda packages
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       env:
         # Increase this value to reset cache
         CACHE_NUMBER: 0
@@ -75,7 +75,7 @@ jobs:
       run: cd tests && pytest --cov=PySide6MolecularNetwork --cov-report=xml .
     - name: Upload coverage
       if: success()
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
