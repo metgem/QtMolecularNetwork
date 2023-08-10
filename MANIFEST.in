@@ -1,2 +1,1 @@
-include versioneer.py
-include PySide2MolecularNetwork/_version.py
+include PySide6MolecularNetwork/_version.py

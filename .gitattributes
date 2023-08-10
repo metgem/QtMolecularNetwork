@@ -1,2 +1,3 @@
 PyQtNetworkView/_version.py export-subst
 PySide2MolecularNetwork/_version.py export-subst
+PySide6MolecularNetwork/_version.py export-subst
