@@ -1,11 +1,14 @@
 [build-system]
-requires = ["setuptools",
-            "setuptools-scm",
-            "wheel",
-            "versioneer[toml]",
-            "cmake_build_extension",
-            "PySide6-Essentials",
-            "shiboken6"]
+requires = [
+    "wheel",
+    "setuptools>=68",
+    "setuptools_scm[toml]>=6.0",
+    "versioneer[toml]",
+    "cmake_build_extension",
+    "PySide6-Essentials",
+    "shiboken6",
+    "shiboken6_generator"
+]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -48,6 +51,3 @@ versionfile_source = "PySide6MolecularNetwork/_version.py"
 versionfile_build = "PySide6MolecularNetwork/_version.py"
 tag_prefix = "v"
 parentdir_prefix = ""
-
-[tool.setuptools.packages.find]
-where = ["shiboken"]
