@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools",
+            "setuptools-scm",
+            "wheel",
+            "versioneer[toml]",
+            "cmake_build_extension",
+            "PySide6-Essentials",
+            "shiboken6"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PySide6MolecularNetwork"
+authors = [
+    {name = "Nicolas Elie", email = "nicolas.elie@cnrs.fr"},
+]
+description = "Qt Widget and Python bindings for visualisation of a network graph"
+readme = "README.md"
+requires-python = ">=3.7"
+keywords = ["PySide6", "PySide", "Qt", "Molecular Network"]
+license = {text = "GPLv3+"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Environment :: Win32 (MS Windows)",
+    "Environment :: MacOS X",
+    "Environment :: X11 Applications :: Qt",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+dynamic=["version"]
+
+[project.urls]
+Homepage = "https://github.com/metgem/QtMolecularNetwork"
+Repository  = "https://github.com/metgem/QtMolecularNetwork"
+
+[tool.versioneer]
+VCS = "git"
+style = "pep440"
+versionfile_source = "PySide6MolecularNetwork/_version.py"
+versionfile_build = "PySide6MolecularNetwork/_version.py"
+tag_prefix = "v"
+parentdir_prefix = ""
+
+[tool.setuptools.packages.find]
+where = ["shiboken"]
