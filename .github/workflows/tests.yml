@@ -53,7 +53,7 @@ jobs:
       shell: bash -l {0}
       run: |
         mamba install -n base libiconv
-        mamba install mesa-libgl-devel-cos7-x86_64
+        sudo apt install libegl1
       if: runner.os == 'Linux'
     - name: Fetch tags
       if: ${{ !env.ACT }}
