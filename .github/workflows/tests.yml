@@ -53,7 +53,7 @@ jobs:
       shell: bash -l {0}
       run: |
         mamba install -n base libiconv
-        sudo apt install libegl1
+        sudo apt install libegl1 libopengl0
       if: runner.os == 'Linux'
     - name: Fetch tags
       if: ${{ !env.ACT }}
