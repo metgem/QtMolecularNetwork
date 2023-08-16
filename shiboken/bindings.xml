@@ -79,8 +79,8 @@
         </modify-function>
         
         <modify-function signature="setNetworkStyle(NetworkStyle *)">
-            <modify-argument index="this">
-                <parent index="1" action="add"/>
+            <modify-argument index="1">
+                <parent index="this" action="add"/>
             </modify-argument>
         </modify-function>
     </object-type>
