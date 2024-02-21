@@ -18,9 +18,9 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Cache conda packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       env:
         # Increase this value to reset cache
         CACHE_NUMBER: 0
@@ -28,7 +28,7 @@ jobs:
         path: ~/conda_pkgs_dir
         key: ${{ runner.os }}-${{ env.CACHE_NUMBER }}
     - name: Set up Python ${{ matrix.python-version }} (Miniconda)
-      uses: conda-incubator/setup-miniconda@v2
+      uses: conda-incubator/setup-miniconda@v3
       with:
         miniforge-variant: Mambaforge
         miniforge-version: latest
@@ -75,7 +75,7 @@ jobs:
       run: cd tests && pytest --cov=PySide6MolecularNetwork --cov-report=xml .
     - name: Upload coverage
       if: success()
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
