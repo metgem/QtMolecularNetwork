@@ -2,10 +2,9 @@
     A set of widgets based on QNetworkView and QNetworkScene for network visualization.
 """
 
-import qmn
-
 try:
     IS_COMPILED = True
+    import qmn
     from .qmn import (Node, NodePolygon, Edge, Config,
                               NetworkScene as BaseNetworkScene,
                               NetworkStyle, DefaultStyle)
