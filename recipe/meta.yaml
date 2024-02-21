@@ -28,7 +28,7 @@ requirements:
         - freetype
         - boost-cpp
         - eigen
-        - qt6-main
+        - qt6-main <6.6.2
         - python
         - {{ pin_compatible('rdkit', max_pin='x.x') }}
         - {{ pin_compatible('rdkit-dev', max_pin='x.x') }}  # [win]
