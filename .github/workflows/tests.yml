@@ -65,7 +65,7 @@ jobs:
         mamba install qt6molecularnetwork pyside6mn --use-local
     - name: Install test dependencies
       shell: bash -l {0}
-      run: mamba install -q tinycss2 pytest pylint pytest-pylint toml pytest-qt pytest-cov codecov pytest-mock
+      run: mamba install -q tinycss2 pytest toml pytest-qt pytest-cov codecov pytest-mock
     - name: Install test dependencies (Linux)
       shell: bash -l {0}
       run: mamba install pytest-xvfb
