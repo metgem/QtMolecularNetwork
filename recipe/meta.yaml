@@ -26,9 +26,9 @@ requirements:
     host:
         - cairo
         - freetype
-        - boost-cpp
+        - libboost-devel
         - eigen
-        - qt6-main <6.6.2
+        - qt6-main
         - python
         - {{ pin_compatible('rdkit', max_pin='x.x') }}
         - {{ pin_compatible('rdkit-dev', max_pin='x.x') }}  # [win]
@@ -75,6 +75,7 @@ outputs:
         - versioneer
         - cmake-build-extension
         - eigen
+        - libboost-devel
         - pip
         - setuptools
         - libclang
