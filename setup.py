@@ -57,6 +57,11 @@ setuptools.setup(
             name="qmn",
             install_prefix="PySide6MolecularNetwork",
             source_dir=str(Path(__file__).parent.absolute() / "shiboken"),
+            cmake_configure_options=[
+                f"-DPython3_ROOT_DIR={Path(sys.prefix)}",
+                f"-DPython3_EXECUTABLE={Path(sys.executable)}",
+                f"-DPython_EXECUTABLE={Path(sys.executable)}"
+            ],
             py_limited_api=True
         ),
     ],

@@ -1,7 +1,4 @@
 python -m pip install . ^
-    --config-settings="--global-option=build_ext" ^
-    --config-settings="--global-option=-DPython3_EXECUTABLE:FILEPATH=%PYTHON%" ^
-    --config-settings="--global-option=-DPython_EXECUTABLE:FILEPATH=%PYTHON%" ^
     --no-build-isolation ^
     --no-deps ^
     --ignore-installed ^
