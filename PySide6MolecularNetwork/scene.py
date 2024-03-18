@@ -278,7 +278,7 @@ class NetworkScene(QGraphicsScene):
             label = model.index(node.index(), column_id).data(role)
             node.setLabel(str(label))
 
-    def setLabels(labels):
+    def setLabels(self, labels):
         for node, label in itertools.zip_longest(self.nodes(), labels):
                 node.setLabel(label)
 
