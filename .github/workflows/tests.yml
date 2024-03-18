@@ -42,8 +42,8 @@ jobs:
       run: |
         mamba info
         mamba list
-        mamba config --show-sources
-        mamba config --show
+        conda config --show-sources
+        conda config --show
     - name: Install build dependencies
       shell: bash -l {0}
       run: |
