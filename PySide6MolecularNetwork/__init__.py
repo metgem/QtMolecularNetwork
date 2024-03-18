@@ -4,7 +4,7 @@
 
 try:
     IS_COMPILED = True
-    import qmn
+    from . import qmn
     from .qmn import (Node, NodePolygon, Edge, Config,
                               NetworkScene as BaseNetworkScene,
                               NetworkStyle, DefaultStyle)
