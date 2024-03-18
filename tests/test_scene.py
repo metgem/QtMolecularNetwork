@@ -282,7 +282,22 @@ def test_scene_set_labels_from_model(scene, role):
     
     for node in scene.nodes():
         assert node.label() == str(node.index()+1)
+      
+      
+def test_scene_set_labels(scene):
+    """Check that setLabels change labels on all nodes."""
+
+    labels = [f'test{i}' for i in range(len(scene.nodes()))]
+    scene.setLabels(labels)
+    
+    for node, label in zip(scene.nodes(), labels):
+        assert node.label() == label
         
+    scene.resetLabels()
+    
+    for node in scene.nodes():
+        assert node.label() == str(node.index()+1)
+
         
 @pytest.mark.parametrize("role", [Qt.DisplayRole, Qt.UserRole+1])
 @pytest.mark.parametrize("func", [None, lambda x: x, lambda x: 2*x, lambda x: x//3], ids=["None", "identity", "2*x", "x/3"])

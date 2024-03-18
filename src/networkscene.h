@@ -73,6 +73,7 @@ public:
     qreal scale();
     void setScale(qreal scale=1);
     void setLabelsFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole);
+    void setLabels(QList<QString> labels);
     void resetLabels();
     QList<QColor> pieColors();
     void setNodesRadiiFromModel(QAbstractItemModel *model, int column_id, int role=Qt::DisplayRole);

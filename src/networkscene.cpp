@@ -404,6 +404,15 @@ void NetworkScene::setLabelsFromModel(QAbstractItemModel *model, int column_id, 
     }
 }
 
+void NetworkScene::setLabels(QList<QString> labels)
+{
+    auto nodes = this->nodes();
+    for (int i=0; i<nodes.size(); i++) {
+        if (labels.size() == nodes.size())
+            nodes[i]->setLabel(labels[i]);
+    }
+}
+
 void NetworkScene::resetLabels()
 {
     foreach (Node* node, this->nodes()) {
