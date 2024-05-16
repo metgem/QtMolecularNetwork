@@ -246,6 +246,17 @@ QRectF NetworkScene::selectedNodesBoundingRect()
     return boundingRect;
 }
 
+QRectF NetworkScene::visibleItemsBoundingRect()
+{
+    QRectF boundingRect;
+    foreach (QGraphicsItem* item, items())
+    {
+        if (item->isVisible and !(item->flags() & QGraphicsItem::ItemHasNoContents))
+        boundingRect |= item->sceneBoundingRect();
+    }
+    return boundingRect;
+}
+
 QList<Edge *> NetworkScene::edges() const
 {
     QList<Edge *> edges;
@@ -550,6 +561,7 @@ void NetworkScene::hideItems(QList<QGraphicsItem *> items)
     {
         item->hide();
     }
+    emit this->itemsVisibilityChanged();
 }
 
 void NetworkScene::showItems(QList<QGraphicsItem *> items)
@@ -558,6 +570,7 @@ void NetworkScene::showItems(QList<QGraphicsItem *> items)
     {
         item->show();
     }
+    emit this->itemsVisibilityChanged();
 }
 
 void NetworkScene::hideSelectedItems()
@@ -568,6 +581,7 @@ void NetworkScene::hideSelectedItems()
     {
         item->hide();
     }
+    emit this->itemsVisibilityChanged();
 }
 
 void NetworkScene::showAllItems()
@@ -576,6 +590,7 @@ void NetworkScene::showAllItems()
     {
         item->show();
     }
+    emit this->itemsVisibilityChanged();
 }
 
 void NetworkScene::hideAllItems()
@@ -584,6 +599,7 @@ void NetworkScene::hideAllItems()
     {
         item->hide();
     }
+    emit this->itemsVisibilityChanged();
 }
 
 QList<QColor> NetworkScene::nodesColors()

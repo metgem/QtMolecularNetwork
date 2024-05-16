@@ -129,6 +129,7 @@ class NetworkView(QGraphicsView):
         # Connect events
         scene.scaleChanged.connect(self.on_scale_changed)
         scene.layoutChanged.connect(self.on_layout_changed)
+        scene.itemsVisibilityChanged.connect(self.on_items_visibility_changed)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton and not self.itemAt(event.position().toPoint()):
@@ -168,13 +169,19 @@ class NetworkView(QGraphicsView):
         self.focusedIn.emit()
 
     def on_scale_changed(self):
-        self.scene().setSceneRect(self.scene().itemsBoundingRect().adjusted(-30, -30, 30, 30))
+        self.adjustSceneRect()
         self.minimap.zoomToFit()
 
     def on_layout_changed(self):
-        self.scene().setSceneRect(self.scene().itemsBoundingRect().adjusted(-30, -30, 30, 30))
+        self.adjustSceneRect()
         self.zoomToFit()
         self.minimap.zoomToFit()
+        
+    def on_items_visibility_changed(self):
+        self.on_layout_changed()
+        
+    def adjustSceneRect(self):
+        self.scene().setSceneRect(self.scene().visibleItemsBoundingRect().adjusted(-30, -30, 30, 30))
 
     def translate(self, x, y):
         super().translate(x, y)

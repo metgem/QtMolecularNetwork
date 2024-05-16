@@ -21,6 +21,7 @@ class QMN_EXPORT NetworkScene : public QGraphicsScene
 Q_SIGNALS:
    void scaleChanged(qreal);
    void layoutChanged();
+   void itemsVisibilityChanged();
    void pieChartsVisibilityChanged(bool);
    void pixmapVisibilityChanged(bool);
    void locked(bool);
@@ -62,6 +63,7 @@ public:
     void setNodesSelection(QList<int> indexes);
     void setNodesSelection(QList<Node *> nodes);
     QRectF selectedNodesBoundingRect();
+    QRectF visibleItemsBoundingRect();
 
     QList<Edge *> edges() const;
     QList<Edge *> selectedEdges() const;

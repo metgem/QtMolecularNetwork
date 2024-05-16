@@ -17,6 +17,7 @@ from .style import NetworkStyle, DefaultStyle
 class NetworkScene(QGraphicsScene):
     scaleChanged = Signal(float)
     layoutChanged = Signal()
+    itemsVisibilityChanged = Signal()
     pieChartsVisibilityChanged = Signal(bool)
     pixmapVisibilityChanged = Signal(bool)
     locked = Signal(bool)
@@ -185,6 +186,13 @@ class NetworkScene(QGraphicsScene):
         bounding_rect = QRectF()
         for node in self.selectedNodes():
             bounding_rect |= node.sceneBoundingRect()
+        return bounding_rect
+        
+    def visibleItemsBoundingRect(self):
+        bounding_rect = QRectF()
+        for item in self.items():
+            if item.isVisible() and not (item.flags() & QGraphicsItem.ItemHasNoContents):
+                bounding_rect |= item.sceneBoundingRect()
         return bounding_rect
     
     def edges(self):
@@ -364,24 +372,29 @@ class NetworkScene(QGraphicsScene):
     def hideItems(self, items):
         for item in items:
             item.hide()
+        self.itemsVisibilityChanged.emit()
 
     def showItems(self, items):
         for item in items:
             item.show()
+        self.itemsVisibilityChanged.emit()
 
     def hideSelectedItems(self):
         items = self.selectedItems()
         self.clearSelection()
         for item in items:
             item.hide()
+        self.itemsVisibilityChanged.emit()
 
     def showAllItems(self):
         for item in self.items():
             item.show()
+        self.itemsVisibilityChanged.emit()
             
     def hideAllItems(self):
         for item in self.items():
             item.hide()
+        self.itemsVisibilityChanged.emit()
 
     def nodesColors(self):
         return [node.brush().color() if node.brush().color() != self.networkStyle().nodeBrush().color()

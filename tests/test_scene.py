@@ -539,16 +539,19 @@ def test_scene_show_hide_items(scene):
         assert edge.isVisible() == True
        
     for i in range(len(nodes)//2):
-        scene.hideItems([nodes[i], nodes[i+5]])
+        with qtbot.waitSignal(scene.itemsVisibilityChanged):
+            scene.hideItems([nodes[i], nodes[i+5]])
         assert nodes[i].isVisible() == False
         assert nodes[i+5].isVisible() == False
     
     for i in range(len(edges)//2):
-        scene.hideItems([edges[i], edges[i+2]])
+        with qtbot.waitSignal(scene.itemsVisibilityChanged):
+            scene.hideItems([edges[i], edges[i+2]])
         assert edges[i].isVisible() == False
         assert edges[i+2].isVisible() == False
     
-    scene.showItems(nodes + edges)
+    with qtbot.waitSignal(scene.itemsVisibilityChanged):
+        scene.showItems(nodes + edges)
     
     for node in nodes:
         assert node.isVisible() == True
@@ -556,7 +559,8 @@ def test_scene_show_hide_items(scene):
     for edge in edges:
         assert edge.isVisible() == True
         
-    scene.hideAllItems()
+    with qtbot.waitSignal(scene.itemsVisibilityChanged):
+        scene.hideAllItems()
     
     for node in nodes:
         assert node.isVisible() == False
@@ -564,7 +568,8 @@ def test_scene_show_hide_items(scene):
     for edge in edges:
         assert edge.isVisible() == False
         
-    scene.showAllItems()
+    with qtbot.waitSignal(scene.itemsVisibilityChanged):
+        scene.showAllItems()
     
     for node in nodes:
         assert node.isVisible() == True
@@ -600,7 +605,8 @@ def test_scene_hide_selected_items(scene):
             not_selected_items.add(edge)
     assert selected_items == set(scene.selectedItems())
         
-    scene.hideSelectedItems()
+    with qtbot.waitSignal(scene.itemsVisibilityChanged):
+        scene.hideSelectedItems()
     assert len(scene.selectedItems()) == 0
 
     for item in selected_items:
@@ -970,8 +976,28 @@ def test_scene_selected_nodes_bounding_rect(scene):
         bounding_rect = new_bounding_rect
         
         
+def test_scene_visible_items_bounding_rect(scene):
+    """Check that visibleItemsBoundingRect decrease/increase as new nodes are hidden/shown."""
+    
+    bounding_rect = scene.visibleItemsBoundingRect()
+    assert bounding_rect.isNull()
+    for node in scene.nodes():
+        node.hide()
+        new_bounding_rect = scene.visibleItemsBoundingRect()
+        if not bounding_rect.isNull():
+            assert bounding_rect.contains(new_bounding_rect)
+        bounding_rect = new_bounding_rect
+        
+    for node in scene.nodes():
+        node.show()
+        new_bounding_rect = scene.visibleItemsBoundingRect()
+        if not new_bounding_rect.isNull():
+            assert bounding_rect.contains(new_bounding_rect)
+        bounding_rect = new_bounding_rect
+        
+        
 def test_scene_items_bounding_rect(mod):
-    """Check that selectedNodesBoundingRect increase as new nodes are selected."""
+    """Check that itemsBoundingRect increase as new nodes are added."""
     
     scene = mod.NetworkScene()
     bounding_rect = scene.itemsBoundingRect()
