@@ -251,8 +251,8 @@ QRectF NetworkScene::visibleItemsBoundingRect()
     QRectF boundingRect;
     foreach (QGraphicsItem* item, items())
     {
-        if (item->isVisible and !(item->flags() & QGraphicsItem::ItemHasNoContents))
-        boundingRect |= item->sceneBoundingRect();
+        if (item->isVisible() and !(item->flags() & QGraphicsItem::ItemHasNoContents))
+            boundingRect |= item->sceneBoundingRect();
     }
     return boundingRect;
 }
