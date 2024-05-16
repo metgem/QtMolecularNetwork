@@ -526,7 +526,7 @@ def test_scene_set_pixmap_visibility(qtbot, scene):
         assert scene.pixmapVisibility() == True
 
             
-def test_scene_show_hide_items(scene):
+def test_scene_show_hide_items(qtbot, scene):
     """Check that nodes/edges can be hidden/shown."""
     
     nodes = scene.nodes()
@@ -578,7 +578,7 @@ def test_scene_show_hide_items(scene):
         assert edge.isVisible() == True
         
         
-def test_scene_hide_selected_items(scene):
+def test_scene_hide_selected_items(qtbot, scene):
     """Check that hideSelectedItems hide only selected items"""
     
     scene.clearSelection()
@@ -980,7 +980,8 @@ def test_scene_visible_items_bounding_rect(scene):
     """Check that visibleItemsBoundingRect decrease/increase as new nodes are hidden/shown."""
     
     bounding_rect = scene.visibleItemsBoundingRect()
-    assert bounding_rect.isNull()
+    assert not bounding_rect.isNull()
+    
     for node in scene.nodes():
         node.hide()
         new_bounding_rect = scene.visibleItemsBoundingRect()
