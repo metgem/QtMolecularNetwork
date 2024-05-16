@@ -993,7 +993,7 @@ def test_scene_visible_items_bounding_rect(scene):
         node.show()
         new_bounding_rect = scene.visibleItemsBoundingRect()
         if not new_bounding_rect.isNull():
-            assert bounding_rect.contains(new_bounding_rect)
+            assert new_bounding_rect.contains(bounding_rect)
         bounding_rect = new_bounding_rect
         
         
