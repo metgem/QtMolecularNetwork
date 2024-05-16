@@ -181,7 +181,7 @@ class NetworkView(QGraphicsView):
         self.on_layout_changed()
         
     def adjustSceneRect(self):
-        self.scene().setSceneRect(self.scene().visibleItemsBoundingRect().adjusted(-30, -30, 30, 30))
+        self.scene().setSceneRect(self.scene().visibleNodesBoundingRect().adjusted(-30, -30, 30, 30))
 
     def translate(self, x, y):
         super().translate(x, y)

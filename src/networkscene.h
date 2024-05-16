@@ -63,7 +63,7 @@ public:
     void setNodesSelection(QList<int> indexes);
     void setNodesSelection(QList<Node *> nodes);
     QRectF selectedNodesBoundingRect();
-    QRectF visibleItemsBoundingRect();
+    QRectF visibleNodesBoundingRect();
 
     QList<Edge *> edges() const;
     QList<Edge *> selectedEdges() const;

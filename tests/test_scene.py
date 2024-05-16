@@ -976,23 +976,25 @@ def test_scene_selected_nodes_bounding_rect(scene):
         bounding_rect = new_bounding_rect
         
         
-def test_scene_visible_items_bounding_rect(scene):
-    """Check that visibleItemsBoundingRect decrease/increase as new nodes are hidden/shown."""
+def test_scene_visible_nodes_bounding_rect(scene):
+    """Check that visibleNodesBoundingRect decrease/increase as new nodes are hidden/shown."""
     
-    bounding_rect = scene.visibleItemsBoundingRect()
+    bounding_rect = scene.visibleNodesBoundingRect()
     assert not bounding_rect.isNull()
     
     for node in scene.nodes():
         node.hide()
-        new_bounding_rect = scene.visibleItemsBoundingRect()
-        if not bounding_rect.isNull():
+        new_bounding_rect = scene.visibleNodesBoundingRect()
+        if not new_bounding_rect.isNull():
             assert bounding_rect.contains(new_bounding_rect)
         bounding_rect = new_bounding_rect
         
+    assert bounding_rect.isNull()
+        
     for node in scene.nodes():
         node.show()
-        new_bounding_rect = scene.visibleItemsBoundingRect()
-        if not new_bounding_rect.isNull():
+        new_bounding_rect = scene.visibleNodesBoundingRect()
+        if not bounding_rect.isNull():
             assert new_bounding_rect.contains(bounding_rect)
         bounding_rect = new_bounding_rect
         

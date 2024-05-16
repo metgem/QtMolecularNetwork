@@ -246,13 +246,13 @@ QRectF NetworkScene::selectedNodesBoundingRect()
     return boundingRect;
 }
 
-QRectF NetworkScene::visibleItemsBoundingRect()
+QRectF NetworkScene::visibleNodesBoundingRect()
 {
     QRectF boundingRect;
-    foreach (QGraphicsItem* item, items())
+    foreach (Node* node, nodes())
     {
-        if (item->isVisible() and !(item->flags() & QGraphicsItem::ItemHasNoContents))
-            boundingRect |= item->sceneBoundingRect();
+        if (node->isVisible() and !(node->flags() & QGraphicsItem::ItemHasNoContents))
+            boundingRect |= node->sceneBoundingRect();
     }
     return boundingRect;
 }

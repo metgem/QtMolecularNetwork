@@ -188,11 +188,11 @@ class NetworkScene(QGraphicsScene):
             bounding_rect |= node.sceneBoundingRect()
         return bounding_rect
         
-    def visibleItemsBoundingRect(self):
+    def visibleNodesBoundingRect(self):
         bounding_rect = QRectF()
-        for item in self.items():
-            if item.isVisible() and not (item.flags() & QGraphicsItem.ItemHasNoContents):
-                bounding_rect |= item.sceneBoundingRect()
+        for node in self.nodes():
+            if node.isVisible() and not (node.flags() & QGraphicsItem.ItemHasNoContents):
+                bounding_rect |= node.sceneBoundingRect()
         return bounding_rect
     
     def edges(self):
