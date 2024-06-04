@@ -287,7 +287,7 @@ class NetworkScene(QGraphicsScene):
             node.setLabel(str(label))
 
     def setLabels(self, labels):
-        for node, label in itertools.zip_longest(self.nodes(), labels):
+        for node, label in zip(self.nodes(), labels):
                 node.setLabel(label)
 
     def resetLabels(self):
